@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>企业注册 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .reg-bg {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%); padding: 40px 20px;
+    }
+    .reg-box {
+      width: 520px; background: #fff; border-radius: 16px;
+      padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .reg-logo { text-align: center; margin-bottom: 24px; }
+    .reg-logo-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: linear-gradient(135deg, #1677ff, #36cfc9);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 28px; margin-bottom: 12px;
+    }
+    .reg-logo-title { font-size: 20px; font-weight: 600; }
+    .reg-logo-sub { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 6px; }
+    .reg-steps { display: flex; align-items: center; margin-bottom: 28px; }
+    .reg-step { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .reg-step-circle {
+      width: 28px; height: 28px; border-radius: 50%; border: 2px solid #d9d9d9;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; color: rgba(0,0,0,0.35); background: #fff;
+    }
+    .reg-step.active .reg-step-circle { border-color: #1677ff; color: #1677ff; background: #e6f4ff; }
+    .reg-step.done .reg-step-circle { border-color: #52c41a; color: #fff; background: #52c41a; }
+    .reg-step-text { font-size: 13px; color: rgba(0,0,0,0.45); }
+    .reg-step.active .reg-step-text { color: rgba(0,0,0,0.88); font-weight: 500; }
+    .reg-step-line { width: 30px; height: 2px; background: #f0f0f0; margin: 0 8px; }
+    .reg-step-line.done { background: #52c41a; }
+    .reg-content { display: none; }
+    .reg-content.active { display: block; animation: fadeIn 0.3s ease; }
+    .reg-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .reg-form-item { margin-bottom: 14px; }
+    .reg-form-item.full { grid-column: span 2; }
+    .reg-form-item label { display: block; margin-bottom: 5px; font-size: 13px; color: rgba(0,0,0,0.65); }
+    .reg-form-item label .required { color: #f5222d; margin-left: 2px; }
+    .reg-form-item input, .reg-form-item select {
+      width: 100%; padding: 9px 12px; border: 1px solid #d9d9d9;
+      border-radius: 6px; font-size: 14px; outline: none;
+    }
+    .reg-form-item input:focus, .reg-form-item select:focus { border-color: #1677ff; }
+    .reg-code-row { display: flex; gap: 10px; }
+    .reg-code-row input { flex: 1; }
+    .reg-code-btn {
+      padding: 9px 14px; background: #1677ff; color: #fff; border: none;
+      border-radius: 6px; font-size: 13px; cursor: pointer; white-space: nowrap;
+    }
+    .reg-code-btn:hover { background: #4096ff; }
+    .reg-upload {
+      border: 2px dashed #d9d9d9; border-radius: 8px; padding: 24px;
+      text-align: center; background: #fafafa; cursor: pointer;
+    }
+    .reg-upload:hover { border-color: #1677ff; background: #e6f4ff; }
+    .reg-upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .reg-upload-text { font-size: 13px; color: rgba(0,0,0,0.45); }
+    .reg-nav { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
+    .reg-success { text-align: center; padding: 40px 20px; }
+    .reg-success-icon { font-size: 64px; margin-bottom: 16px; }
+    .reg-success-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .reg-success-desc { font-size: 14px; color: rgba(0,0,0,0.45); line-height: 1.8; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <div class="reg-bg">
+    <div class="reg-box">
+      <div class="reg-logo">
+        <div class="reg-logo-icon">🌿</div>
+        <div class="reg-logo-title">企业注册</div>
+        <div class="reg-logo-sub">加入污碳协同AI监管平台，开启智能环保管理</div>
+      </div>
+      
+      <div class="reg-steps">
+        <div class="reg-step active" id="step1Item">
+          <div class="reg-step-circle" id="step1Circle">1</div>
+          <span class="reg-step-text">企业信息</span>
+        </div>
+        <div class="reg-step-line" id="line1"></div>
+        <div class="reg-step" id="step2Item">
+          <div class="reg-step-circle" id="step2Circle">2</div>
+          <span class="reg-step-text">实名认证</span>
+        </div>
+        <div class="reg-step-line" id="line2"></div>
+        <div class="reg-step" id="step3Item">
+          <div class="reg-step-circle" id="step3Circle">3</div>
+          <span class="reg-step-text">完成</span>
+        </div>
+      </div>
+      
+      <!-- 步骤1：企业信息 -->
+      <div class="reg-content active" id="regStep1">
+        <div class="reg-form-grid">
+          <div class="reg-form-item">
+            <label>企业名称<span class="required">*</span></label>
+            <input type="text" placeholder="请输入企业全称" value="蓝天工业涂装有限公司">
+          </div>
+          <div class="reg-form-item">
+            <label>统一社会信用代码<span class="required">*</span></label>
+            <input type="text" placeholder="18位统一社会信用代码" value="91110108MA0012345">
+          </div>
+          <div class="reg-form-item full">
+            <label>注册地址<span class="required">*</span></label>
+            <input type="text" placeholder="请输入企业注册地址" value="北京市海淀区张镇工业园A区3号">
+          </div>
+          <div class="reg-form-item">
+            <label>所属行业<span class="required">*</span></label>
+            <select>
+              <option>工业涂装</option>
+              <option selected>汽车零部件涂装</option>
+              <option>家具涂装</option>
+              <option>金属涂装</option>
+              <option>汽修行业</option>
+            </select>
+          </div>
+          <div class="reg-form-item">
+            <label>排污许可证编号</label>
+            <input type="text" placeholder="请输入许可证编号" value="91110108MA0012345001P">
+          </div>
+          <div class="reg-form-item">
+            <label>联系人姓名<span class="required">*</span></label>
+            <input type="text" placeholder="请输入联系人姓名" value="张环保">
+          </div>
+          <div class="reg-form-item">
+            <label>联系人手机号<span class="required">*</span></label>
+            <input type="text" placeholder="请输入手机号" value="138****5678">
+          </div>
+          <div class="reg-form-item full">
+            <label>设置登录密码<span class="required">*</span></label>
+            <input type="password" placeholder="8-20位，含字母和数字" value="demo1234">
+          </div>
+        </div>
+        <div class="reg-nav">
+          <span></span>
+          <button class="btn btn-primary" onclick="goRegStep(2)">下一步：实名认证 →</button>
+        </div>
+      </div>
+      
+      <!-- 步骤2：实名认证 -->
+      <div class="reg-content" id="regStep2">
+        <div class="reg-form-item full">
+          <label>营业执照上传<span class="required">*</span></label>
+          <div class="reg-upload" onclick="this.innerHTML='<div style=font-size:32px>✅</div><div style=font-size:13px;margin-top:8px>营业执照_蓝天工业.jpg<br><span style=color:#52c41a>上传成功</span></div>'">
+            <div class="reg-upload-icon">📎</div>
+            <div class="reg-upload-text">点击上传营业执照扫描件<br>支持 JPG / PNG / PDF</div>
+          </div>
+        </div>
+        <div class="reg-form-item full">
+          <label>法人身份证上传<span class="required">*</span></label>
+          <div class="reg-upload" onclick="this.innerHTML='<div style=font-size:32px>✅</div><div style=font-size:13px;margin-top:8px>身份证_张三.jpg<br><span style=color:#52c41a>上传成功</span></div>'">
+            <div class="reg-upload-icon">🪪</div>
+            <div class="reg-upload-text">点击上传法人身份证正反面<br>支持 JPG / PNG</div>
+          </div>
+        </div>
+        <div class="reg-form-item full">
+          <label>短信验证码<span class="required">*</span></label>
+          <div class="reg-code-row">
+            <input type="text" placeholder="请输入验证码">
+            <button class="reg-code-btn">获取验证码</button>
+          </div>
+        </div>
+        <div class="reg-form-item full">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" checked> 我已阅读并同意 <a href="#" style="color:#1677ff">用户协议</a> 和 <a href="#" style="color:#1677ff">隐私政策</a>
+          </label>
+        </div>
+        <div class="reg-nav">
+          <button class="btn btn-default" onclick="goRegStep(1)">← 上一步</button>
+          <button class="btn btn-primary" onclick="goRegStep(3)">提交注册</button>
+        </div>
+      </div>
+      
+      <!-- 步骤3：完成 -->
+      <div class="reg-content" id="regStep3">
+        <div class="reg-success">
+          <div class="reg-success-icon">🎉</div>
+          <div class="reg-success-title">注册提交成功</div>
+          <div class="reg-success-desc">
+            您的企业信息已提交审核<br>
+            监测数据科将在 <strong>1-2 个工作日</strong> 内完成审核<br>
+            审核结果将通过短信通知您
+          </div>
+          <div style="background:#f6ffed;border:1px solid #b7eb8f;border-radius:8px;padding:14px 20px;margin-bottom:24px;text-align:left;font-size:13px;line-height:1.8">
+            <strong style="color:#52c41a">📋 审核进度</strong><br>
+            ✅ 企业信息填写完成<br>
+            ✅ 实名认证材料上传完成<br>
+            ⏳ 等待监测数据科审核<br>
+            ⬜ 审核通过，开通平台权限
+          </div>
+          <a href="login.html" class="btn btn-primary" style="padding:10px 40px">前往登录页</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function goRegStep(n) {
+      document.querySelectorAll('.reg-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('regStep' + n).classList.add('active');
+      for (let i = 1; i <= 3; i++) {
+        const item = document.getElementById('step' + i + 'Item');
+        const circle = document.getElementById('step' + i + 'Circle');
+        const line = document.getElementById('line' + (i-1));
+        item.classList.remove('active', 'done');
+        if (i < n) {
+          item.classList.add('done');
+          circle.textContent = '✓';
+          if (line) line.classList.add('done');
+        } else if (i === n) {
+          item.classList.add('active');
+          circle.textContent = i;
+        } else {
+          circle.textContent = i;
+        }
+        if (i >= n && line) line.classList.remove('done');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>调度指令详情 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: #f0f2f5; }
+    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .main { margin-left: 0; margin-top: 64px; padding: 24px; }
+    .back-link { font-size: 13px; color: #1677ff; margin-bottom: 12px; display: inline-block; }
+    .back-link:hover { text-decoration: underline; }
+    
+    .dispatch-header {
+      background: #fff; border-radius: 8px; padding: 20px 24px;
+      margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .dispatch-header-left { flex: 1; }
+    .dispatch-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .dispatch-meta { font-size: 13px; color: rgba(0,0,0,0.45); line-height: 1.8; }
+    .dispatch-status {
+      padding: 4px 14px; border-radius: 4px; font-size: 13px; font-weight: 500;
+    }
+    .dispatch-status.executing { background: #e6f4ff; color: #1677ff; }
+    .dispatch-status.pending { background: #fffbe6; color: #d48806; }
+    .dispatch-status.closed { background: #f6ffed; color: #389e0d; }
+    
+    .timeline-vertical { position: relative; padding-left: 28px; }
+    .timeline-vertical::before {
+      content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px;
+      width: 2px; background: #f0f0f0;
+    }
+    .tl-item { position: relative; padding-bottom: 24px; }
+    .tl-item::before {
+      content: ""; position: absolute; left: -24px; top: 4px; width: 12px; height: 12px;
+      border-radius: 50%; background: #d9d9d9; border: 2px solid #fff; box-shadow: 0 0 0 2px #f0f0f0;
+    }
+    .tl-item.active::before { background: #1677ff; box-shadow: 0 0 0 2px #1677ff; }
+    .tl-item.done::before { background: #52c41a; box-shadow: 0 0 0 2px #52c41a; }
+    .tl-item.current::before { background: #faad14; box-shadow: 0 0 0 2px #faad14; }
+    .tl-time { font-size: 12px; color: rgba(0,0,0,0.35); margin-bottom: 4px; }
+    .tl-card {
+      background: #fff; border-radius: 8px; padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;
+    }
+    .tl-card.active { border-color: #1677ff; background: #e6f4ff; }
+    .tl-card-title { font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .tl-card-content { font-size: 13px; color: rgba(0,0,0,0.65); line-height: 1.8; }
+    .tl-card-content strong { color: rgba(0,0,0,0.88); }
+    .tl-actor { font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 8px; }
+    
+    .dispatch-body { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+    .dispatch-left { display: flex; flex-direction: column; gap: 16px; }
+    .dispatch-right { display: flex; flex-direction: column; gap: 16px; }
+    
+    .info-card { background: #fff; border-radius: 8px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .info-card-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+    .info-row:last-child { border-bottom: none; }
+    .info-row span:first-child { color: rgba(0,0,0,0.45); }
+    .info-row span:last-child { font-weight: 500; }
+    
+    .action-box {
+      background: #fff; border-radius: 8px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .action-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+    .action-textarea {
+      width: 100%; min-height: 100px; padding: 10px 12px;
+      border: 1px solid #d9d9d9; border-radius: 6px; font-size: 13px;
+      resize: vertical; outline: none;
+    }
+    .action-textarea:focus { border-color: #1677ff; }
+    .action-btns { display: flex; gap: 10px; margin-top: 12px; }
+    .action-btns .btn { flex: 1; font-size: 13px; }
+    
+    .evidence-list { margin-top: 10px; }
+    .evidence-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px;
+      background: #fafafa; border-radius: 6px; margin-bottom: 6px; font-size: 12px;
+    }
+    .evidence-icon { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>海淀区生态环境局</span><div class="avatar">李</div><span>李管理</span></div>
+  </div>
+  
+  <div class="main">
+    <a class="back-link" href="index.html">← 返回 指挥大屏</a>
+    
+    <div class="dispatch-header">
+      <div class="dispatch-header-left">
+        <div class="dispatch-title">📋 调度指令 DSP-20260518-001</div>
+        <div class="dispatch-meta">
+          类型：自查自纠建议 | 目标企业：蓝天工业涂装有限公司<br>
+          关联预警：ALT-20260518-001（Paradox 风险预警）| 截止期限：2026-05-19 18:00
+        </div>
+      </div>
+      <span class="dispatch-status executing">🟡 处置中（企业已签收）</span>
+    </div>
+    
+    <div class="dispatch-body">
+      <div class="dispatch-left">
+        <!-- 时间轴 -->
+        <div class="info-card">
+          <div class="info-card-title">⏱️ 处理进度</div>
+          <div class="timeline-vertical">
+            <div class="tl-item done">
+              <div class="tl-time">2026-05-18 09:15</div>
+              <div class="tl-card">
+                <div class="tl-card-title">📤 指令下发</div>
+                <div class="tl-card-content">
+                  基于 AI 分析，贵司近 3 日 C-P 协同指数持续低于 0.4，主要原因是 <strong>RTO 空烧时长占比过高（22%）</strong>。<br><br>
+                  <strong>建议：</strong><br>
+                  ① 调整喷涂排班至集中时段（8-12时、13-17时）<br>
+                  ② 检查蓄热体是否堵塞，清洗或更换<br>
+                  ③ 适当下调燃烧室温度至 760°C<br><br>
+                  请于 <strong>7 日内</strong> 反馈整改情况。
+                </div>
+                <div class="tl-actor">👤 下发人：李管理（管理科）</div>
+              </div>
+            </div>
+            <div class="tl-item done">
+              <div class="tl-time">2026-05-18 09:20</div>
+              <div class="tl-card">
+                <div class="tl-card-title">📩 企业签收</div>
+                <div class="tl-card-content">蓝天工业涂装有限公司已签收该调度指令</div>
+                <div class="tl-actor">👤 签收人：张环保</div>
+              </div>
+            </div>
+            <div class="tl-item current">
+              <div class="tl-time">当前阶段</div>
+              <div class="tl-card active">
+                <div class="tl-card-title">📝 等待企业整改反馈</div>
+                <div class="tl-card-content">
+                  企业正在整改中，剩余时间：<strong style="color:#f5222d">18 小时 30 分</strong><br>
+                  超期将自动触发催办（短信 + 站内消息）
+                </div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-time">待完成</div>
+              <div class="tl-card">
+                <div class="tl-card-title">🔍 监测科复核</div>
+                <div class="tl-card-content">企业提交整改反馈后，监测数据科进行数据复核</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-time">待完成</div>
+              <div class="tl-card">
+                <div class="tl-card-title">✅ 销号闭环</div>
+                <div class="tl-card-content">复核通过后，任务销号，预警自动解除</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 操作区 -->
+        <div class="action-box">
+          <div class="action-title">✏️ 管理科操作</div>
+          <textarea class="action-textarea" placeholder="输入催办备注或复核意见..."></textarea>
+          <div class="action-btns">
+            <button class="btn btn-default">⏰ 发送催办</button>
+            <button class="btn btn-primary">✅ 复核通过，销号</button>
+            <button class="btn btn-danger">↩️ 退回补充</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dispatch-right">
+        <div class="info-card">
+          <div class="info-card-title">🏭 目标企业信息</div>
+          <div class="info-row"><span>企业名称</span><span>蓝天工业涂装有限公司</span></div>
+          <div class="info-row"><span>统一社会信用代码</span><span>91110108MA0012345</span></div>
+          <div class="info-row"><span>所属行业</span><span>汽车零部件涂装</span></div>
+          <div class="info-row"><span>联系人</span><span>张环保 138****5678</span></div>
+        </div>
+        
+        <div class="info-card">
+          <div class="info-card-title">🚨 关联预警信息</div>
+          <div class="info-row"><span>预警编号</span><span>ALT-20260518-001</span></div>
+          <div class="info-row"><span>预警类型</span><span style="color:#f5222d">Paradox 风险</span></div>
+          <div class="info-row"><span>C-P 协同指数</span><span style="color:#f5222d;font-weight:700">0.38</span></div>
+          <div class="info-row"><span>持续时间</span><span>12 小时</span></div>
+          <div class="info-row"><span>判定类型</span><span>减污增碳陷阱</span></div>
+        </div>
+        
+        <div class="info-card">
+          <div class="info-card-title">📎 附件材料</div>
+          <div class="evidence-list">
+            <div class="evidence-item"><span class="evidence-icon">📊</span><span>AI诊断报告_ALT-20260518-001.pdf</span></div>
+            <div class="evidence-item"><span class="evidence-icon">📈</span><span>近7天C-P趋势图.png</span></div>
+            <div class="evidence-item"><span class="evidence-icon">📋</span><span>RTO运行数据明细.xlsx</span></div>
+          </div>
+        </div>
+        
+        <div class="info-card">
+          <div class="info-card-title">📜 操作留痕</div>
+          <div style="font-size:12px;color:rgba(0,0,0,0.45);line-height:2">
+            09:15 李管理 创建调度指令<br>
+            09:15 系统 自动推送至企业<br>
+            09:20 张环保 签收指令<br>
+            09:20 系统 记录签收时间
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
