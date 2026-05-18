@@ -5,13 +5,13 @@
   <title>LLM 智能政务助手 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    body { background: #f0f2f5; }
+    body { background: #020617; color: #e2e8f0; }
     .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; min-height: calc(100vh - 64px); }
     .llm-wrap { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; height: calc(100vh - 112px); }
     .llm-header { text-align: center; margin-bottom: 20px; }
     .llm-header-title { font-size: 20px; font-weight: 600; }
-    .llm-header-sub { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 4px; }
+    .llm-header-sub { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 4px; }
     .llm-body { flex: 1; overflow-y: auto; padding: 0 20px; }
     .llm-body::-webkit-scrollbar { width: 6px; }
     .llm-body::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 3px; }
@@ -27,11 +27,11 @@
       max-width: 70%; padding: 14px 18px; border-radius: 12px; font-size: 14px; line-height: 1.8;
       position: relative;
     }
-    .msg.ai .msg-bubble { background: #fff; border: 1px solid #e8e8e8; border-top-left-radius: 2px; }
+    .msg.ai .msg-bubble { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border: 1px solid #e8e8e8; border-top-left-radius: 2px; }
     .msg.user .msg-bubble { background: #1677ff; color: #fff; border-top-right-radius: 2px; }
     .msg-bubble strong { font-weight: 600; }
     .msg.ai .msg-bubble strong { color: #1677ff; }
-    .msg-time { font-size: 11px; color: rgba(0,0,0,0.25); margin-top: 4px; text-align: right; }
+    .msg-time { font-size: 11px; color: rgba(226,232,240,0.2); margin-top: 4px; text-align: right; }
     .msg.user .msg-time { color: rgba(255,255,255,0.6); }
     
     .ai-card {
@@ -41,17 +41,17 @@
     .ai-card-title { font-weight: 600; color: #52c41a; margin-bottom: 6px; }
     .ai-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
     .ai-table th, .ai-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; }
-    .ai-table th { background: #fafafa; font-weight: 600; }
-    .ai-source { font-size: 11px; color: rgba(0,0,0,0.35); margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
+    .ai-table th { background: rgba(34,211,238,0.04); font-weight: 600; }
+    .ai-source { font-size: 11px; color: rgba(226,232,240,0.3); margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
     .ai-source a { color: #1677ff; }
     .ai-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 2px; }
     
     .llm-input-bar {
-      display: flex; gap: 10px; padding: 16px 20px; background: #fff;
+      display: flex; gap: 10px; padding: 16px 20px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1);
       border-radius: 12px; box-shadow: 0 -2px 8px rgba(0,0,0,0.04); margin-top: 8px;
     }
     .llm-input {
-      flex: 1; padding: 10px 16px; border: 1px solid #d9d9d9; border-radius: 8px;
+      flex: 1; padding: 10px 16px; border: 1px solid rgba(34,211,238,0.15); border-radius: 8px;
       font-size: 14px; outline: none;
     }
     .llm-input:focus { border-color: #1677ff; }
@@ -65,8 +65,8 @@
       display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; justify-content: center;
     }
     .quick-q {
-      padding: 6px 14px; background: #fff; border: 1px solid #e8e8e8;
-      border-radius: 16px; font-size: 12px; cursor: pointer; color: rgba(0,0,0,0.65);
+      padding: 6px 14px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border: 1px solid #e8e8e8;
+      border-radius: 16px; font-size: 12px; cursor: pointer; color: rgba(226,232,240,0.6);
       transition: all 0.2s;
     }
     .quick-q:hover { border-color: #1677ff; color: #1677ff; background: #e6f4ff; }
@@ -76,12 +76,12 @@
     }
     .llm-welcome-icon { font-size: 48px; margin-bottom: 12px; }
     .llm-welcome-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-    .llm-welcome-desc { font-size: 13px; color: rgba(0,0,0,0.45); line-height: 1.8; }
+    .llm-welcome-desc { font-size: 13px; color: rgba(226,232,240,0.4); line-height: 1.8; }
     .llm-capability { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
-    .llm-cap-item { padding: 16px; background: #fff; border-radius: 8px; border: 1px solid #e8e8e8; }
+    .llm-cap-item { padding: 16px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; border: 1px solid #e8e8e8; }
     .llm-cap-icon { font-size: 24px; margin-bottom: 8px; }
     .llm-cap-title { font-size: 13px; font-weight: 600; }
-    .llm-cap-desc { font-size: 11px; color: rgba(0,0,0,0.45); margin-top: 4px; }
+    .llm-cap-desc { font-size: 11px; color: rgba(226,232,240,0.4); margin-top: 4px; }
   </style>
 </head>
 <body>

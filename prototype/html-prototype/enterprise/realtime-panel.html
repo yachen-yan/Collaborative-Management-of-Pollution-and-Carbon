@@ -6,15 +6,15 @@
   <link rel="stylesheet" href="../css/style.css">
   <script src="../js/data.js"></script>
   <style>
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; }
-    .page-header .update-time { font-size: 13px; color: rgba(0,0,0,0.45); font-weight: 400; }
+    .page-header .update-time { font-size: 13px; color: rgba(226,232,240,0.4); font-weight: 400; }
     .rt-big-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
     .rt-big-card { text-align: center; padding: 24px 16px; }
     .rt-big-value { font-size: 36px; font-weight: 700; line-height: 1.1; }
-    .rt-big-label { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 8px; }
-    .rt-big-unit { font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 2px; }
+    .rt-big-label { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 8px; }
+    .rt-big-unit { font-size: 12px; color: rgba(226,232,240,0.3); margin-top: 2px; }
     .rt-big-trend { font-size: 12px; margin-top: 6px; }
     .rt-big-trend.up { color: #f5222d; }
     .rt-big-trend.down { color: #52c41a; }
@@ -40,7 +40,7 @@
     .compare-bar {
       display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
     }
-    .compare-label { width: 80px; font-size: 12px; color: rgba(0,0,0,0.45); }
+    .compare-label { width: 80px; font-size: 12px; color: rgba(226,232,240,0.4); }
     .compare-track { flex: 1; height: 20px; background: #f0f0f0; border-radius: 4px; position: relative; }
     .compare-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
     .compare-value { width: 50px; text-align: right; font-size: 13px; font-weight: 500; }
@@ -56,10 +56,10 @@
     .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .status-item {
       padding: 14px; border-radius: 8px; text-align: center;
-      border: 1px solid #f0f0f0;
+      border: 1px solid rgba(34,211,238,0.08);
     }
     .status-icon { font-size: 28px; margin-bottom: 6px; }
-    .status-name { font-size: 13px; color: rgba(0,0,0,0.45); }
+    .status-name { font-size: 13px; color: rgba(226,232,240,0.4); }
     .status-value { font-size: 18px; font-weight: 600; margin-top: 4px; }
     .status-item.normal { background: #f6ffed; border-color: #b7eb8f; }
     .status-item.warn { background: #fffbe6; border-color: #ffe58f; }

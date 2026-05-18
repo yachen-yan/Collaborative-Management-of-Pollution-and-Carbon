@@ -5,7 +5,7 @@
   <title>预警中心 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; }
     
@@ -13,21 +13,21 @@
       display: flex; gap: 12px; margin-bottom: 16px; align-items: center;
     }
     .filter-btn {
-      padding: 5px 14px; border-radius: 6px; border: 1px solid #d9d9d9;
-      background: #fff; font-size: 13px; cursor: pointer; transition: all 0.2s;
+      padding: 5px 14px; border-radius: 6px; border: 1px solid rgba(34,211,238,0.15);
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px); font-size: 13px; cursor: pointer; transition: all 0.2s;
     }
     .filter-btn.active { background: #1677ff; color: #fff; border-color: #1677ff; }
     .filter-btn:hover:not(.active) { border-color: #1677ff; color: #1677ff; }
     
     .alert-card {
       display: flex; gap: 14px; padding: 16px 20px;
-      background: #fff; border-radius: 8px; margin-bottom: 10px;
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px); border-radius: 8px; margin-bottom: 10px;
       border-left: 4px solid #d9d9d9; cursor: pointer;
       transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     }
     .alert-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-    .alert-card.unread { background: #fff; }
-    .alert-card.read { background: #fafafa; opacity: 0.85; }
+    .alert-card.unread { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px); }
+    .alert-card.read { background: rgba(34,211,238,0.04); opacity: 0.85; }
     .alert-card.critical { border-left-color: #f5222d; }
     .alert-card.warning { border-left-color: #faad14; }
     .alert-card.info { border-left-color: #1677ff; }
@@ -47,8 +47,8 @@
       display: inline-block; width: 6px; height: 6px; border-radius: 50%;
       background: #f5222d; margin-left: 6px; vertical-align: middle;
     }
-    .alert-card-time { font-size: 12px; color: rgba(0,0,0,0.35); white-space: nowrap; margin-left: 12px; }
-    .alert-card-desc { font-size: 13px; color: rgba(0,0,0,0.55); line-height: 1.6; }
+    .alert-card-time { font-size: 12px; color: rgba(226,232,240,0.3); white-space: nowrap; margin-left: 12px; }
+    .alert-card-desc { font-size: 13px; color: rgba(226,232,240,0.5); line-height: 1.6; }
     .alert-card-tags { margin-top: 8px; display: flex; gap: 6px; }
     
     .alert-detail-modal {
@@ -57,7 +57,7 @@
     }
     .alert-detail-modal.active { display: flex; }
     .alert-detail-box {
-      width: 640px; max-height: 80vh; background: #fff; border-radius: 12px;
+      width: 640px; max-height: 80vh; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px); border-radius: 12px;
       overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     }
     .alert-detail-header {
@@ -65,8 +65,8 @@
       display: flex; justify-content: space-between; align-items: center;
     }
     .alert-detail-title { font-size: 16px; font-weight: 600; }
-    .alert-detail-close { font-size: 20px; cursor: pointer; color: rgba(0,0,0,0.35); }
-    .alert-detail-close:hover { color: rgba(0,0,0,0.65); }
+    .alert-detail-close { font-size: 20px; cursor: pointer; color: rgba(226,232,240,0.3); }
+    .alert-detail-close:hover { color: rgba(226,232,240,0.6); }
     .alert-detail-body { padding: 20px 24px; overflow-y: auto; max-height: calc(80vh - 60px); }
     
     .diag-section { margin-bottom: 16px; }
@@ -81,7 +81,7 @@
       border-bottom: 1px solid #f0f0f0; font-size: 13px;
     }
     .diag-data-row:last-child { border-bottom: none; }
-    .diag-data-row span:first-child { color: rgba(0,0,0,0.45); }
+    .diag-data-row span:first-child { color: rgba(226,232,240,0.4); }
     .diag-data-row span:last-child { font-weight: 500; }
     
     .suggest-list { margin-top: 8px; }
@@ -96,9 +96,9 @@
     .suggest-text { flex: 1; line-height: 1.6; }
     
     .stats-bar { display: flex; gap: 16px; margin-bottom: 16px; }
-    .stats-item { padding: 10px 16px; background: #fafafa; border-radius: 6px; text-align: center; }
+    .stats-item { padding: 10px 16px; background: rgba(34,211,238,0.04); border-radius: 6px; text-align: center; }
     .stats-num { font-size: 20px; font-weight: 700; }
-    .stats-label { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 2px; }
+    .stats-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -147,9 +147,9 @@
           </div>
           <div class="alert-card-desc">C-P 协同指数 0.38，已连续 12h 低于 0.4，疑似 RTO 空烧导致「减污增碳陷阱」</div>
           <div class="alert-card-tags">
-            <span class="tag tag-red">C-P < 0.4</span>
-            <span class="tag tag-red">减污增碳</span>
-            <span class="tag tag-orange">持续12h</span>
+            <span class="tag tag-neon-red">C-P < 0.4</span>
+            <span class="tag tag-neon-red">减污增碳</span>
+            <span class="tag tag-neon-orange">持续12h</span>
           </div>
         </div>
       </div>
@@ -163,8 +163,8 @@
           </div>
           <div class="alert-card-desc">C-P 协同指数 0.42，持续低于 0.6 超过 4h，天然气消耗环比激增</div>
           <div class="alert-card-tags">
-            <span class="tag tag-yellow">C-P < 0.6</span>
-            <span class="tag tag-yellow">持续4h</span>
+            <span class="tag tag-neon-yellow">C-P < 0.6</span>
+            <span class="tag tag-neon-yellow">持续4h</span>
           </div>
         </div>
       </div>
@@ -178,8 +178,8 @@
           </div>
           <div class="alert-card-desc">5月月度上报中天然气/RTO时长比值偏离历史均值 45%，请核实数据</div>
           <div class="alert-card-tags">
-            <span class="tag tag-yellow">偏离+42%</span>
-            <span class="tag tag-blue">待复核</span>
+            <span class="tag tag-neon-yellow">偏离+42%</span>
+            <span class="tag tag-neon-blue">待复核</span>
           </div>
         </div>
       </div>
@@ -193,7 +193,7 @@
           </div>
           <div class="alert-card-desc">排污许可证将于 21 天后到期（2026-12-31），请及时办理续期</div>
           <div class="alert-card-tags">
-            <span class="tag tag-blue">剩余21天</span>
+            <span class="tag tag-neon-blue">剩余21天</span>
           </div>
         </div>
       </div>

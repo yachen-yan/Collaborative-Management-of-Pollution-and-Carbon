@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="../css/style.css">
   <script src="../js/data.js"></script>
   <style>
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
     .form-section { margin-bottom: 24px; }
@@ -16,34 +16,34 @@
     }
     .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     .form-grid-2 { grid-template-columns: repeat(2, 1fr); }
-    .form-item label { display: block; margin-bottom: 6px; font-size: 13px; color: rgba(0,0,0,0.65); }
-    .form-item label .unit { color: rgba(0,0,0,0.35); font-size: 12px; margin-left: 4px; }
+    .form-item label { display: block; margin-bottom: 6px; font-size: 13px; color: rgba(226,232,240,0.6); }
+    .form-item label .unit { color: rgba(226,232,240,0.3); font-size: 12px; margin-left: 4px; }
     .form-item input, .form-item select {
-      width: 100%; padding: 9px 12px; border: 1px solid #d9d9d9;
+      width: 100%; padding: 9px 12px; border: 1px solid rgba(34,211,238,0.15);
       border-radius: 6px; font-size: 14px; outline: none;
     }
     .form-item input:focus, .form-item select:focus { border-color: #1677ff; }
     .form-item input.warning { border-color: #faad14; background: #fffbe6; }
     .form-item input.error { border-color: #f5222d; background: #fff1f0; }
     .form-hint {
-      font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 4px;
+      font-size: 12px; color: rgba(226,232,240,0.3); margin-top: 4px;
     }
     .form-hint.warn { color: #faad14; }
     .form-hint.error { color: #f5222d; }
     .ocr-section {
       border: 2px dashed #d9d9d9; border-radius: 8px; padding: 32px;
-      text-align: center; background: #fafafa; cursor: pointer;
+      text-align: center; background: rgba(34,211,238,0.04); cursor: pointer;
       transition: all 0.2s; margin-bottom: 20px;
     }
     .ocr-section:hover { border-color: #1677ff; background: #e6f4ff; }
     .ocr-section.dragover { border-color: #1677ff; background: #e6f4ff; }
     .ocr-icon { font-size: 48px; margin-bottom: 12px; }
-    .ocr-text { font-size: 14px; color: rgba(0,0,0,0.65); }
-    .ocr-sub { font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 6px; }
+    .ocr-text { font-size: 14px; color: rgba(226,232,240,0.6); }
+    .ocr-sub { font-size: 12px; color: rgba(226,232,240,0.3); margin-top: 6px; }
     .ocr-files { margin-top: 16px; text-align: left; }
     .ocr-file-item {
       display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-      background: #fff; border-radius: 6px; margin-bottom: 8px;
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px); border-radius: 6px; margin-bottom: 8px;
       border: 1px solid #e8e8e8;
     }
     .ocr-file-icon { font-size: 24px; }
@@ -59,7 +59,7 @@
     }
     .ocr-fill-result-title { font-weight: 600; color: #52c41a; margin-bottom: 6px; }
     .ocr-fill-row { display: flex; justify-content: space-between; padding: 4px 0; }
-    .ocr-fill-row span:first-child { color: rgba(0,0,0,0.45); }
+    .ocr-fill-row span:first-child { color: rgba(226,232,240,0.4); }
     .ocr-fill-row span:last-child { font-weight: 500; }
     .ocr-fill-row .low-conf { color: #faad14; }
     .btn-bar {
@@ -69,7 +69,7 @@
     .btn-lg { padding: 10px 32px; font-size: 15px; }
     .validation-panel {
       position: fixed; right: 24px; top: 88px; width: 280px;
-      background: #fff; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
       padding: 16px; z-index: 200;
     }
     .validation-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }

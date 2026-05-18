@@ -5,7 +5,7 @@
   <title>自然语言报表 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    body { background: #f0f2f5; }
+    body { background: #020617; color: #e2e8f0; }
     .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
     .report-wrap { max-width: 1000px; margin: 0 auto; }
@@ -14,17 +14,17 @@
     }
     .report-title { font-size: 20px; font-weight: 600; }
     .report-actions { display: flex; gap: 10px; }
-    .report-card { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .report-card { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .report-section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
     .report-section-title::before { content: ""; display: inline-block; width: 4px; height: 16px; background: #1677ff; border-radius: 2px; }
     
     .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
-    .stat-box { text-align: center; padding: 20px; background: #fafafa; border-radius: 8px; }
+    .stat-box { text-align: center; padding: 20px; background: rgba(34,211,238,0.04); border-radius: 8px; }
     .stat-num { font-size: 32px; font-weight: 700; }
-    .stat-label { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 6px; }
+    .stat-label { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 6px; }
     
     .chart-placeholder {
-      height: 220px; background: #fafafa; border-radius: 8px;
+      height: 220px; background: rgba(34,211,238,0.04); border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       border: 1px dashed #d9d9d9; margin-bottom: 16px;
     }
@@ -33,8 +33,8 @@
     }
     .chart-bar-item { text-align: center; }
     .chart-bar-fill { width: 48px; border-radius: 4px 4px 0 0; transition: height 0.6s; }
-    .chart-bar-label { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 8px; }
-    .chart-bar-value { font-size: 11px; color: rgba(0,0,0,0.35); }
+    .chart-bar-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 8px; }
+    .chart-bar-value { font-size: 11px; color: rgba(226,232,240,0.3); }
     
     .pie-demo { display: flex; align-items: center; justify-content: center; gap: 40px; }
     .pie-ring { width: 120px; height: 120px; border-radius: 50%; position: relative; }
@@ -56,8 +56,8 @@
     
     .report-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .report-table th, .report-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
-    .report-table th { background: #fafafa; font-weight: 600; }
-    .report-table tr:hover { background: #fafafa; }
+    .report-table th { background: rgba(34,211,238,0.04); font-weight: 600; }
+    .report-table tr:hover { background: rgba(34,211,238,0.04); }
   </style>
 </head>
 <body>
