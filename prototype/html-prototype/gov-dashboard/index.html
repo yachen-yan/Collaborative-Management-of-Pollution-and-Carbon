@@ -4,134 +4,87 @@
   <meta charset="UTF-8">
   <title>协同管控指挥大屏 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/data.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      background: #020617; color: #e2e8f0;
-      font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
-      overflow: hidden;
-    }
+    body { background: #020617; color: #e2e8f0; font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; overflow: hidden; }
     .screen-wrap { width:100vw; height:100vh; padding:16px 20px 48px; display:flex; flex-direction:column; }
     
     /* 头部 */
-    .screen-header {
-      display:flex; justify-content:space-between; align-items:center;
-      margin-bottom:16px; padding-bottom:12px;
-      border-bottom:1px solid rgba(34,211,238,0.15);
-    }
+    .screen-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(34,211,238,0.15); }
     .screen-header-left { display:flex; align-items:center; gap:12px; }
     .screen-header-title { font-size:20px; font-weight:700; letter-spacing:2px; display:flex; align-items:center; gap:10px; }
-    .screen-header-title .pulse-dot {
-      width:8px; height:8px; border-radius:50%; background:#22d3ee;
-      box-shadow:0 0 8px #22d3ee, 0 0 20px rgba(34,211,238,0.4);
-      animation: pulseDot 2s ease-in-out infinite;
-    }
+    .screen-header-title .pulse-dot { width:8px; height:8px; border-radius:50%; background:#22d3ee; box-shadow:0 0 8px #22d3ee, 0 0 20px rgba(34,211,238,0.4); animation: pulseDot 2s ease-in-out infinite; }
     @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.4} }
     .screen-header-sub { font-size:12px; color:rgba(226,232,240,0.4); margin-top:4px; }
     .screen-nav { display:flex; gap:8px; }
-    .screen-nav a {
-      padding:5px 14px; border-radius:6px; font-size:12px;
-      color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1);
-      text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05);
-    }
-    .screen-nav a:hover, .screen-nav a.active {
-      color:#22d3ee; border-color:rgba(34,211,238,0.4);
-      background:rgba(34,211,238,0.1); box-shadow:0 0 12px rgba(34,211,238,0.15);
-    }
+    .screen-nav a { padding:5px 14px; border-radius:6px; font-size:12px; color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1); text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05); }
+    .screen-nav a:hover, .screen-nav a.active { color:#22d3ee; border-color:rgba(34,211,238,0.4); background:rgba(34,211,238,0.1); box-shadow:0 0 12px rgba(34,211,238,0.15); }
     
-    /* KPI卡 - 玻璃态 */
+    /* KPI卡 */
     .kpi-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; }
     .kpi-card {
-      background: rgba(34,211,238,0.05); backdrop-filter:blur(8px);
-      border:1px solid rgba(34,211,238,0.15); border-radius:10px;
-      padding:18px; position:relative; overflow:hidden;
-      transition:all 0.3s;
+      background: rgba(34,211,238,0.05); backdrop-filter:blur(8px); border:1px solid rgba(34,211,238,0.15); border-radius:10px;
+      padding:18px; position:relative; overflow:hidden; transition:all 0.3s; cursor:pointer;
     }
-    .kpi-card:hover { border-color:rgba(34,211,238,0.3); box-shadow:0 0 20px rgba(34,211,238,0.1); }
+    .kpi-card:hover { border-color:rgba(34,211,238,0.35); box-shadow:0 0 24px rgba(34,211,238,0.12); transform:translateY(-2px); }
     .kpi-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; }
     .kpi-card.blue::before { background:linear-gradient(90deg,transparent,#0ea5e9,transparent); }
     .kpi-card.red::before { background:linear-gradient(90deg,transparent,#ef4444,transparent); }
     .kpi-card.yellow::before { background:linear-gradient(90deg,transparent,#fbbf24,transparent); }
     .kpi-card.green::before { background:linear-gradient(90deg,transparent,#4ade80,transparent); }
-    .kpi-card::after {
-      content:""; position:absolute; top:-50%; left:-50%; right:-50%; bottom:-50%;
-      background:radial-gradient(circle at 30% 70%, rgba(34,211,238,0.03) 0%, transparent 60%);
-    }
+    .kpi-card::after { content:""; position:absolute; top:-50%; left:-50%; right:-50%; bottom:-50%; background:radial-gradient(circle at 30% 70%, rgba(34,211,238,0.03) 0%, transparent 60%); }
     .kpi-label { font-size:12px; color:rgba(226,232,240,0.4); margin-bottom:8px; position:relative; z-index:1; }
     .kpi-value { font-size:34px; font-weight:700; line-height:1; position:relative; z-index:1; }
     .kpi-value .unit { font-size:13px; font-weight:400; margin-left:4px; color:rgba(226,232,240,0.4); }
     .kpi-trend { font-size:11px; margin-top:8px; color:rgba(226,232,240,0.35); position:relative; z-index:1; }
     .kpi-trend.up { color:#f87171; }
     .kpi-trend.down { color:#4ade80; }
+    .kpi-click-hint { position:absolute; bottom:6px; right:10px; font-size:10px; color:rgba(34,211,238,0.3); opacity:0; transition:opacity 0.3s; z-index:1; }
+    .kpi-card:hover .kpi-click-hint { opacity:1; }
     
     /* 主体区 */
     .screen-body { display:grid; grid-template-columns:1fr 360px; gap:14px; flex:1; min-height:0; }
     .screen-left { display:flex; flex-direction:column; gap:14px; }
     .screen-right { display:flex; flex-direction:column; gap:14px; }
     
-    /* 面板 - 玻璃态 */
+    /* 面板 */
     .panel {
-      background: rgba(34,211,238,0.04); backdrop-filter:blur(8px);
-      border:1px solid rgba(34,211,238,0.12); border-radius:10px;
+      background: rgba(34,211,238,0.04); backdrop-filter:blur(8px); border:1px solid rgba(34,211,238,0.12); border-radius:10px;
       padding:14px; display:flex; flex-direction:column;
     }
     .panel-title {
-      font-size:14px; font-weight:600; margin-bottom:12px;
-      display:flex; align-items:center; gap:8px; color:#22d3ee;
+      font-size:14px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px; color:#22d3ee;
     }
-    .panel-title::before {
-      content:""; display:inline-block; width:3px; height:14px;
-      background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px;
-    }
+    .panel-title::before { content:""; display:inline-block; width:3px; height:14px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; }
     .panel-title.green::before { background:linear-gradient(180deg,#4ade80,#22c55e); }
     .panel-title.yellow::before { background:linear-gradient(180deg,#fbbf24,#f59e0b); }
     .panel-title.red::before { background:linear-gradient(180deg,#f87171,#ef4444); }
     
     /* 地图占位 */
-    .map-area {
-      flex:1; min-height:200px; position:relative;
-      background: linear-gradient(180deg, rgba(8,47,73,0.4) 0%, rgba(2,6,23,0.8) 100%);
-      border-radius:8px; border:1px dashed rgba(34,211,238,0.15);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-    }
-    .map-area::before {
-      content:""; position:absolute; top:0; left:0; right:0; bottom:0;
-      background-image: linear-gradient(rgba(34,211,238,0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34,211,238,0.05) 1px, transparent 1px);
-      background-size: 30px 30px;
-    }
-    .map-zone {
-      position:absolute; padding:6px 12px; border-radius:6px; font-size:11px;
-      z-index:2; backdrop-filter:blur(4px);
-    }
+    .map-area { flex:1; min-height:200px; position:relative; background: linear-gradient(180deg, rgba(8,47,73,0.4) 0%, rgba(2,6,23,0.8) 100%); border-radius:8px; border:1px dashed rgba(34,211,238,0.15); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .map-area::before { content:""; position:absolute; top:0; left:0; right:0; bottom:0; background-image: linear-gradient(rgba(34,211,238,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.05) 1px, transparent 1px); background-size: 30px 30px; }
+    .map-zone { position:absolute; padding:6px 12px; border-radius:6px; font-size:11px; z-index:2; backdrop-filter:blur(4px); cursor:pointer; transition:all 0.2s; }
+    .map-zone:hover { transform:scale(1.05); }
     .map-zone.warn { background:rgba(251,191,36,0.15); color:#fde047; border:1px solid rgba(251,191,36,0.3); top:20%; left:28%; }
     .map-zone.danger { background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); top:45%; right:22%; }
-    .map-legend-bar {
-      position:absolute; bottom:10px; left:10px; right:10px;
-      display:flex; gap:16px; justify-content:center; z-index:2;
-    }
-    .map-legend-bar span { font-size:11px; color:rgba(226,232,240,0.4); }
+    .map-legend-bar { position:absolute; bottom:10px; left:10px; right:10px; display:flex; gap:16px; justify-content:center; z-index:2; }
+    .map-legend-bar span { font-size:11px; color:rgba(226,232,240,0.4); cursor:pointer; transition:color 0.2s; }
+    .map-legend-bar span:hover { color:#22d3ee; }
     
     /* 效果图表 */
     .effect-chart { height:140px; position:relative; }
     .effect-bar { display:flex; align-items:flex-end; gap:12px; height:110px; padding-top:10px; justify-content:center; }
-    .effect-bar-item { text-align:center; }
-    .effect-bar-fill {
-      width:36px; border-radius:4px 4px 0 0; transition:height 0.6s ease;
-      position:relative; box-shadow:0 0 12px currentColor;
-    }
-    .effect-bar-fill::after {
-      content: attr(data-val); position:absolute; top:-16px; left:50%; transform:translateX(-50%);
-      font-size:10px; font-weight:600; white-space:nowrap; color:#fff;
-    }
+    .effect-bar-item { text-align:center; cursor:pointer; transition:all 0.2s; }
+    .effect-bar-item:hover { transform:translateY(-4px); }
+    .effect-bar-fill { width:36px; border-radius:4px 4px 0 0; transition:height 0.6s ease; position:relative; box-shadow:0 0 12px currentColor; }
+    .effect-bar-fill::after { content: attr(data-val); position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:600; white-space:nowrap; color:#fff; }
     .effect-bar-label { font-size:10px; color:rgba(226,232,240,0.35); margin-top:6px; }
     
     /* 事件流 */
     .event-stream { max-height:180px; overflow:hidden; position:relative; }
-    .event-item {
-      display:flex; align-items:center; gap:10px; padding:7px 0;
-      border-bottom:1px solid rgba(34,211,238,0.06); font-size:12px;
-    }
+    .event-item { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid rgba(34,211,238,0.06); font-size:12px; cursor:pointer; transition:all 0.2s; }
+    .event-item:hover { background:rgba(34,211,238,0.04); padding-left:6px; border-radius:4px; }
     .event-item:last-child { border-bottom:none; }
     .event-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
     .event-dot.red { background:#ef4444; box-shadow:0 0 6px #ef4444; }
@@ -145,59 +98,67 @@
     
     /* 任务 */
     .task-tabs { display:flex; gap:4px; margin-bottom:10px; }
-    .task-tab {
-      flex:1; text-align:center; padding:7px; font-size:11px;
-      border-radius:6px; cursor:pointer; color:rgba(226,232,240,0.3);
-      background:rgba(34,211,238,0.04); border:1px solid transparent;
-      transition:all 0.2s;
-    }
+    .task-tab { flex:1; text-align:center; padding:7px; font-size:11px; border-radius:6px; cursor:pointer; color:rgba(226,232,240,0.3); background:rgba(34,211,238,0.04); border:1px solid transparent; transition:all 0.2s; }
     .task-tab.active { background:rgba(34,211,238,0.12); color:#22d3ee; border-color:rgba(34,211,238,0.25); }
     .task-tab .num { font-size:16px; font-weight:700; display:block; margin-bottom:2px; }
     .task-list { max-height:200px; overflow-y:auto; }
     .task-list::-webkit-scrollbar { width:3px; }
     .task-list::-webkit-scrollbar-thumb { background:rgba(34,211,238,0.2); }
-    .task-item {
-      padding:9px 12px; border-radius:6px; margin-bottom:6px;
-      background:rgba(34,211,238,0.04); font-size:11px; cursor:pointer;
-      border:1px solid rgba(34,211,238,0.06); transition:all 0.2s;
-    }
-    .task-item:hover { background:rgba(34,211,238,0.08); border-color:rgba(34,211,238,0.15); }
+    .task-item { padding:9px 12px; border-radius:6px; margin-bottom:6px; background:rgba(34,211,238,0.04); font-size:11px; cursor:pointer; border:1px solid rgba(34,211,238,0.06); transition:all 0.2s; }
+    .task-item:hover { background:rgba(34,211,238,0.08); border-color:rgba(34,211,238,0.15); transform:translateX(3px); }
     .task-item-header { display:flex; justify-content:space-between; margin-bottom:3px; }
     .task-item-title { font-weight:500; color:rgba(226,232,240,0.8); }
     .task-item-tag { padding:1px 6px; border-radius:3px; font-size:9px; }
     .task-item-tag.urgent { background:rgba(239,68,68,0.15); color:#fca5a5; }
     .task-item-tag.normal { background:rgba(14,165,233,0.15); color:#7dd3fc; }
+    .task-item-tag.closed { background:rgba(34,197,94,0.15); color:#86efac; }
+    .task-item-tag.pending { background:rgba(234,179,8,0.15); color:#fde047; }
     .task-item-desc { color:rgba(226,232,240,0.4); line-height:1.5; }
     .task-item-meta { color:rgba(226,232,240,0.25); margin-top:3px; font-size:10px; }
     .quick-actions { display:flex; gap:6px; margin-top:10px; }
-    .quick-actions .btn {
-      flex:1; padding:7px; font-size:11px; border-radius:6px;
-      background:rgba(34,211,238,0.1); color:#22d3ee;
-      border:1px solid rgba(34,211,238,0.2); cursor:pointer;
-      transition:all 0.2s; text-align:center;
-    }
+    .quick-actions .btn { flex:1; padding:7px; font-size:11px; border-radius:6px; background:rgba(34,211,238,0.1); color:#22d3ee; border:1px solid rgba(34,211,238,0.2); cursor:pointer; transition:all 0.2s; text-align:center; }
     .quick-actions .btn:hover { background:rgba(34,211,238,0.2); box-shadow:0 0 12px rgba(34,211,238,0.15); }
+    .quick-actions .btn.primary { background:rgba(34,211,238,0.15); border-color:rgba(34,211,238,0.35); }
+    .quick-actions .btn.primary:hover { background:rgba(34,211,238,0.25); }
     
     /* 底部滚动条 */
-    .ticker {
-      position:fixed; bottom:0; left:0; right:0; height:36px;
-      background:rgba(2,6,23,0.95); border-top:1px solid rgba(34,211,238,0.15);
-      display:flex; align-items:center; overflow:hidden;
-    }
-    .ticker-label {
-      padding:0 16px; background:rgba(34,211,238,0.1); height:100%;
-      display:flex; align-items:center; font-size:11px; font-weight:500;
-      color:#22d3ee; flex-shrink:0; border-right:1px solid rgba(34,211,238,0.15);
-    }
+    .ticker { position:fixed; bottom:0; left:0; right:0; height:36px; background:rgba(2,6,23,0.95); border-top:1px solid rgba(34,211,238,0.15); display:flex; align-items:center; overflow:hidden; }
+    .ticker-label { padding:0 16px; background:rgba(34,211,238,0.1); height:100%; display:flex; align-items:center; font-size:11px; font-weight:500; color:#22d3ee; flex-shrink:0; border-right:1px solid rgba(34,211,238,0.15); }
     .ticker-content { flex:1; overflow:hidden; position:relative; }
-    .ticker-track {
-      display:flex; gap:40px; white-space:nowrap;
-      animation: tickerMove 30s linear infinite;
-    }
+    .ticker-track { display:flex; gap:40px; white-space:nowrap; animation: tickerMove 30s linear infinite; }
     @keyframes tickerMove { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
     .ticker-item { font-size:11px; color:rgba(226,232,240,0.5); }
     .ticker-item .cp { color:#f87171; font-weight:500; }
     .ticker-item .name { color:#22d3ee; }
+
+    /* 弹窗 */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:500; align-items:center; justify-content:center; }
+    .modal-overlay.active { display:flex; }
+    .modal-box { background:rgba(2,6,23,0.98); border:1px solid rgba(34,211,238,0.2); border-radius:12px; width:520px; max-height:80vh; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.5), 0 0 40px rgba(34,211,238,0.05); }
+    .modal-header { padding:16px 20px; border-bottom:1px solid rgba(34,211,238,0.1); display:flex; justify-content:space-between; align-items:center; }
+    .modal-title { font-size:15px; font-weight:600; color:#22d3ee; }
+    .modal-close { font-size:18px; color:rgba(226,232,240,0.3); cursor:pointer; transition:all 0.2s; }
+    .modal-close:hover { color:#22d3ee; }
+    .modal-body { padding:16px 20px; overflow-y:auto; max-height:calc(80vh - 60px); }
+    .modal-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(34,211,238,0.06); font-size:13px; }
+    .modal-row span:first-child { color:rgba(226,232,240,0.4); }
+    .modal-row span:last-child { font-weight:500; }
+    
+    /* 新建调度表单 */
+    .form-group { margin-bottom:12px; }
+    .form-group label { display:block; font-size:12px; color:rgba(226,232,240,0.5); margin-bottom:4px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width:100%; padding:8px 10px; border:1px solid rgba(34,211,238,0.15); border-radius:6px;
+      background:rgba(2,6,23,0.6); color:#e2e8f0; font-size:13px; outline:none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#22d3ee; }
+    .form-group textarea { min-height:80px; resize:vertical; }
+    .form-actions { display:flex; gap:10px; margin-top:16px; }
+    .form-actions .btn { flex:1; padding:8px; font-size:13px; border-radius:6px; cursor:pointer; border:1px solid transparent; }
+    .form-actions .btn-primary { background:rgba(34,211,238,0.15); color:#22d3ee; border-color:rgba(34,211,238,0.3); }
+    .form-actions .btn-primary:hover { background:rgba(34,211,238,0.25); }
+    .form-actions .btn-default { background:rgba(34,211,238,0.05); color:rgba(226,232,240,0.5); border-color:rgba(34,211,238,0.1); }
+    .form-actions .btn-default:hover { border-color:rgba(34,211,238,0.2); color:#22d3ee; }
   </style>
 </head>
 <body>
@@ -220,25 +181,29 @@
     
     <!-- KPI -->
     <div class="kpi-bar">
-      <div class="kpi-card blue">
+      <div class="kpi-card blue" onclick="openKpiDetail('cp')">
         <div class="kpi-label">📍 当前区域协同指数</div>
         <div class="kpi-value" style="color:#0ea5e9">62<span class="unit">/100</span></div>
         <div class="kpi-trend">🟡 关注区（阈值 70）</div>
+        <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
-      <div class="kpi-card red">
+      <div class="kpi-card red" onclick="openKpiDetail('paradox')">
         <div class="kpi-label">🚨 今日 Paradox 预警</div>
         <div class="kpi-value" style="color:#ef4444">3<span class="unit">条</span></div>
         <div class="kpi-trend up">↑ 较昨日 +1</div>
+        <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
-      <div class="kpi-card yellow">
+      <div class="kpi-card yellow" onclick="openKpiDetail('task')">
         <div class="kpi-label">⏳ 待处置任务</div>
         <div class="kpi-value" style="color:#fbbf24">2<span class="unit">条</span></div>
         <div class="kpi-trend down">↓ 较昨日 -1</div>
+        <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
-      <div class="kpi-card green">
+      <div class="kpi-card green" onclick="openKpiDetail('closed')">
         <div class="kpi-label">✅ 本月已闭环</div>
         <div class="kpi-value" style="color:#4ade80">15<span class="unit">条</span></div>
         <div class="kpi-trend down">闭环率 88%</div>
+        <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
     </div>
     
@@ -248,13 +213,13 @@
         <div class="panel" style="flex:1.2">
           <div class="panel-title">🗺️ 辖区企业态势概览</div>
           <div class="map-area">
-            <div class="map-zone warn">⚠️ 张镇工业园 协同指数 58</div>
-            <div class="map-zone danger">🔴 李村工业区 2家 paradox</div>
+            <div class="map-zone warn" onclick="showToast('张镇工业园：协同指数58，12家企业中3家paradox','warn')">⚠️ 张镇工业园 协同指数 58</div>
+            <div class="map-zone danger" onclick="showToast('李村工业区：2家paradox，已下发调度指令','error')">🔴 李村工业区 2家 paradox</div>
             <div class="map-legend-bar">
-              <span>🟢 双减标兵 8家</span>
-              <span>🟡 关注企业 12家</span>
-              <span>🔴 paradox 3家</span>
-              <span>⚪ 数据不足 5家</span>
+              <span onclick="showToast('双减标兵企业：8家','success')">🟢 双减标兵 8家</span>
+              <span onclick="showToast('关注企业：12家','warn')">🟡 关注企业 12家</span>
+              <span onclick="showToast('Paradox风险企业：3家','error')">🔴 paradox 3家</span>
+              <span onclick="showToast('数据不足企业：5家','info')">⚪ 数据不足 5家</span>
             </div>
           </div>
         </div>
@@ -264,28 +229,28 @@
           <div class="panel-title green">📈 处置效果追踪（近30天）</div>
           <div class="effect-chart">
             <div class="effect-bar">
-              <div class="effect-bar-item">
+              <div class="effect-bar-item" onclick="showToast('VOCs整改前：排放12.5kg/h','info')">
                 <div class="effect-bar-fill" style="height:70%;background:linear-gradient(180deg,#ef4444,#dc2626);color:#ef4444" data-val="整改前"></div>
                 <div class="effect-bar-label">VOCs</div>
               </div>
-              <div class="effect-bar-item">
+              <div class="effect-bar-item" onclick="showToast('碳排整改前：0.42 tCO₂/h','info')">
                 <div class="effect-bar-fill" style="height:45%;background:linear-gradient(180deg,#fbbf24,#d97706);color:#fbbf24" data-val="整改前"></div>
                 <div class="effect-bar-label">碳排</div>
               </div>
-              <div class="effect-bar-item">
+              <div class="effect-bar-item" onclick="showToast('C-P整改前：0.38','info')">
                 <div class="effect-bar-fill" style="height:55%;background:linear-gradient(180deg,#0ea5e9,#0284c7);color:#0ea5e9" data-val="整改前"></div>
                 <div class="effect-bar-label">C-P</div>
               </div>
               <div style="width:16px"></div>
-              <div class="effect-bar-item">
+              <div class="effect-bar-item" onclick="showToast('VOCs整改后：排放8.2kg/h ↓34%','success')">
                 <div class="effect-bar-fill" style="height:50%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
                 <div class="effect-bar-label">VOCs</div>
               </div>
-              <div class="effect-bar-item">
+              <div class="effect-bar-item" onclick="showToast('碳排整改后：0.31 tCO₂/h ↓26%','success')">
                 <div class="effect-bar-fill" style="height:60%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
                 <div class="effect-bar-label">碳排</div>
               </div>
-              <div class="effect-bar-item">
+              <div class="effect-bar-item" onclick="showToast('C-P整改后：0.72 ↑89%','success')">
                 <div class="effect-bar-fill" style="height:80%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
                 <div class="effect-bar-label">C-P</div>
               </div>
@@ -299,73 +264,22 @@
         <!-- 事件流 -->
         <div class="panel" style="flex:1">
           <div class="panel-title red">🔥 Paradox 事件流</div>
-          <div class="event-stream">
-            <div class="event-item">
-              <div class="event-dot red"></div>
-              <div class="event-time">09:00</div>
-              <div class="event-text"><span class="name">蓝天工业</span> C-P <span class="event-cp red">0.38</span> 减污增碳</div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot red"></div>
-              <div class="event-time">08:45</div>
-              <div class="event-text"><span class="name">红星喷涂</span> C-P <span class="event-cp red">0.35</span> 减碳增污</div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot yellow"></div>
-              <div class="event-time">08:12</div>
-              <div class="event-text"><span class="name">鑫达汽修</span> C-P <span class="event-cp yellow">0.52</span> 协同失衡</div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot red"></div>
-              <div class="event-time">07:30</div>
-              <div class="event-text"><span class="name">金辉涂装</span> C-P <span class="event-cp red">0.41</span> 减污增碳</div>
-            </div>
-            <div class="event-item">
-              <div class="event-dot yellow"></div>
-              <div class="event-time">昨日</div>
-              <div class="event-text"><span class="name">伟达制造</span> C-P <span class="event-cp yellow">0.55</span> 协同失衡</div>
-            </div>
-          </div>
+          <div class="event-stream" id="eventStream"></div>
         </div>
         
         <!-- 调度看板 -->
         <div class="panel" style="flex:1.3">
           <div class="panel-title yellow">📋 任务调度看板</div>
-          <div class="task-tabs">
-            <div class="task-tab active"><span class="num">2</span>待调度</div>
-            <div class="task-tab"><span class="num">3</span>处置中</div>
-            <div class="task-tab"><span class="num">1</span>待复核</div>
-            <div class="task-tab"><span class="num">15</span>已销号</div>
+          <div class="task-tabs" id="taskTabs">
+            <div class="task-tab active" data-status="dispatched" onclick="switchTab(this,'dispatched')"><span class="num" id="tabDispatched">2</span>待调度</div>
+            <div class="task-tab" data-status="feedback" onclick="switchTab(this,'feedback')"><span class="num" id="tabFeedback">1</span>处置中</div>
+            <div class="task-tab" data-status="reviewed" onclick="switchTab(this,'reviewed')"><span class="num" id="tabReviewed">1</span>待复核</div>
+            <div class="task-tab" data-status="closed" onclick="switchTab(this,'closed')"><span class="num" id="tabClosed">15</span>已销号</div>
           </div>
-          <div class="task-list">
-            <div class="task-item">
-              <div class="task-item-header">
-                <span class="task-item-title">蓝天工业 — 自查自纠建议</span>
-                <span class="task-item-tag urgent">超期</span>
-              </div>
-              <div class="task-item-desc">C-P 0.38 持续12h，建议调整排班、检查蓄热体</div>
-              <div class="task-item-meta">⏰ 截止 05-19 18:00 | 📤 已下发 2h</div>
-            </div>
-            <div class="task-item">
-              <div class="task-item-header">
-                <span class="task-item-title">红星喷涂 — 现场核查建议</span>
-                <span class="task-item-tag normal">正常</span>
-              </div>
-              <div class="task-item-desc">C-P 0.35 减碳增污，RTO 温度异常偏低</div>
-              <div class="task-item-meta">⏰ 截止 05-20 18:00 | 📤 已下发 1h</div>
-            </div>
-            <div class="task-item">
-              <div class="task-item-header">
-                <span class="task-item-title">鑫达汽修 — 技术优化建议</span>
-                <span class="task-item-tag normal">正常</span>
-              </div>
-              <div class="task-item-desc">涂料切换后烘干能耗激增，建议引入热泵</div>
-              <div class="task-item-meta">⏰ 截止 05-22 18:00 | 📤 已下发 30min</div>
-            </div>
-          </div>
+          <div class="task-list" id="taskList"></div>
           <div class="quick-actions">
-            <button class="btn">➕ 新建调度</button>
-            <button class="btn">📊 统计报表</button>
+            <button class="btn primary" onclick="openDispatchModal()">➕ 新建调度</button>
+            <button class="btn" onclick="window.open('../gov-monitoring/monthly-monitor.html','_blank')">📊 统计报表</button>
           </div>
         </div>
       </div>
@@ -388,5 +302,222 @@
       </div>
     </div>
   </div>
+
+  <!-- KPI详情弹窗 -->
+  <div class="modal-overlay" id="kpiModal" onclick="closeModal(event)">
+    <div class="modal-box">
+      <div class="modal-header"><span class="modal-title" id="kpiModalTitle">详情</span><span class="modal-close" onclick="closeModalDirect()">✕</span></div>
+      <div class="modal-body" id="kpiModalBody"></div>
+    </div>
+  </div>
+
+  <!-- 新建调度弹窗 -->
+  <div class="modal-overlay" id="dispatchModal" onclick="closeModal(event)">
+    <div class="modal-box">
+      <div class="modal-header"><span class="modal-title">➕ 新建调度指令</span><span class="modal-close" onclick="closeModalDirect()">✕</span></div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>目标企业</label>
+          <select id="dEnterprise"><option>蓝天工业涂装有限公司</option><option>红星喷涂厂</option><option>鑫达汽修</option><option>金辉涂装</option><option>伟达制造</option></select>
+        </div>
+        <div class="form-group">
+          <label>预警类型</label>
+          <select id="dType"><option value="paradox">Paradox 风险</option><option value="data">数据异常</option><option value="permit">证件到期</option><option value="imbalance">协同失衡</option></select>
+        </div>
+        <div class="form-group">
+          <label>截止期限</label>
+          <input type="date" id="dDeadline" value="2026-05-25">
+        </div>
+        <div class="form-group">
+          <label>调度内容</label>
+          <textarea id="dContent" placeholder="请输入调度指令内容...">请立即排查RTO运行异常，并于3个工作日内反馈整改措施。</textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-default" onclick="closeModalDirect()">取消</button>
+          <button class="btn-primary" onclick="submitDispatch()">✅ 下发调度</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 事件流渲染 ==========
+    const events = [
+      { time: '09:00', type: 'red', name: '蓝天工业', cp: '0.38', cpClass: 'red', desc: '减污增碳' },
+      { time: '08:45', type: 'red', name: '红星喷涂', cp: '0.35', cpClass: 'red', desc: '减碳增污' },
+      { time: '08:12', type: 'yellow', name: '鑫达汽修', cp: '0.52', cpClass: 'yellow', desc: '协同失衡' },
+      { time: '07:30', type: 'red', name: '金辉涂装', cp: '0.41', cpClass: 'red', desc: '减污增碳' },
+      { time: '昨日', type: 'yellow', name: '伟达制造', cp: '0.55', cpClass: 'yellow', desc: '协同失衡' },
+    ];
+    const es = document.getElementById('eventStream');
+    events.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'event-item';
+      div.onclick = () => showToast(`${e.name}：C-P ${e.cp} ${e.desc} — 已生成AI诊断报告`, e.type === 'red' ? 'error' : 'warn');
+      div.innerHTML = `<div class="event-dot ${e.type}"></div><div class="event-time">${e.time}</div><div class="event-text"><span class="name">${e.name}</span> C-P <span class="event-cp ${e.cpClass}">${e.cp}</span> ${e.desc}</div>`;
+      es.appendChild(div);
+    });
+
+    // ========== 任务调度看板 ==========
+    let currentTab = 'dispatched';
+
+    function switchTab(el, status) {
+      document.querySelectorAll('.task-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      currentTab = status;
+      renderTasks();
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('taskList');
+      const dispatches = DataStore.getDispatches();
+      const filtered = dispatches.filter(d => d.statusCode === currentTab);
+      
+      // 更新tab数字
+      const counts = { dispatched:0, received:0, feedback:0, reviewed:0, closed:0 };
+      dispatches.forEach(d => { if(counts[d.statusCode] !== undefined) counts[d.statusCode]++; });
+      document.getElementById('tabDispatched').textContent = counts.dispatched;
+      document.getElementById('tabFeedback').textContent = counts.feedback + counts.received;
+      document.getElementById('tabReviewed').textContent = counts.reviewed;
+      document.getElementById('tabClosed').textContent = counts.closed;
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(226,232,240,0.25);font-size:12px">暂无任务</div>';
+        return;
+      }
+      list.innerHTML = filtered.map(d => {
+        const tagMap = { dispatched: ['待调度','pending'], received: ['已签收','normal'], feedback: ['处置中','normal'], reviewed: ['待复核','pending'], closed: ['已销号','closed'] };
+        const tag = tagMap[d.statusCode] || ['待调度','normal'];
+        return `
+          <div class="task-item" onclick="location.href='dispatch-detail.html'">
+            <div class="task-item-header"><span class="task-item-title">${d.target} — ${d.title}</span><span class="task-item-tag ${tag[1]}">${tag[0]}</span></div>
+            <div class="task-item-desc">${d.content.substring(0,40)}${d.content.length>40?'...':''}</div>
+            <div class="task-item-meta">⏰ 截止 ${d.deadline} | 📤 ${d.status}</div>
+          </div>`;
+      }).join('');
+    }
+
+    // ========== 新建调度 ==========
+    function openDispatchModal() {
+      document.getElementById('dispatchModal').classList.add('active');
+    }
+    function submitDispatch() {
+      const enterprise = document.getElementById('dEnterprise').value;
+      const type = document.getElementById('dType').value;
+      const deadline = document.getElementById('dDeadline').value;
+      const content = document.getElementById('dContent').value;
+      const id = 'DSP-' + Date.now().toString().slice(-10);
+      const typeNames = { paradox: 'Paradox 风险整改通知', data: '数据异常核查通知', permit: '证件续期提醒', imbalance: '协同失衡整改通知' };
+      
+      const newDispatch = {
+        id: id,
+        type: type,
+        title: typeNames[type] || '调度通知',
+        target: enterprise,
+        deadline: deadline,
+        status: '已下发',
+        statusCode: 'dispatched',
+        step: 0,
+        steps: ['已下发','企业签收','整改反馈','监测科复核','已销号'],
+        createdAt: '2026-05-18 ' + new Date().toTimeString().slice(0,5),
+        content: content
+      };
+      
+      const dispatches = DataStore.getDispatches();
+      dispatches.unshift(newDispatch);
+      DataStore.setDispatches(dispatches);
+      
+      closeModalDirect();
+      renderTasks();
+      showToast(`✅ 调度指令 ${id} 已下发至 ${enterprise}`, 'success');
+    }
+
+    // ========== KPI详情弹窗 ==========
+    function openKpiDetail(type) {
+      const modal = document.getElementById('kpiModal');
+      const title = document.getElementById('kpiModalTitle');
+      const body = document.getElementById('kpiModalBody');
+      
+      if (type === 'cp') {
+        title.textContent = '📍 区域协同指数详情';
+        body.innerHTML = `
+          <div class="modal-row"><span>当前指数</span><span style="color:#0ea5e9;font-weight:700">62 / 100</span></div>
+          <div class="modal-row"><span>等级</span><span>🟡 关注区（阈值 70）</span></div>
+          <div class="modal-row"><span>环比变化</span><span style="color:#f87171">↓ 8.8%</span></div>
+          <div class="modal-row"><span>辖区企业</span><span>28 家</span></div>
+          <div class="modal-row"><span>双减标兵</span><span style="color:#4ade80">8 家</span></div>
+          <div class="modal-row"><span>Paradox企业</span><span style="color:#f87171">3 家</span></div>
+          <div style="margin-top:12px;padding:10px;background:rgba(34,211,238,0.04);border-radius:6px;font-size:12px;color:rgba(226,232,240,0.5)">
+            💡 主要下降原因：3家企业同时拉满RTO负荷，天然气总耗环比增加28%
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="window.open('../gov-monitoring/monthly-monitor.html','_blank')">📊 查看月报</button>
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
+          </div>`;
+      } else if (type === 'paradox') {
+        title.textContent = '🚨 Paradox 预警详情';
+        body.innerHTML = `
+          <div class="modal-row"><span>今日预警</span><span style="color:#ef4444;font-weight:700">3 条</span></div>
+          <div class="modal-row"><span>减污增碳</span><span style="color:#f87171">2 条</span></div>
+          <div class="modal-row"><span>减碳增污</span><span style="color:#fbbf24">1 条</span></div>
+          <div class="modal-row"><span>较昨日</span><span style="color:#f87171">↑ +1</span></div>
+          <div style="margin-top:12px;font-size:12px;color:rgba(226,232,240,0.5);line-height:2">
+            🔴 蓝天工业涂装 C-P 0.38 减污增碳 | RTO空烧22%<br>
+            🔴 红星喷涂厂 C-P 0.35 减碳增污 | 温度偏低<br>
+            🟡 鑫达汽修 C-P 0.52 协同失衡
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="window.open('../enterprise/alerts.html','_blank')">🔔 查看预警</button>
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
+          </div>`;
+      } else if (type === 'task') {
+        title.textContent = '⏳ 待处置任务详情';
+        const dispatches = DataStore.getDispatches();
+        const pending = dispatches.filter(d => d.statusCode !== 'closed');
+        body.innerHTML = `
+          <div class="modal-row"><span>待处置</span><span style="color:#fbbf24;font-weight:700">${pending.length} 条</span></div>
+          <div class="modal-row"><span>已下发</span><span>${dispatches.filter(d=>d.statusCode==='dispatched').length} 条</span></div>
+          <div class="modal-row"><span>处置中</span><span>${dispatches.filter(d=>d.statusCode==='feedback'||d.statusCode==='received').length} 条</span></div>
+          <div class="modal-row"><span>待复核</span><span>${dispatches.filter(d=>d.statusCode==='reviewed').length} 条</span></div>
+          <div style="margin-top:12px;font-size:12px;color:rgba(226,232,240,0.5);line-height:2">
+            ${pending.slice(0,3).map(d => `📋 ${d.target} — ${d.status} | 截止 ${d.deadline}`).join('<br>')}
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect();openDispatchModal()">➕ 新建调度</button>
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
+          </div>`;
+      } else {
+        title.textContent = '✅ 闭环处置详情';
+        const dispatches = DataStore.getDispatches();
+        body.innerHTML = `
+          <div class="modal-row"><span>本月已闭环</span><span style="color:#4ade80;font-weight:700">${dispatches.filter(d=>d.statusCode==='closed').length} 条</span></div>
+          <div class="modal-row"><span>闭环率</span><span style="color:#4ade80">88%</span></div>
+          <div class="modal-row"><span>平均处置时长</span><span>4.2 天</span></div>
+          <div class="modal-row"><span>超期任务</span><span style="color:#f87171">1 条</span></div>
+          <div style="margin-top:12px;font-size:12px;color:rgba(226,232,240,0.5);line-height:2">
+            ✅ 蓝天工业涂装 05-15 paradox 已销号<br>
+            ✅ 红星喷涂厂 05-10 协同失衡 已销号<br>
+            ✅ 金辉涂装 05-08 数据异常 已销号
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="window.open('dispatch-detail.html','_blank')">📋 调度详情</button>
+            <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
+          </div>`;
+      }
+      modal.classList.add('active');
+    }
+
+    function closeModal(e) {
+      if (e.target.classList.contains('modal-overlay')) {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+      }
+    }
+    function closeModalDirect() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    }
+
+    // 初始化
+    renderTasks();
+  </script>
 </body>
 </html>
