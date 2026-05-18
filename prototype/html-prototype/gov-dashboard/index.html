@@ -5,188 +5,216 @@
   <title>协同管控指挥大屏 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    body { background: #0a1628; color: #fff; font-family: "PingFang SC","Microsoft YaHei",sans-serif; }
-    .screen-wrap { min-height: 100vh; padding: 20px 24px; }
-    .screen-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #020617; color: #e2e8f0;
+      font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+      overflow: hidden;
     }
-    .screen-title { font-size: 22px; font-weight: 700; letter-spacing: 2px; }
-    .screen-title span { color: #36cfc9; }
-    .screen-meta { font-size: 13px; color: rgba(255,255,255,0.5); }
-    .screen-nav { display: flex; gap: 8px; }
-    .screen-nav a {
-      padding: 6px 16px; border-radius: 6px; font-size: 13px;
-      color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.15);
-      transition: all 0.2s;
-    }
-    .screen-nav a:hover, .screen-nav a.active { background: rgba(22,119,255,0.3); border-color: #1677ff; color: #fff; }
+    .screen-wrap { width:100vw; height:100vh; padding:16px 20px 48px; display:flex; flex-direction:column; }
     
-    /* 顶部指标卡 */
-    .kpi-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    /* 头部 */
+    .screen-header {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:16px; padding-bottom:12px;
+      border-bottom:1px solid rgba(34,211,238,0.15);
+    }
+    .screen-header-left { display:flex; align-items:center; gap:12px; }
+    .screen-header-title { font-size:20px; font-weight:700; letter-spacing:2px; display:flex; align-items:center; gap:10px; }
+    .screen-header-title .pulse-dot {
+      width:8px; height:8px; border-radius:50%; background:#22d3ee;
+      box-shadow:0 0 8px #22d3ee, 0 0 20px rgba(34,211,238,0.4);
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .screen-header-sub { font-size:12px; color:rgba(226,232,240,0.4); margin-top:4px; }
+    .screen-nav { display:flex; gap:8px; }
+    .screen-nav a {
+      padding:5px 14px; border-radius:6px; font-size:12px;
+      color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1);
+      text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05);
+    }
+    .screen-nav a:hover, .screen-nav a.active {
+      color:#22d3ee; border-color:rgba(34,211,238,0.4);
+      background:rgba(34,211,238,0.1); box-shadow:0 0 12px rgba(34,211,238,0.15);
+    }
+    
+    /* KPI卡 - 玻璃态 */
+    .kpi-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; }
     .kpi-card {
-      background: linear-gradient(135deg, rgba(22,119,255,0.15) 0%, rgba(54,207,201,0.08) 100%);
-      border: 1px solid rgba(22,119,255,0.25); border-radius: 10px;
-      padding: 20px; position: relative; overflow: hidden;
+      background: rgba(34,211,238,0.05); backdrop-filter:blur(8px);
+      border:1px solid rgba(34,211,238,0.15); border-radius:10px;
+      padding:18px; position:relative; overflow:hidden;
+      transition:all 0.3s;
     }
-    .kpi-card::before {
-      content: ""; position: absolute; top:0; left:0; right:0; height: 3px;
+    .kpi-card:hover { border-color:rgba(34,211,238,0.3); box-shadow:0 0 20px rgba(34,211,238,0.1); }
+    .kpi-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; }
+    .kpi-card.blue::before { background:linear-gradient(90deg,transparent,#0ea5e9,transparent); }
+    .kpi-card.red::before { background:linear-gradient(90deg,transparent,#ef4444,transparent); }
+    .kpi-card.yellow::before { background:linear-gradient(90deg,transparent,#fbbf24,transparent); }
+    .kpi-card.green::before { background:linear-gradient(90deg,transparent,#4ade80,transparent); }
+    .kpi-card::after {
+      content:""; position:absolute; top:-50%; left:-50%; right:-50%; bottom:-50%;
+      background:radial-gradient(circle at 30% 70%, rgba(34,211,238,0.03) 0%, transparent 60%);
     }
-    .kpi-card.blue::before { background: #1677ff; }
-    .kpi-card.green::before { background: #52c41a; }
-    .kpi-card.yellow::before { background: #faad14; }
-    .kpi-card.red::before { background: #f5222d; }
-    .kpi-label { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
-    .kpi-value { font-size: 36px; font-weight: 700; line-height: 1; }
-    .kpi-value .unit { font-size: 14px; font-weight: 400; margin-left: 4px; color: rgba(255,255,255,0.5); }
-    .kpi-trend { font-size: 12px; margin-top: 8px; color: rgba(255,255,255,0.4); }
-    .kpi-trend.up { color: #ff7875; }
-    .kpi-trend.down { color: #95de64; }
+    .kpi-label { font-size:12px; color:rgba(226,232,240,0.4); margin-bottom:8px; position:relative; z-index:1; }
+    .kpi-value { font-size:34px; font-weight:700; line-height:1; position:relative; z-index:1; }
+    .kpi-value .unit { font-size:13px; font-weight:400; margin-left:4px; color:rgba(226,232,240,0.4); }
+    .kpi-trend { font-size:11px; margin-top:8px; color:rgba(226,232,240,0.35); position:relative; z-index:1; }
+    .kpi-trend.up { color:#f87171; }
+    .kpi-trend.down { color:#4ade80; }
     
     /* 主体区 */
-    .screen-body { display: grid; grid-template-columns: 1fr 380px; gap: 16px; }
-    .screen-left { display: flex; flex-direction: column; gap: 16px; }
-    .screen-right { display: flex; flex-direction: column; gap: 16px; }
+    .screen-body { display:grid; grid-template-columns:1fr 360px; gap:14px; flex:1; min-height:0; }
+    .screen-left { display:flex; flex-direction:column; gap:14px; }
+    .screen-right { display:flex; flex-direction:column; gap:14px; }
     
-    /* 面板卡片 */
+    /* 面板 - 玻璃态 */
     .panel {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px; padding: 16px;
+      background: rgba(34,211,238,0.04); backdrop-filter:blur(8px);
+      border:1px solid rgba(34,211,238,0.12); border-radius:10px;
+      padding:14px; display:flex; flex-direction:column;
     }
     .panel-title {
-      font-size: 15px; font-weight: 600; margin-bottom: 14px;
-      display: flex; align-items: center; gap: 8px;
+      font-size:14px; font-weight:600; margin-bottom:12px;
+      display:flex; align-items:center; gap:8px; color:#22d3ee;
     }
     .panel-title::before {
-      content: ""; display: inline-block; width: 4px; height: 16px;
-      background: #1677ff; border-radius: 2px;
+      content:""; display:inline-block; width:3px; height:14px;
+      background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px;
     }
-    .panel-title.green::before { background: #52c41a; }
-    .panel-title.yellow::before { background: #faad14; }
-    .panel-title.red::before { background: #f5222d; }
+    .panel-title.green::before { background:linear-gradient(180deg,#4ade80,#22c55e); }
+    .panel-title.yellow::before { background:linear-gradient(180deg,#fbbf24,#f59e0b); }
+    .panel-title.red::before { background:linear-gradient(180deg,#f87171,#ef4444); }
     
-    /* 事件流 */
-    .event-stream { max-height: 200px; overflow: hidden; position: relative; }
-    .event-item {
-      display: flex; align-items: center; gap: 10px; padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px;
+    /* 地图占位 */
+    .map-area {
+      flex:1; min-height:200px; position:relative;
+      background: linear-gradient(180deg, rgba(8,47,73,0.4) 0%, rgba(2,6,23,0.8) 100%);
+      border-radius:8px; border:1px dashed rgba(34,211,238,0.15);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
     }
-    .event-item:last-child { border-bottom: none; }
-    .event-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    .map-area::before {
+      content:""; position:absolute; top:0; left:0; right:0; bottom:0;
+      background-image: linear-gradient(rgba(34,211,238,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
     }
-    .event-dot.red { background: #f5222d; box-shadow: 0 0 6px rgba(245,34,45,0.5); }
-    .event-dot.yellow { background: #faad14; }
-    .event-time { color: rgba(255,255,255,0.35); font-size: 12px; width: 50px; flex-shrink: 0; }
-    .event-text { flex: 1; }
-    .event-text .name { color: #36cfc9; font-weight: 500; }
-    .event-cp { font-family: monospace; font-size: 13px; }
-    .event-cp.red { color: #ff7875; }
-    .event-cp.yellow { color: #ffd666; }
+    .map-zone {
+      position:absolute; padding:6px 12px; border-radius:6px; font-size:11px;
+      z-index:2; backdrop-filter:blur(4px);
+    }
+    .map-zone.warn { background:rgba(251,191,36,0.15); color:#fde047; border:1px solid rgba(251,191,36,0.3); top:20%; left:28%; }
+    .map-zone.danger { background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); top:45%; right:22%; }
+    .map-legend-bar {
+      position:absolute; bottom:10px; left:10px; right:10px;
+      display:flex; gap:16px; justify-content:center; z-index:2;
+    }
+    .map-legend-bar span { font-size:11px; color:rgba(226,232,240,0.4); }
     
-    /* 调度看板 */
-    .task-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
-    .task-tab {
-      flex: 1; text-align: center; padding: 8px; font-size: 12px;
-      border-radius: 6px; cursor: pointer; color: rgba(255,255,255,0.4);
-      background: rgba(255,255,255,0.04); border: 1px solid transparent;
-    }
-    .task-tab.active { background: rgba(22,119,255,0.2); color: #fff; border-color: rgba(22,119,255,0.4); }
-    .task-tab .num { font-size: 18px; font-weight: 700; display: block; margin-bottom: 2px; }
-    .task-list { max-height: 220px; overflow-y: auto; }
-    .task-list::-webkit-scrollbar { width: 4px; }
-    .task-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-    .task-item {
-      padding: 10px 12px; border-radius: 6px; margin-bottom: 8px;
-      background: rgba(255,255,255,0.04); font-size: 12px; cursor: pointer;
-      transition: background 0.2s;
-    }
-    .task-item:hover { background: rgba(255,255,255,0.08); }
-    .task-item-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .task-item-title { font-weight: 500; }
-    .task-item-tag {
-      padding: 1px 6px; border-radius: 3px; font-size: 10px;
-    }
-    .task-item-tag.urgent { background: rgba(245,34,45,0.2); color: #ff7875; }
-    .task-item-tag.normal { background: rgba(22,119,255,0.2); color: #69c0ff; }
-    .task-item-desc { color: rgba(255,255,255,0.4); line-height: 1.5; }
-    .task-item-meta { color: rgba(255,255,255,0.3); margin-top: 4px; font-size: 11px; }
-    
-    /* 处置效果 */
-    .effect-chart { height: 160px; position: relative; }
-    .effect-chart svg { width: 100%; height: 100%; }
-    .effect-bar { display: flex; align-items: flex-end; gap: 12px; height: 120px; padding-top: 20px; }
-    .effect-bar-item { flex: 1; text-align: center; }
+    /* 效果图表 */
+    .effect-chart { height:140px; position:relative; }
+    .effect-bar { display:flex; align-items:flex-end; gap:12px; height:110px; padding-top:10px; justify-content:center; }
+    .effect-bar-item { text-align:center; }
     .effect-bar-fill {
-      width: 100%; border-radius: 4px 4px 0 0; transition: height 0.6s ease;
-      position: relative;
+      width:36px; border-radius:4px 4px 0 0; transition:height 0.6s ease;
+      position:relative; box-shadow:0 0 12px currentColor;
     }
     .effect-bar-fill::after {
-      content: attr(data-val); position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-      font-size: 12px; font-weight: 600; white-space: nowrap;
+      content: attr(data-val); position:absolute; top:-16px; left:50%; transform:translateX(-50%);
+      font-size:10px; font-weight:600; white-space:nowrap; color:#fff;
     }
-    .effect-bar-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 6px; }
+    .effect-bar-label { font-size:10px; color:rgba(226,232,240,0.35); margin-top:6px; }
+    
+    /* 事件流 */
+    .event-stream { max-height:180px; overflow:hidden; position:relative; }
+    .event-item {
+      display:flex; align-items:center; gap:10px; padding:7px 0;
+      border-bottom:1px solid rgba(34,211,238,0.06); font-size:12px;
+    }
+    .event-item:last-child { border-bottom:none; }
+    .event-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .event-dot.red { background:#ef4444; box-shadow:0 0 6px #ef4444; }
+    .event-dot.yellow { background:#fbbf24; box-shadow:0 0 6px #fbbf24; }
+    .event-time { color:rgba(226,232,240,0.3); font-size:11px; width:42px; flex-shrink:0; }
+    .event-text { flex:1; }
+    .event-text .name { color:#22d3ee; font-weight:500; }
+    .event-cp { font-family:monospace; font-size:12px; }
+    .event-cp.red { color:#f87171; }
+    .event-cp.yellow { color:#fde047; }
+    
+    /* 任务 */
+    .task-tabs { display:flex; gap:4px; margin-bottom:10px; }
+    .task-tab {
+      flex:1; text-align:center; padding:7px; font-size:11px;
+      border-radius:6px; cursor:pointer; color:rgba(226,232,240,0.3);
+      background:rgba(34,211,238,0.04); border:1px solid transparent;
+      transition:all 0.2s;
+    }
+    .task-tab.active { background:rgba(34,211,238,0.12); color:#22d3ee; border-color:rgba(34,211,238,0.25); }
+    .task-tab .num { font-size:16px; font-weight:700; display:block; margin-bottom:2px; }
+    .task-list { max-height:200px; overflow-y:auto; }
+    .task-list::-webkit-scrollbar { width:3px; }
+    .task-list::-webkit-scrollbar-thumb { background:rgba(34,211,238,0.2); }
+    .task-item {
+      padding:9px 12px; border-radius:6px; margin-bottom:6px;
+      background:rgba(34,211,238,0.04); font-size:11px; cursor:pointer;
+      border:1px solid rgba(34,211,238,0.06); transition:all 0.2s;
+    }
+    .task-item:hover { background:rgba(34,211,238,0.08); border-color:rgba(34,211,238,0.15); }
+    .task-item-header { display:flex; justify-content:space-between; margin-bottom:3px; }
+    .task-item-title { font-weight:500; color:rgba(226,232,240,0.8); }
+    .task-item-tag { padding:1px 6px; border-radius:3px; font-size:9px; }
+    .task-item-tag.urgent { background:rgba(239,68,68,0.15); color:#fca5a5; }
+    .task-item-tag.normal { background:rgba(14,165,233,0.15); color:#7dd3fc; }
+    .task-item-desc { color:rgba(226,232,240,0.4); line-height:1.5; }
+    .task-item-meta { color:rgba(226,232,240,0.25); margin-top:3px; font-size:10px; }
+    .quick-actions { display:flex; gap:6px; margin-top:10px; }
+    .quick-actions .btn {
+      flex:1; padding:7px; font-size:11px; border-radius:6px;
+      background:rgba(34,211,238,0.1); color:#22d3ee;
+      border:1px solid rgba(34,211,238,0.2); cursor:pointer;
+      transition:all 0.2s; text-align:center;
+    }
+    .quick-actions .btn:hover { background:rgba(34,211,238,0.2); box-shadow:0 0 12px rgba(34,211,238,0.15); }
     
     /* 底部滚动条 */
     .ticker {
-      position: fixed; bottom: 0; left: 0; right: 0; height: 36px;
-      background: rgba(10,22,40,0.95); border-top: 1px solid rgba(22,119,255,0.3);
-      display: flex; align-items: center; overflow: hidden;
+      position:fixed; bottom:0; left:0; right:0; height:36px;
+      background:rgba(2,6,23,0.95); border-top:1px solid rgba(34,211,238,0.15);
+      display:flex; align-items:center; overflow:hidden;
     }
     .ticker-label {
-      padding: 0 16px; background: rgba(22,119,255,0.2); height: 100%;
-      display: flex; align-items: center; font-size: 12px; font-weight: 500;
-      color: #69c0ff; flex-shrink: 0;
+      padding:0 16px; background:rgba(34,211,238,0.1); height:100%;
+      display:flex; align-items:center; font-size:11px; font-weight:500;
+      color:#22d3ee; flex-shrink:0; border-right:1px solid rgba(34,211,238,0.15);
     }
-    .ticker-content {
-      flex: 1; overflow: hidden; position: relative;
-    }
+    .ticker-content { flex:1; overflow:hidden; position:relative; }
     .ticker-track {
-      display: flex; gap: 40px; white-space: nowrap;
+      display:flex; gap:40px; white-space:nowrap;
       animation: tickerMove 30s linear infinite;
     }
-    @keyframes tickerMove {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .ticker-item { font-size: 12px; color: rgba(255,255,255,0.6); }
-    .ticker-item .cp { color: #ff7875; font-weight: 500; }
-    
-    /* 区域地图示意 */
-    .map-placeholder {
-      height: 240px; background: rgba(22,119,255,0.06); border-radius: 8px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      border: 1px dashed rgba(22,119,255,0.2); position: relative;
-    }
-    .map-placeholder-text { font-size: 14px; color: rgba(255,255,255,0.3); }
-    .map-zone-label {
-      position: absolute; padding: 4px 10px; border-radius: 4px; font-size: 11px;
-    }
-    .map-zone-label.warn { background: rgba(250,173,20,0.15); color: #ffd666; border: 1px solid rgba(250,173,20,0.3); top: 20%; left: 30%; }
-    .map-zone-label.danger { background: rgba(245,34,45,0.15); color: #ff7875; border: 1px solid rgba(245,34,45,0.3); top: 50%; right: 25%; }
-    
-    /* 快捷操作 */
-    .quick-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .quick-actions .btn {
-      flex: 1; padding: 8px; font-size: 12px; border-radius: 6px;
-      background: rgba(22,119,255,0.15); color: #69c0ff;
-      border: 1px solid rgba(22,119,255,0.3); cursor: pointer;
-    }
-    .quick-actions .btn:hover { background: rgba(22,119,255,0.25); }
+    @keyframes tickerMove { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .ticker-item { font-size:11px; color:rgba(226,232,240,0.5); }
+    .ticker-item .cp { color:#f87171; font-weight:500; }
+    .ticker-item .name { color:#22d3ee; }
   </style>
 </head>
 <body>
   <div class="screen-wrap">
     <div class="screen-header">
-      <div>
-        <div class="screen-title">📊 <span>污碳协同</span> 协同管控指挥大屏</div>
-        <div class="screen-meta">北京市海淀区生态环境局 · 工业涂装行业 · 2026-05-18 09:00</div>
+      <div class="screen-header-left">
+        <div class="screen-header-title">
+          <span class="pulse-dot"></span>
+          📊 污碳协同 · 协同管控指挥大屏
+        </div>
+        <div class="screen-header-sub">北京市海淀区生态环境局 · 工业涂装行业 · 2026-05-18 09:00</div>
       </div>
       <div class="screen-nav">
-        <a href="../index.html" style="text-decoration:none">🏠 首页</a>
+        <a href="../index.html">🏠 首页</a>
         <a class="active" style="text-decoration:none">📊 指挥大屏</a>
         <a href="llm-assistant.html" style="text-decoration:none">🤖 LLM助手</a>
-        <a href="../gov-monitoring/index.html" style="text-decoration:none">🗺️ 3D监测</a>
+        <a href="../gov-monitoring/index.html" style="text-decoration:none">🌐 3D监测</a>
       </div>
     </div>
     
@@ -194,22 +222,22 @@
     <div class="kpi-bar">
       <div class="kpi-card blue">
         <div class="kpi-label">📍 当前区域协同指数</div>
-        <div class="kpi-value">62<span class="unit">/100</span></div>
+        <div class="kpi-value" style="color:#0ea5e9">62<span class="unit">/100</span></div>
         <div class="kpi-trend">🟡 关注区（阈值 70）</div>
       </div>
       <div class="kpi-card red">
         <div class="kpi-label">🚨 今日 Paradox 预警</div>
-        <div class="kpi-value">3<span class="unit">条</span></div>
+        <div class="kpi-value" style="color:#ef4444">3<span class="unit">条</span></div>
         <div class="kpi-trend up">↑ 较昨日 +1</div>
       </div>
       <div class="kpi-card yellow">
         <div class="kpi-label">⏳ 待处置任务</div>
-        <div class="kpi-value">2<span class="unit">条</span></div>
+        <div class="kpi-value" style="color:#fbbf24">2<span class="unit">条</span></div>
         <div class="kpi-trend down">↓ 较昨日 -1</div>
       </div>
       <div class="kpi-card green">
         <div class="kpi-label">✅ 本月已闭环</div>
-        <div class="kpi-value">15<span class="unit">条</span></div>
+        <div class="kpi-value" style="color:#4ade80">15<span class="unit">条</span></div>
         <div class="kpi-trend down">闭环率 88%</div>
       </div>
     </div>
@@ -217,71 +245,70 @@
     <div class="screen-body">
       <div class="screen-left">
         <!-- 区域态势地图 -->
-        <div class="panel">
+        <div class="panel" style="flex:1.2">
           <div class="panel-title">🗺️ 辖区企业态势概览</div>
-          <div class="map-placeholder">
-            <div class="map-zone-label warn">⚠️ 张镇工业园 协同指数 58</div>
-            <div class="map-zone-label danger">🔴 李村工业区 2家 paradox</div>
-            <div class="map-placeholder-text">🗺️ 2D 区域地图占位<br>实际部署接入 GIS 底图</div>
-            <div style="position:absolute;bottom:12px;left:12px;display:flex;gap:12px">
-              <span style="font-size:11px;color:rgba(255,255,255,0.4)">🟢 双减标兵 8家</span>
-              <span style="font-size:11px;color:rgba(255,255,255,0.4)">🟡 关注企业 12家</span>
-              <span style="font-size:11px;color:rgba(255,255,255,0.4)">🔴 paradox 3家</span>
-              <span style="font-size:11px;color:rgba(255,255,255,0.4)">⚪ 数据不足 5家</span>
+          <div class="map-area">
+            <div class="map-zone warn">⚠️ 张镇工业园 协同指数 58</div>
+            <div class="map-zone danger">🔴 李村工业区 2家 paradox</div>
+            <div class="map-legend-bar">
+              <span>🟢 双减标兵 8家</span>
+              <span>🟡 关注企业 12家</span>
+              <span>🔴 paradox 3家</span>
+              <span>⚪ 数据不足 5家</span>
             </div>
           </div>
         </div>
         
         <!-- 处置效果 -->
-        <div class="panel">
+        <div class="panel" style="flex:0.8">
           <div class="panel-title green">📈 处置效果追踪（近30天）</div>
           <div class="effect-chart">
             <div class="effect-bar">
               <div class="effect-bar-item">
-                <div class="effect-bar-fill" style="height:70%;background:linear-gradient(180deg,#52c41a,#389e0d)" data-val="整改前"></div>
+                <div class="effect-bar-fill" style="height:70%;background:linear-gradient(180deg,#ef4444,#dc2626);color:#ef4444" data-val="整改前"></div>
                 <div class="effect-bar-label">VOCs</div>
               </div>
               <div class="effect-bar-item">
-                <div class="effect-bar-fill" style="height:45%;background:linear-gradient(180deg,#f5222d,#cf1322)" data-val="整改前"></div>
+                <div class="effect-bar-fill" style="height:45%;background:linear-gradient(180deg,#fbbf24,#d97706);color:#fbbf24" data-val="整改前"></div>
                 <div class="effect-bar-label">碳排</div>
               </div>
               <div class="effect-bar-item">
-                <div class="effect-bar-fill" style="height:55%;background:linear-gradient(180deg,#faad14,#d48806)" data-val="整改前"></div>
-                <div class="effect-bar-label">C-P指数</div>
+                <div class="effect-bar-fill" style="height:55%;background:linear-gradient(180deg,#0ea5e9,#0284c7);color:#0ea5e9" data-val="整改前"></div>
+                <div class="effect-bar-label">C-P</div>
               </div>
-              <div style="width:20px"></div>
+              <div style="width:16px"></div>
               <div class="effect-bar-item">
-                <div class="effect-bar-fill" style="height:50%;background:linear-gradient(180deg,#52c41a,#389e0d)" data-val="整改后"></div>
+                <div class="effect-bar-fill" style="height:50%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
                 <div class="effect-bar-label">VOCs</div>
               </div>
               <div class="effect-bar-item">
-                <div class="effect-bar-fill" style="height:60%;background:linear-gradient(180deg,#f5222d,#cf1322)" data-val="整改后"></div>
+                <div class="effect-bar-fill" style="height:60%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
                 <div class="effect-bar-label">碳排</div>
               </div>
               <div class="effect-bar-item">
-                <div class="effect-bar-fill" style="height:80%;background:linear-gradient(180deg,#52c41a,#389e0d)" data-val="整改后"></div>
-                <div class="effect-bar-label">C-P指数</div>
+                <div class="effect-bar-fill" style="height:80%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
+                <div class="effect-bar-label">C-P</div>
               </div>
             </div>
-            <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px">整改企业：蓝天工业涂装有限公司 | 整改周期：7天</div>
+            <div style="text-align:center;font-size:10px;color:rgba(226,232,240,0.25);margin-top:4px">整改企业：蓝天工业涂装有限公司 | 整改周期：7天</div>
           </div>
         </div>
       </div>
       
       <div class="screen-right">
         <!-- 事件流 -->
-        <div class="panel">
+        <div class="panel" style="flex:1">
           <div class="panel-title red">🔥 Paradox 事件流</div>
           <div class="event-stream">
             <div class="event-item">
               <div class="event-dot red"></div>
               <div class="event-time">09:00</div>
-              <div class="event-text"><span class="name">蓝天工业涂装</span> C-P <span class="event-cp red">0.38</span> 减污增碳</div>
+              <div class="event-text"><span class="name">蓝天工业</span> C-P <span class="event-cp red">0.38</span> 减污增碳</div>
             </div>
             <div class="event-item">
               <div class="event-dot red"></div>
               <div class="event-time">08:45</div>
-              <div class="event-text"><span class="name">红星喷涂厂</span> C-P <span class="event-cp red">0.35</span> 减碳增污</div>
+              <div class="event-text"><span class="name">红星喷涂</span> C-P <span class="event-cp red">0.35</span> 减碳增污</div>
             </div>
             <div class="event-item">
               <div class="event-dot yellow"></div>
@@ -302,7 +329,7 @@
         </div>
         
         <!-- 调度看板 -->
-        <div class="panel">
+        <div class="panel" style="flex:1.3">
           <div class="panel-title yellow">📋 任务调度看板</div>
           <div class="task-tabs">
             <div class="task-tab active"><span class="num">2</span>待调度</div>
@@ -350,14 +377,14 @@
     <div class="ticker-label">📢 实时播报</div>
     <div class="ticker-content">
       <div class="ticker-track">
-        <span class="ticker-item">🔴 <span class="name" style="color:#36cfc9">蓝天工业涂装</span> C-P <span class="cp">0.38</span> 减污增碳陷阱 | RTO空烧22%</span>
-        <span class="ticker-item">🔴 <span class="name" style="color:#36cfc9">红星喷涂厂</span> C-P <span class="cp">0.35</span> 减碳增污 | 燃烧室温度680°C</span>
-        <span class="ticker-item">🟡 <span class="name" style="color:#36cfc9">鑫达汽修</span> C-P <span class="cp">0.52</span> 协同失衡 | 水性漆增碳</span>
-        <span class="ticker-item">🟢 <span class="name" style="color:#36cfc9">标杆企业A</span> C-P <span style="color:#95de64">0.88</span> 双减标兵 | 维持优秀</span>
-        <span class="ticker-item">🔴 <span class="name" style="color:#36cfc9">蓝天工业涂装</span> C-P <span class="cp">0.38</span> 减污增碳陷阱 | RTO空烧22%</span>
-        <span class="ticker-item">🔴 <span class="name" style="color:#36cfc9">红星喷涂厂</span> C-P <span class="cp">0.35</span> 减碳增污 | 燃烧室温度680°C</span>
-        <span class="ticker-item">🟡 <span class="name" style="color:#36cfc9">鑫达汽修</span> C-P <span class="cp">0.52</span> 协同失衡 | 水性漆增碳</span>
-        <span class="ticker-item">🟢 <span class="name" style="color:#36cfc9">标杆企业A</span> C-P <span style="color:#95de64">0.88</span> 双减标兵 | 维持优秀</span>
+        <span class="ticker-item">🔴 <span class="name">蓝天工业涂装</span> C-P <span class="cp">0.38</span> 减污增碳陷阱 | RTO空烧22%</span>
+        <span class="ticker-item">🔴 <span class="name">红星喷涂厂</span> C-P <span class="cp">0.35</span> 减碳增污 | 燃烧室温度680°C</span>
+        <span class="ticker-item">🟡 <span class="name">鑫达汽修</span> C-P <span class="cp">0.52</span> 协同失衡 | 水性漆增碳</span>
+        <span class="ticker-item">🟢 <span class="name">标杆企业A</span> C-P <span style="color:#4ade80">0.88</span> 双减标兵 | 维持优秀</span>
+        <span class="ticker-item">🔴 <span class="name">蓝天工业涂装</span> C-P <span class="cp">0.38</span> 减污增碳陷阱 | RTO空烧22%</span>
+        <span class="ticker-item">🔴 <span class="name">红星喷涂厂</span> C-P <span class="cp">0.35</span> 减碳增污 | 燃烧室温度680°C</span>
+        <span class="ticker-item">🟡 <span class="name">鑫达汽修</span> C-P <span class="cp">0.52</span> 协同失衡 | 水性漆增碳</span>
+        <span class="ticker-item">🟢 <span class="name">标杆企业A</span> C-P <span style="color:#4ade80">0.88</span> 双减标兵 | 维持优秀</span>
       </div>
     </div>
   </div>

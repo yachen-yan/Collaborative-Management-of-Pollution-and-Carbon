@@ -5,81 +5,99 @@
   <title>企业详情透视 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    body { background: #f0f2f5; }
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    body { background: #020617; color: #e2e8f0; }
+    .topbar { background: linear-gradient(90deg, #0c4a6e 0%, #0369a1 100%); border-bottom:1px solid rgba(34,211,238,0.2); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
-    .back-link { font-size: 13px; color: #1677ff; margin-bottom: 12px; display: inline-block; }
-    .back-link:hover { text-decoration: underline; }
+    .back-link { font-size: 13px; color: #22d3ee; margin-bottom: 12px; display: inline-block; transition:all 0.2s; }
+    .back-link:hover { text-shadow:0 0 8px rgba(34,211,238,0.5); }
     
     .ent-header {
-      background: linear-gradient(135deg, #1677ff 0%, #36cfc9 100%);
-      color: #fff; padding: 24px; border-radius: 10px; margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(14,165,233,0.2) 0%, rgba(34,211,238,0.1) 100%);
+      border:1px solid rgba(34,211,238,0.2); color: #e2e8f0;
+      padding: 24px; border-radius: 12px; margin-bottom: 20px;
       display: flex; justify-content: space-between; align-items: flex-start;
+      backdrop-filter:blur(8px); box-shadow:0 0 30px rgba(34,211,238,0.08);
     }
     .ent-header-left { flex: 1; }
     .ent-header-name { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
-    .ent-header-info { font-size: 13px; opacity: 0.85; line-height: 1.8; }
+    .ent-header-info { font-size: 13px; opacity: 0.7; line-height: 1.8; }
     .ent-header-right { text-align: center; min-width: 120px; }
-    .ent-header-score { font-size: 42px; font-weight: 700; line-height: 1; }
-    .ent-header-score-label { font-size: 12px; opacity: 0.7; margin-top: 6px; }
+    .ent-header-score { font-size: 42px; font-weight: 700; line-height: 1; color:#fbbf24; text-shadow:0 0 20px rgba(251,191,36,0.3); }
+    .ent-header-score-label { font-size: 12px; opacity: 0.6; margin-top: 6px; }
     
-    .ent-tabs { display: flex; gap: 4px; margin-bottom: 20px; background: #fff; padding: 4px; border-radius: 8px; width: fit-content; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    .ent-tab { padding: 8px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; color: rgba(0,0,0,0.45); transition: all 0.2s; }
-    .ent-tab.active { background: #1677ff; color: #fff; font-weight: 500; }
-    .ent-tab:hover:not(.active) { color: rgba(0,0,0,0.65); }
+    .ent-tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(34,211,238,0.05); padding: 4px; border-radius: 8px; width: fit-content; border:1px solid rgba(34,211,238,0.1); }
+    .ent-tab { padding: 8px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; color: rgba(226,232,240,0.4); transition: all 0.2s; }
+    .ent-tab.active { background: rgba(34,211,238,0.15); color: #22d3ee; font-weight: 500; box-shadow:0 0 12px rgba(34,211,238,0.1); }
+    .ent-tab:hover:not(.active) { color: rgba(226,232,240,0.6); }
     
     .ent-content { display: none; }
     .ent-content.active { display: block; animation: fadeIn 0.3s ease; }
     
+    .card-dark {
+      background: rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1);
+      border-radius: 10px; padding: 20px; backdrop-filter:blur(8px);
+      transition:all 0.3s;
+    }
+    .card-dark:hover { border-color:rgba(34,211,238,0.2); }
+    .card-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; color:#22d3ee; }
+    
     .rt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-    .rt-item { text-align: center; padding: 16px; }
+    .rt-item { text-align: center; padding: 16px; background:rgba(34,211,238,0.03); border-radius:8px; border:1px solid rgba(34,211,238,0.06); transition:all 0.3s; }
+    .rt-item:hover { border-color:rgba(34,211,238,0.15); transform:translateY(-2px); }
     .rt-value { font-size: 22px; font-weight: 700; }
-    .rt-label { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 4px; }
-    .rt-unit { font-size: 11px; color: rgba(0,0,0,0.35); }
+    .rt-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 4px; }
+    .rt-unit { font-size: 11px; color: rgba(226,232,240,0.25); }
     
     .risk-panel {
-      background: #fff1f0; border: 1px solid #ffa39e; border-radius: 8px;
-      padding: 16px; margin-bottom: 16px;
+      background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px; padding: 16px; margin-bottom: 16px;
+      box-shadow:0 0 20px rgba(239,68,68,0.05);
     }
-    .risk-title { font-weight: 600; color: #f5222d; margin-bottom: 10px; }
+    .risk-title { font-weight: 600; color: #f87171; margin-bottom: 10px; }
     .risk-list { font-size: 13px; line-height: 2; }
     .risk-item { display: flex; align-items: center; gap: 8px; }
-    .risk-level { padding: 1px 8px; border-radius: 3px; font-size: 11px; }
+    .risk-level { padding: 2px 10px; border-radius: 3px; font-size: 11px; }
     
     .history-chart { height: 200px; position: relative; }
     .history-chart svg { width: 100%; height: 100%; }
     
     .event-timeline { position: relative; padding-left: 20px; }
-    .event-timeline::before {
-      content: ""; position: absolute; left: 5px; top: 0; bottom: 0; width: 2px; background: #f0f0f0;
-    }
+    .event-timeline::before { content: ""; position: absolute; left: 5px; top: 0; bottom: 0; width: 2px; background: rgba(34,211,238,0.15); }
     .timeline-item { position: relative; padding-bottom: 16px; }
     .timeline-item::before {
       content: ""; position: absolute; left: -18px; top: 4px; width: 10px; height: 10px;
-      border-radius: 50%; background: #d9d9d9; border: 2px solid #fff;
+      border-radius: 50%; background: #1e293b; border: 2px solid rgba(34,211,238,0.3);
     }
-    .timeline-item.red::before { background: #f5222d; }
-    .timeline-item.yellow::before { background: #faad14; }
-    .timeline-item.green::before { background: #52c41a; }
-    .timeline-date { font-size: 12px; color: rgba(0,0,0,0.35); margin-bottom: 4px; }
-    .timeline-content { font-size: 13px; padding: 10px 14px; background: #fafafa; border-radius: 6px; }
-    .timeline-content .title { font-weight: 500; margin-bottom: 2px; }
-    .timeline-content .desc { color: rgba(0,0,0,0.45); font-size: 12px; }
+    .timeline-item.red::before { background: #ef4444; border-color: #f87171; box-shadow:0 0 8px #ef4444; }
+    .timeline-item.yellow::before { background: #fbbf24; border-color: #fde047; box-shadow:0 0 8px #fbbf24; }
+    .timeline-item.green::before { background: #4ade80; border-color: #86efac; box-shadow:0 0 8px #4ade80; }
+    .timeline-date { font-size: 12px; color: rgba(226,232,240,0.3); margin-bottom: 4px; }
+    .timeline-content {
+      font-size: 13px; padding: 10px 14px;
+      background: rgba(34,211,238,0.04); border-radius: 6px;
+      border:1px solid rgba(34,211,238,0.08);
+    }
+    .timeline-content .title { font-weight: 500; margin-bottom: 2px; color:rgba(226,232,240,0.85); }
+    .timeline-content .desc { color: rgba(226,232,240,0.45); font-size: 12px; }
     
     .ocr-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .ocr-compare-col { background: #fafafa; padding: 14px; border-radius: 6px; }
-    .ocr-compare-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
-    .ocr-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; border-bottom: 1px solid #f0f0f0; }
+    .ocr-compare-col { background: rgba(34,211,238,0.03); padding: 14px; border-radius: 8px; border:1px solid rgba(34,211,238,0.08); }
+    .ocr-compare-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; color:#22d3ee; }
+    .ocr-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; border-bottom: 1px solid rgba(34,211,238,0.06); }
     .ocr-row:last-child { border-bottom: none; }
-    .ocr-row span:first-child { color: rgba(0,0,0,0.45); }
-    .ocr-row .diff { color: #f5222d; font-weight: 500; }
-    .ocr-row .match { color: #52c41a; }
+    .ocr-row span:first-child { color: rgba(226,232,240,0.4); }
+    .ocr-row .diff { color: #f87171; font-weight: 500; }
+    .ocr-row .match { color: #4ade80; }
+    
+    .row { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .col-6 { flex: 0 0 calc(50% - 8px); }
+    .col-4 { flex: 0 0 calc(33.333% - 11px); }
   </style>
 </head>
 <body>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
-    <div class="user"><span>海淀区生态环境局 · 监测数据科</span><div class="avatar">王</div><span>王监测</span></div>
+    <div class="user"><span>海淀区生态环境局 · 监测数据科</span><div class="avatar" style="background:rgba(34,211,238,0.2);color:#22d3ee">王</div><span>王监测</span></div>
   </div>
   
   <div class="main">
@@ -108,44 +126,44 @@
     
     <!-- 实时仪表盘 -->
     <div class="ent-content active" id="tab0">
-      <div class="card">
-        <div style="font-size:15px;font-weight:600;margin-bottom:14px">📊 实时双算数据（09:00）</div>
+      <div class="card-dark">
+        <div class="card-title">📊 实时双算数据（09:00）</div>
         <div class="rt-grid">
           <div class="rt-item">
-            <div class="rt-value" style="color:#1677ff">12.5</div>
+            <div class="rt-value" style="color:#22d3ee">12.5</div>
             <div class="rt-unit">kg/h</div>
             <div class="rt-label">VOCs排放速率</div>
           </div>
           <div class="rt-item">
-            <div class="rt-value" style="color:#52c41a">94.2%</div>
+            <div class="rt-value" style="color:#4ade80">94.2%</div>
             <div class="rt-label">VOCs去除效率</div>
           </div>
           <div class="rt-item">
-            <div class="rt-value" style="color:#fa8c16">0.42</div>
+            <div class="rt-value" style="color:#fbbf24">0.42</div>
             <div class="rt-unit">tCO₂/h</div>
             <div class="rt-label">总碳排放</div>
           </div>
           <div class="rt-item">
-            <div class="rt-value" style="color:#f5222d">0.38</div>
+            <div class="rt-value" style="color:#f87171">0.38</div>
             <div class="rt-label">C-P 协同指数</div>
           </div>
           <div class="rt-item">
-            <div class="rt-value" style="color:#1677ff">785</div>
+            <div class="rt-value" style="color:#22d3ee">785</div>
             <div class="rt-unit">°C</div>
             <div class="rt-label">燃烧室温度</div>
           </div>
           <div class="rt-item">
-            <div class="rt-value" style="color:#faad14">1200</div>
+            <div class="rt-value" style="color:#fbbf24">1200</div>
             <div class="rt-unit">Nm³/h</div>
             <div class="rt-label">天然气流量</div>
           </div>
           <div class="rt-item">
-            <div class="rt-value" style="color:#1677ff">8.3</div>
+            <div class="rt-value" style="color:#22d3ee">8.3</div>
             <div class="rt-unit">kg/万m²</div>
             <div class="rt-label">VOCs排放强度</div>
           </div>
           <div class="rt-item">
-            <div class="rt-value" style="color:#fa8c16">0.28</div>
+            <div class="rt-value" style="color:#fbbf24">0.28</div>
             <div class="rt-unit">tCO₂/万m²</div>
             <div class="rt-label">碳排强度</div>
           </div>
@@ -154,35 +172,35 @@
       
       <div class="row" style="margin-top:16px">
         <div class="col-6">
-          <div class="card">
-            <div style="font-size:15px;font-weight:600;margin-bottom:14px">📈 C-P 协同指数（近7天）</div>
+          <div class="card-dark">
+            <div class="card-title">📈 C-P 协同指数（近7天）</div>
             <div class="history-chart">
               <svg viewBox="0 0 400 180">
-                <line x1="40" y1="20" x2="40" y2="150" stroke="#f0f0f0" stroke-width="1"/>
-                <line x1="40" y1="150" x2="380" y2="150" stroke="#f0f0f0" stroke-width="1"/>
-                <line x1="40" y1="90" x2="380" y2="90" stroke="#f5222d" stroke-width="1" stroke-dasharray="6,4"/>
-                <text x="385" y="94" font-size="10" fill="#f5222d">0.5</text>
-                <polyline points="40,60 90,66 140,72 190,78 240,84 290,90 340,96" fill="none" stroke="#1677ff" stroke-width="2"/>
-                <circle cx="340" cy="96" r="4" fill="#f5222d" stroke="#fff" stroke-width="2"/>
-                <text x="40" y="168" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">5/12</text>
-                <text x="140" y="168" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">5/14</text>
-                <text x="240" y="168" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">5/16</text>
-                <text x="340" y="168" font-size="10" fill="#f5222d" text-anchor="middle" font-weight="bold">今天</text>
+                <line x1="40" y1="20" x2="40" y2="150" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+                <line x1="40" y1="150" x2="380" y2="150" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+                <line x1="40" y1="90" x2="380" y2="90" stroke="#f87171" stroke-width="1" stroke-dasharray="6,4"/>
+                <text x="385" y="94" font-size="10" fill="#f87171">0.5</text>
+                <polyline points="40,60 90,66 140,72 190,78 240,84 290,90 340,96" fill="none" stroke="#22d3ee" stroke-width="2"/>
+                <circle cx="340" cy="96" r="4" fill="#f87171" stroke="#fff" stroke-width="2"/>
+                <text x="40" y="168" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">5/12</text>
+                <text x="140" y="168" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">5/14</text>
+                <text x="240" y="168" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">5/16</text>
+                <text x="340" y="168" font-size="10" fill="#f87171" text-anchor="middle" font-weight="bold">今天</text>
               </svg>
             </div>
           </div>
         </div>
         <div class="col-6">
-          <div class="card">
-            <div style="font-size:15px;font-weight:600;margin-bottom:14px">🔥 天然气消耗（近7天）</div>
+          <div class="card-dark">
+            <div class="card-title">🔥 天然气消耗（近7天）</div>
             <div class="history-chart">
               <svg viewBox="0 0 400 180">
-                <line x1="40" y1="20" x2="40" y2="150" stroke="#f0f0f0" stroke-width="1"/>
-                <line x1="40" y1="150" x2="380" y2="150" stroke="#f0f0f0" stroke-width="1"/>
-                <polyline points="40,120 90,118 140,115 190,110 240,100 290,90 340,80" fill="none" stroke="#fa8c16" stroke-width="2"/>
-                <circle cx="340" cy="80" r="4" fill="#fa8c16" stroke="#fff" stroke-width="2"/>
-                <text x="40" y="168" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">5/12</text>
-                <text x="340" y="168" font-size="10" fill="#fa8c16" text-anchor="middle" font-weight="bold">今天</text>
+                <line x1="40" y1="20" x2="40" y2="150" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+                <line x1="40" y1="150" x2="380" y2="150" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+                <polyline points="40,120 90,118 140,115 190,110 240,100 290,90 340,80" fill="none" stroke="#fbbf24" stroke-width="2"/>
+                <circle cx="340" cy="80" r="4" fill="#fbbf24" stroke="#fff" stroke-width="2"/>
+                <text x="40" y="168" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">5/12</text>
+                <text x="340" y="168" font-size="10" fill="#fbbf24" text-anchor="middle" font-weight="bold">今天</text>
               </svg>
             </div>
           </div>
@@ -196,22 +214,22 @@
         <div class="risk-title">🚨 当前高风险项（3项）</div>
         <div class="risk-list">
           <div class="risk-item">
-            <span class="risk-level" style="background:#f5222d;color:#fff">危急</span>
+            <span class="risk-level" style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3)">危急</span>
             <span>C-P 协同指数 0.38，已连续 12h 低于 0.4，触发 paradox 风险预警</span>
           </div>
           <div class="risk-item">
-            <span class="risk-level" style="background:#f5222d;color:#fff">危急</span>
+            <span class="risk-level" style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3)">危急</span>
             <span>RTO 空烧时长占比 22%，天然气浪费严重</span>
           </div>
           <div class="risk-item">
-            <span class="risk-level" style="background:#faad14;color:#fff">警告</span>
+            <span class="risk-level" style="background:rgba(234,179,8,0.2);color:#fde047;border:1px solid rgba(234,179,8,0.3)">警告</span>
             <span>热回收效率 87%，低于 90% 警戒线</span>
           </div>
         </div>
       </div>
       
-      <div class="card">
-        <div style="font-size:15px;font-weight:600;margin-bottom:14px">📋 近30天异常事件</div>
+      <div class="card-dark">
+        <div class="card-title">📋 近30天异常事件</div>
         <div class="event-timeline">
           <div class="timeline-item red">
             <div class="timeline-date">2026-05-18 09:00</div>
@@ -254,60 +272,49 @@
     
     <!-- 历史趋势 -->
     <div class="ent-content" id="tab2">
-      <div class="card">
-        <div style="font-size:15px;font-weight:600;margin-bottom:14px">📈 近90天 VOCs / 天然气 / C-P 趋势</div>
+      <div class="card-dark">
+        <div class="card-title">📈 近90天 VOCs / 天然气 / C-P 趋势</div>
         <div class="history-chart">
           <svg viewBox="0 0 700 220">
-            <line x1="50" y1="20" x2="50" y2="180" stroke="#f0f0f0" stroke-width="1"/>
-            <line x1="50" y1="180" x2="650" y2="180" stroke="#f0f0f0" stroke-width="1"/>
-            <line x1="50" y1="100" x2="650" y2="100" stroke="#f5222d" stroke-width="1" stroke-dasharray="6,4"/>
-            <text x="655" y="104" font-size="10" fill="#f5222d">C-P 0.5</text>
-            <!-- VOCs -->
-            <polyline points="50,80 120,75 190,85 260,70 330,90 400,85 470,95 540,80 610,75 650,70" fill="none" stroke="#1677ff" stroke-width="2"/>
-            <!-- 天然气 -->
-            <polyline points="50,140 120,135 190,138 260,130 330,125 400,120 470,115 540,110 610,105 650,100" fill="none" stroke="#fa8c16" stroke-width="2"/>
-            <!-- C-P -->
-            <polyline points="50,60 120,65 190,70 260,75 330,80 400,85 470,90 540,95 610,100 650,105" fill="none" stroke="#52c41a" stroke-width="2"/>
-            
-            <text x="50" y="200" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">2月</text>
-            <text x="200" y="200" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">3月</text>
-            <text x="400" y="200" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4月</text>
-            <text x="600" y="200" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">5月</text>
-            
-            <rect x="500" y="20" width="140" height="60" rx="4" fill="#fff" stroke="#f0f0f0"/>
-            <line x1="515" y1="40" x2="545" y2="40" stroke="#1677ff" stroke-width="2"/>
-            <text x="555" y="44" font-size="11" fill="rgba(0,0,0,0.65)">VOCs排放</text>
-            <line x1="515" y1="58" x2="545" y2="58" stroke="#fa8c16" stroke-width="2"/>
-            <text x="555" y="62" font-size="11" fill="rgba(0,0,0,0.65)">天然气</text>
-            <line x1="515" y1="76" x2="545" y2="76" stroke="#52c41a" stroke-width="2"/>
-            <text x="555" y="78" font-size="11" fill="rgba(0,0,0,0.65)">C-P指数</text>
+            <line x1="50" y1="20" x2="50" y2="180" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+            <line x1="50" y1="180" x2="650" y2="180" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+            <line x1="50" y1="100" x2="650" y2="100" stroke="#f87171" stroke-width="1" stroke-dasharray="6,4"/>
+            <text x="655" y="104" font-size="10" fill="#f87171">0.5</text>
+            <polyline points="50,80 120,75 190,85 260,70 330,90 400,85 470,95 540,80 610,75 650,70" fill="none" stroke="#22d3ee" stroke-width="2"/>
+            <polyline points="50,140 120,135 190,138 260,130 330,125 400,120 470,115 540,110 610,105 650,100" fill="none" stroke="#fbbf24" stroke-width="2"/>
+            <polyline points="50,60 120,65 190,70 260,75 330,80 400,85 470,90 540,95 610,100 650,105" fill="none" stroke="#4ade80" stroke-width="2"/>
+            <text x="50" y="200" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">2月</text>
+            <text x="200" y="200" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">3月</text>
+            <text x="400" y="200" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4月</text>
+            <text x="600" y="200" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">5月</text>
+            <rect x="500" y="20" width="140" height="60" rx="4" fill="rgba(2,6,23,0.8)" stroke="rgba(34,211,238,0.15)"/>
+            <line x1="515" y1="40" x2="545" y2="40" stroke="#22d3ee" stroke-width="2"/>
+            <text x="555" y="44" font-size="11" fill="rgba(226,232,240,0.6)">VOCs排放</text>
+            <line x1="515" y1="58" x2="545" y2="58" stroke="#fbbf24" stroke-width="2"/>
+            <text x="555" y="62" font-size="11" fill="rgba(226,232,240,0.6)">天然气</text>
+            <line x1="515" y1="76" x2="545" y2="76" stroke="#4ade80" stroke-width="2"/>
+            <text x="555" y="78" font-size="11" fill="rgba(226,232,240,0.6)">C-P指数</text>
           </svg>
         </div>
       </div>
       
       <div class="row" style="margin-top:16px">
         <div class="col-4">
-          <div class="card">
-            <div style="text-align:center">
-              <div style="font-size:32px;font-weight:700;color:#f5222d">7</div>
-              <div style="font-size:13px;color:rgba(0,0,0,0.45)">近90天 Paradox 事件</div>
-            </div>
+          <div class="card-dark" style="text-align:center">
+            <div style="font-size:32px;font-weight:700;color:#f87171">7</div>
+            <div style="font-size:13px;color:rgba(226,232,240,0.4)">近90天 Paradox 事件</div>
           </div>
         </div>
         <div class="col-4">
-          <div class="card">
-            <div style="text-align:center">
-              <div style="font-size:32px;font-weight:700;color:#faad14">12.5</div>
-              <div style="font-size:13px;color:rgba(0,0,0,0.45)">平均响应时长（小时）</div>
-            </div>
+          <div class="card-dark" style="text-align:center">
+            <div style="font-size:32px;font-weight:700;color:#fbbf24">12.5</div>
+            <div style="font-size:13px;color:rgba(226,232,240,0.4)">平均响应时长（小时）</div>
           </div>
         </div>
         <div class="col-4">
-          <div class="card">
-            <div style="text-align:center">
-              <div style="font-size:32px;font-weight:700;color:#52c41a">85%</div>
-              <div style="font-size:13px;color:rgba(0,0,0,0.45)">整改闭环率</div>
-            </div>
+          <div class="card-dark" style="text-align:center">
+            <div style="font-size:32px;font-weight:700;color:#4ade80">85%</div>
+            <div style="font-size:13px;color:rgba(226,232,240,0.4)">整改闭环率</div>
           </div>
         </div>
       </div>
@@ -315,8 +322,8 @@
     
     <!-- OCR对照 -->
     <div class="ent-content" id="tab3">
-      <div class="card">
-        <div style="font-size:15px;font-weight:600;margin-bottom:14px">📄 2026年5月 月度数据 OCR 解析对照</div>
+      <div class="card-dark">
+        <div class="card-title">📄 2026年5月 月度数据 OCR 解析对照</div>
         <div class="ocr-compare">
           <div class="ocr-compare-col">
             <div class="ocr-compare-title">📄 OCR 解析结果</div>
@@ -326,7 +333,7 @@
             <div class="ocr-row"><span>RTO运行时长</span><span>520 h</span></div>
             <div class="ocr-row"><span>天然气消耗</span><span class="diff">18,500 Nm³ ?</span></div>
             <div class="ocr-row"><span>燃烧室温度</span><span>785 °C</span></div>
-            <div style="font-size:11px;color:rgba(0,0,0,0.35);margin-top:8px">置信度：92%（天然气项 67%，建议核对）</div>
+            <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px">置信度：92%（天然气项 67%，建议核对）</div>
           </div>
           <div class="ocr-compare-col">
             <div class="ocr-compare-title">✏️ 企业填报数据</div>
@@ -336,7 +343,7 @@
             <div class="ocr-row"><span>RTO运行时长</span><span class="match">520 h ✓</span></div>
             <div class="ocr-row"><span>天然气消耗</span><span class="diff">18,500 Nm³</span></div>
             <div class="ocr-row"><span>燃烧室温度</span><span class="match">785 °C ✓</span></div>
-            <div style="font-size:11px;color:rgba(0,0,0,0.35);margin-top:8px">填报时间：2026-05-18 09:15</div>
+            <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px">填报时间：2026-05-18 09:15</div>
           </div>
         </div>
       </div>

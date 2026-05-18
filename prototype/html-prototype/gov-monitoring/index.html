@@ -2,150 +2,323 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>3D GIS 污碳协同监测台 — 污碳协同AI监管平台</title>
+  <title>3D GIS 数字孪生监测台 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    body { background: #0a1628; color: #fff; font-family: "PingFang SC","Microsoft YaHei",sans-serif; margin:0; }
-    .map-wrap { min-height: 100vh; display: flex; flex-direction: column; }
-    .map-header {
-      height: 56px; background: rgba(10,22,40,0.9); border-bottom: 1px solid rgba(255,255,255,0.08);
-      display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #020617; color: #e2e8f0;
+      font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+      overflow: hidden;
     }
-    .map-title { font-size: 16px; font-weight: 600; }
-    .map-title span { color: #36cfc9; }
-    .map-nav { display: flex; gap: 8px; }
-    .map-nav a {
-      padding: 5px 12px; border-radius: 4px; font-size: 12px;
-      color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1);
-      text-decoration: none;
+    .dt-wrap { width:100vw; height:100vh; position:relative; }
+    
+    /* 顶部栏 */
+    .dt-header {
+      position:absolute; top:0; left:0; right:0; z-index:100;
+      height: 56px; background: rgba(2,6,23,0.85); backdrop-filter:blur(12px);
+      border-bottom: 1px solid rgba(56,189,248,0.15);
+      display:flex; align-items:center; justify-content:space-between; padding:0 24px;
     }
-    .map-nav a:hover, .map-nav a.active { background: rgba(22,119,255,0.2); color: #fff; border-color: #1677ff; }
-    .map-body { flex: 1; position: relative; display: flex; }
-    .map-canvas {
-      flex: 1; background: linear-gradient(180deg, #0a1628 0%, #0d2137 50%, #0a1628 100%);
-      display: flex; align-items: center; justify-content: center; position: relative;
+    .dt-header-title { font-size:16px; font-weight:600; display:flex; align-items:center; gap:10px; }
+    .dt-header-title .pulse-dot {
+      width:8px; height:8px; border-radius:50%; background:#22d3ee;
+      box-shadow:0 0 8px #22d3ee, 0 0 20px rgba(34,211,238,0.4);
+      animation: pulseDot 2s ease-in-out infinite;
     }
-    .map-canvas-text { text-align: center; color: rgba(255,255,255,0.2); font-size: 14px; }
-    .map-canvas-text .icon { font-size: 48px; margin-bottom: 12px; display: block; }
-    /* 模拟气泡 */
-    .map-bubble {
-      position: absolute; border-radius: 50%; display: flex;
-      align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
-      cursor: pointer; box-shadow: 0 0 12px rgba(0,0,0,0.3);
+    @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .dt-header-nav { display:flex; gap:8px; }
+    .dt-header-nav a {
+      padding:5px 14px; border-radius:6px; font-size:12px;
+      color:rgba(226,232,240,0.5); border:1px solid rgba(56,189,248,0.1);
+      text-decoration:none; transition:all 0.3s; background:rgba(56,189,248,0.05);
     }
-    .map-bubble::after {
-      content: attr(data-name); position: absolute; bottom: -18px;
-      white-space: nowrap; font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 400;
+    .dt-header-nav a:hover, .dt-header-nav a.active {
+      color:#22d3ee; border-color:rgba(34,211,238,0.4);
+      background:rgba(34,211,238,0.1); box-shadow:0 0 12px rgba(34,211,238,0.15);
     }
-    .map-bubble.red { background: rgba(245,34,45,0.8); border: 2px solid #ff7875; animation: pulseRed 2s infinite; }
-    .map-bubble.green { background: rgba(82,196,26,0.8); border: 2px solid #95de64; }
-    .map-bubble.yellow { background: rgba(250,173,20,0.8); border: 2px solid #ffd666; }
-    .map-bubble.gray { background: rgba(150,150,150,0.5); border: 2px solid rgba(255,255,255,0.3); }
-    @keyframes pulseRed {
-      0%,100% { box-shadow: 0 0 8px rgba(245,34,45,0.4); }
-      50% { box-shadow: 0 0 20px rgba(245,34,45,0.8); }
+    
+    /* 数字孪生画布 */
+    .dt-canvas {
+      position:absolute; top:56px; left:0; right:320px; bottom:44px;
+      background: radial-gradient(ellipse at 50% 80%, #0c4a6e 0%, #020617 60%);
+      overflow:hidden; perspective: 1200px;
     }
+    /* 网格地形 */
+    .dt-grid {
+      position:absolute; top:0; left:0; right:0; bottom:0;
+      background-image:
+        linear-gradient(rgba(34,211,238,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform: rotateX(55deg) scale(1.5);
+      transform-origin: center bottom;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove { 0%{background-position:0 0} 100%{background-position:40px 40px} }
+    /* 扫描线 */
+    .dt-scanline {
+      position:absolute; top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+      box-shadow: 0 0 20px #22d3ee, 0 0 40px rgba(34,211,238,0.3);
+      animation: scanMove 4s ease-in-out infinite;
+      opacity:0.6;
+    }
+    @keyframes scanMove { 0%,100%{top:5%} 50%{top:95%} }
+    /* 3D建筑物 */
+    .dt-building {
+      position:absolute; bottom:35%; transform-style:preserve-3d;
+      background: linear-gradient(180deg, rgba(56,189,248,0.3), rgba(56,189,248,0.05));
+      border: 1px solid rgba(56,189,248,0.3);
+      border-radius: 2px 2px 0 0;
+      box-shadow: 0 0 20px rgba(56,189,248,0.15), inset 0 0 20px rgba(56,189,248,0.1);
+    }
+    .dt-building::before {
+      content:""; position:absolute; top:0; left:0; right:0; bottom:0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 8px,
+        rgba(34,211,238,0.15) 8px, rgba(34,211,238,0.15) 9px
+      );
+    }
+    .dt-building::after {
+      content:""; position:absolute; top:-2px; left:-2px; right:-2px;
+      height:3px; background:#22d3ee; border-radius:2px;
+      box-shadow: 0 0 10px #22d3ee;
+    }
+    /* 地形起伏 */
+    .dt-terrain {
+      position:absolute; bottom:0; left:0; right:0; height:38%;
+      background: linear-gradient(180deg, transparent 0%, rgba(8,47,73,0.6) 40%, rgba(2,6,23,0.95) 100%);
+    }
+    /* 粒子 */
+    .dt-particle {
+      position:absolute; width:2px; height:2px; border-radius:50%;
+      background:#22d3ee; box-shadow:0 0 4px #22d3ee;
+      animation: particleFloat 6s ease-in-out infinite;
+    }
+    @keyframes particleFloat {
+      0%,100%{transform:translateY(0) translateX(0); opacity:0}
+      20%{opacity:1}
+      80%{opacity:1}
+      100%{transform:translateY(-200px) translateX(50px); opacity:0}
+    }
+    /* 气泡 */
+    .dt-bubble {
+      position:absolute; border-radius:50%; display:flex;
+      align-items:center; justify-content:center; font-size:10px; font-weight:700;
+      color:#fff; cursor:pointer; z-index:10;
+      box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+      animation: bubbleFloat 3s ease-in-out infinite;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .dt-bubble::after {
+      content: attr(data-name); position:absolute; bottom:-22px;
+      font-size:10px; color:rgba(226,232,240,0.6); font-weight:400;
+      white-space:nowrap; text-shadow:0 0 8px rgba(0,0,0,0.8);
+    }
+    .dt-bubble.red { background: radial-gradient(circle, rgba(239,68,68,0.8), rgba(220,38,38,0.4)); color:#fca5a5; }
+    .dt-bubble.green { background: radial-gradient(circle, rgba(34,197,94,0.8), rgba(22,163,74,0.4)); color:#86efac; }
+    .dt-bubble.yellow { background: radial-gradient(circle, rgba(234,179,8,0.8), rgba(202,138,4,0.4)); color:#fde047; }
+    .dt-bubble.gray { background: radial-gradient(circle, rgba(148,163,184,0.5), rgba(100,116,139,0.2)); color:#cbd5e1; }
+    .dt-bubble.red { animation: bubbleFloat 3s ease-in-out infinite, bubblePulse 2s ease-in-out infinite; }
+    @keyframes bubbleFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes bubblePulse { 0%,100%{box-shadow:0 0 20px #ef4444,0 0 40px rgba(239,68,68,0.3)} 50%{box-shadow:0 0 30px #ef4444,0 0 60px rgba(239,68,68,0.5)} }
     /* 飞线 */
-    .map-flyline {
-      position: absolute; height: 2px; background: linear-gradient(90deg, transparent, #f5222d, transparent);
-      transform-origin: left center; opacity: 0.6;
+    .dt-flyline {
+      position:absolute; height:2px;
+      background: linear-gradient(90deg, transparent, #ef4444, #f97316, transparent);
+      box-shadow: 0 0 10px #ef4444;
+      animation: flylinePulse 2s ease-in-out infinite;
     }
-    .map-sidebar {
-      width: 320px; background: rgba(10,22,40,0.95); border-left: 1px solid rgba(255,255,255,0.08);
-      padding: 16px; overflow-y: auto;
+    @keyframes flylinePulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+    /* 热力图网格柱 */
+    .dt-heat-col {
+      position:absolute; bottom:35%; width:24px;
+      background: linear-gradient(180deg, rgba(234,179,8,0.6), rgba(234,179,8,0.1));
+      border:1px solid rgba(234,179,8,0.4); border-radius:2px 2px 0 0;
+      transform: rotateX(55deg); transform-origin: bottom;
     }
-    .map-panel-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-    .map-legend { margin-bottom: 16px; }
-    .map-legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: rgba(255,255,255,0.6); }
-    .map-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .map-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
-    .map-stat { background: rgba(255,255,255,0.04); padding: 10px; border-radius: 6px; text-align: center; }
-    .map-stat-num { font-size: 20px; font-weight: 700; }
-    .map-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
-    .map-ent-list { max-height: 300px; overflow-y: auto; }
-    .map-ent-item {
-      display: flex; align-items: center; gap: 8px; padding: 8px;
-      border-radius: 4px; margin-bottom: 4px; cursor: pointer;
-      font-size: 12px; transition: background 0.2s;
+    
+    /* 侧边栏 */
+    .dt-sidebar {
+      position:absolute; top:56px; right:0; width:320px; bottom:44px;
+      background: rgba(2,6,23,0.9); backdrop-filter:blur(12px);
+      border-left: 1px solid rgba(56,189,248,0.1); overflow-y:auto; padding:16px;
     }
-    .map-ent-item:hover { background: rgba(255,255,255,0.06); }
-    .map-ent-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .map-ent-name { flex: 1; }
-    .map-ent-cp { font-family: monospace; }
-    .map-timebar {
-      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: rgba(10,22,40,0.9); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px; padding: 8px 20px; display: flex; align-items: center; gap: 12px;
+    .dt-sidebar::-webkit-scrollbar { width:4px }
+    .dt-sidebar::-webkit-scrollbar-thumb { background:rgba(56,189,248,0.2); border-radius:2px }
+    .dt-panel { background:rgba(56,189,248,0.05); border:1px solid rgba(56,189,248,0.1); border-radius:8px; padding:14px; margin-bottom:12px; }
+    .dt-panel-title { font-size:13px; font-weight:600; margin-bottom:10px; color:#22d3ee; display:flex; align-items:center; gap:6px; }
+    .dt-panel-title::before { content:""; display:inline-block; width:3px; height:14px; background:#22d3ee; border-radius:2px; }
+    .dt-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .dt-stat-item { text-align:center; padding:10px; background:rgba(56,189,248,0.05); border-radius:6px; border:1px solid rgba(56,189,248,0.08); }
+    .dt-stat-num { font-size:20px; font-weight:700; }
+    .dt-stat-label { font-size:10px; color:rgba(226,232,240,0.4); margin-top:2px; }
+    .dt-ent-item { display:flex; align-items:center; gap:8px; padding:8px; border-radius:6px; margin-bottom:4px; cursor:pointer; font-size:12px; transition:all 0.2s; }
+    .dt-ent-item:hover { background:rgba(56,189,248,0.1); }
+    .dt-ent-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .dt-ent-name { flex:1; }
+    .dt-ent-cp { font-family:monospace; font-size:12px; }
+    .dt-legend { display:flex; flex-wrap:wrap; gap:8px; }
+    .dt-legend-item { display:flex; align-items:center; gap:4px; font-size:11px; color:rgba(226,232,240,0.5); }
+    .dt-legend-dot { width:8px; height:8px; border-radius:50%; }
+    
+    /* 底部时间轴 */
+    .dt-timebar {
+      position:absolute; bottom:0; left:0; right:320px; height:44px;
+      background:rgba(2,6,23,0.9); border-top:1px solid rgba(56,189,248,0.1);
+      display:flex; align-items:center; padding:0 20px; gap:16px;
     }
-    .map-timebar-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(22,119,255,0.3); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .map-timebar-track { width: 300px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; position: relative; }
-    .map-timebar-thumb { position: absolute; top: -5px; left: 65%; width: 14px; height: 14px; background: #1677ff; border-radius: 50%; cursor: pointer; }
-    .map-timebar-label { font-size: 11px; color: rgba(255,255,255,0.5); min-width: 80px; text-align: center; }
+    .dt-timebar-btn { width:28px; height:28px; border-radius:50%; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.1); color:#22d3ee; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .dt-timebar-btn:hover { background:rgba(56,189,248,0.2); box-shadow:0 0 10px rgba(34,211,238,0.2); }
+    .dt-timebar-track { flex:1; height:3px; background:rgba(56,189,248,0.15); border-radius:2px; position:relative; }
+    .dt-timebar-fill { position:absolute; left:0; top:0; height:100%; width:65%; background:linear-gradient(90deg, #0ea5e9, #22d3ee); border-radius:2px; }
+    .dt-timebar-thumb { position:absolute; top:-5px; left:65%; width:14px; height:14px; background:#22d3ee; border-radius:50%; cursor:pointer; box-shadow:0 0 10px #22d3ee; }
+    .dt-timebar-label { font-size:11px; color:#22d3ee; font-family:monospace; min-width:100px; }
+    .dt-timebar-speed { display:flex; gap:4px; }
+    .dt-timebar-speed span { padding:2px 8px; border-radius:3px; font-size:10px; color:rgba(226,232,240,0.4); cursor:pointer; border:1px solid transparent; }
+    .dt-timebar-speed span.active { color:#22d3ee; border-color:rgba(34,211,238,0.3); background:rgba(34,211,238,0.1); }
+    
+    /* 角落装饰 */
+    .dt-corner { position:absolute; width:60px; height:60px; pointer-events:none; }
+    .dt-corner.tl { top:60px; left:4px; border-top:2px solid rgba(34,211,238,0.4); border-left:2px solid rgba(34,211,238,0.4); }
+    .dt-corner.tr { top:60px; right:324px; border-top:2px solid rgba(34,211,238,0.4); border-right:2px solid rgba(34,211,238,0.4); }
+    .dt-corner.bl { bottom:48px; left:4px; border-bottom:2px solid rgba(34,211,238,0.4); border-left:2px solid rgba(34,211,238,0.4); }
+    .dt-corner.br { bottom:48px; right:324px; border-bottom:2px solid rgba(34,211,238,0.4); border-right:2px solid rgba(34,211,238,0.4); }
   </style>
 </head>
 <body>
-  <div class="map-wrap">
-    <div class="map-header">
-      <div class="map-title">🗺️ <span>3D GIS</span> 污碳协同监测台</div>
-      <div class="map-nav">
+  <div class="dt-wrap">
+    <div class="dt-header">
+      <div class="dt-header-title">
+        <span class="pulse-dot"></span>
+        🌐 3D 数字孪生 · 污碳协同监测台
+      </div>
+      <div class="dt-header-nav">
         <a href="../index.html">🏠 首页</a>
         <a href="../gov-dashboard/index.html">📊 指挥大屏</a>
-        <a href="../gov-dashboard/llm-assistant.html" style="text-decoration:none">🤖 LLM助手</a>
-        <a class="active" style="text-decoration:none">🗺️ 3D监测</a>
+        <a href="../gov-dashboard/llm-assistant.html">🤖 LLM助手</a>
+        <a class="active">🌐 3D监测</a>
       </div>
     </div>
-    <div class="map-body">
-      <div class="map-canvas" id="mapCanvas">
-        <div class="map-canvas-text">
-          <span class="icon">🌐</span>
-          3D GIS 数字孪生底图占位<br>
-          <span style="font-size:12px">实际部署接入 Cesium + 卫星影像 + 建筑物白模</span>
-        </div>
-        <!-- 模拟气泡 -->
-        <div class="map-bubble red" style="width:36px;height:36px;top:35%;left:30%" data-name="蓝天工业">0.38</div>
-        <div class="map-bubble red" style="width:32px;height:32px;top:55%;left:65%" data-name="红星喷涂">0.35</div>
-        <div class="map-bubble yellow" style="width:28px;height:28px;top:25%;left:55%" data-name="鑫达汽修">0.52</div>
-        <div class="map-bubble green" style="width:30px;height:30px;top:40%;left:45%" data-name="标杆企业A">0.88</div>
-        <div class="map-bubble green" style="width:26px;height:26px;top:60%;left:35%" data-name="标杆企业B">0.82</div>
-        <div class="map-bubble yellow" style="width:24px;height:24px;top:45%;left:60%" data-name="伟达制造">0.55</div>
-        <div class="map-bubble gray" style="width:22px;height:22px;top:30%;left:70%" data-name="新达涂装">--</div>
-        <!-- 模拟飞线 -->
-        <div class="map-flyline" style="width:120px;top:40%;left:32%;transform:rotate(25deg)"></div>
-        
-        <div class="map-timebar">
-          <button class="map-timebar-btn">◀</button>
-          <span class="map-timebar-label">2026-05-18 09:00</span>
-          <div class="map-timebar-track"><div class="map-timebar-thumb"></div></div>
-          <button class="map-timebar-btn">▶</button>
+    
+    <div class="dt-canvas">
+      <div class="dt-grid"></div>
+      <div class="dt-terrain"></div>
+      <div class="dt-scanline"></div>
+      
+      <!-- 3D建筑物 -->
+      <div class="dt-building" style="left:18%;width:40px;height:80px"></div>
+      <div class="dt-building" style="left:22%;width:30px;height:120px;animation-delay:0.5s"></div>
+      <div class="dt-building" style="left:26%;width:50px;height:60px;animation-delay:1s"></div>
+      <div class="dt-building" style="left:55%;width:35px;height:100px"></div>
+      <div class="dt-building" style="left:60%;width:45px;height:70px;animation-delay:0.3s"></div>
+      <div class="dt-building" style="left:65%;width:25px;height:140px;animation-delay:0.8s"></div>
+      <div class="dt-building" style="left:72%;width:40px;height:90px"></div>
+      
+      <!-- 热力图柱 -->
+      <div class="dt-heat-col" style="left:15%;height:30px"></div>
+      <div class="dt-heat-col" style="left:20%;height:60px"></div>
+      <div class="dt-heat-col" style="left:25%;height:45px"></div>
+      <div class="dt-heat-col" style="left:58%;height:80px"></div>
+      <div class="dt-heat-col" style="left:63%;height:55px"></div>
+      <div class="dt-heat-col" style="left:70%;height:40px"></div>
+      
+      <!-- 粒子 -->
+      <div class="dt-particle" style="left:20%;bottom:50%;animation-delay:0s"></div>
+      <div class="dt-particle" style="left:35%;bottom:60%;animation-delay:1.5s"></div>
+      <div class="dt-particle" style="left:50%;bottom:45%;animation-delay:3s"></div>
+      <div class="dt-particle" style="left:70%;bottom:55%;animation-delay:4.5s"></div>
+      <div class="dt-particle" style="left:80%;bottom:40%;animation-delay:2s"></div>
+      
+      <!-- 气泡 -->
+      <div class="dt-bubble red" style="width:36px;height:36px;left:21%;bottom:58%" data-name="蓝天工业">0.38</div>
+      <div class="dt-bubble red" style="width:32px;height:32px;left:59%;bottom:62%" data-name="红星喷涂">0.35</div>
+      <div class="dt-bubble yellow" style="width:28px;height:28px;left:35%;bottom:52%" data-name="鑫达汽修">0.52</div>
+      <div class="dt-bubble green" style="width:30px;height:30px;left:48%;bottom:48%" data-name="标杆企业A">0.88</div>
+      <div class="dt-bubble green" style="width:26px;height:26px;left:73%;bottom:50%" data-name="标杆企业B">0.82</div>
+      <div class="dt-bubble yellow" style="width:24px;height:24px;left:66%;bottom:55%" data-name="伟达制造">0.55</div>
+      <div class="dt-bubble gray" style="width:22px;height:22px;left:80%;bottom:45%" data-name="新达涂装">--</div>
+      
+      <!-- 飞线 -->
+      <div class="dt-flyline" style="width:80px;left:24%;bottom:56%;transform:rotate(18deg)"></div>
+      
+      <!-- 角落 -->
+      <div class="dt-corner tl"></div>
+      <div class="dt-corner tr"></div>
+      <div class="dt-corner bl"></div>
+      <div class="dt-corner br"></div>
+    </div>
+    
+    <div class="dt-sidebar">
+      <div class="dt-panel">
+        <div class="dt-panel-title">📊 辖区概览</div>
+        <div class="dt-stat-grid">
+          <div class="dt-stat-item">
+            <div class="dt-stat-num" style="color:#4ade80">8</div>
+            <div class="dt-stat-label">双减标兵</div>
+          </div>
+          <div class="dt-stat-item">
+            <div class="dt-stat-num" style="color:#facc15">12</div>
+            <div class="dt-stat-label">关注企业</div>
+          </div>
+          <div class="dt-stat-item">
+            <div class="dt-stat-num" style="color:#f87171">3</div>
+            <div class="dt-stat-label">Paradox</div>
+          </div>
+          <div class="dt-stat-item">
+            <div class="dt-stat-num" style="color:#94a3b8">5</div>
+            <div class="dt-stat-label">数据不足</div>
+          </div>
         </div>
       </div>
-      <div class="map-sidebar">
-        <div class="map-panel-title">📊 辖区概览</div>
-        <div class="map-stats">
-          <div class="map-stat"><div class="map-stat-num" style="color:#52c41a">8</div><div class="map-stat-label">双减标兵</div></div>
-          <div class="map-stat"><div class="map-stat-num" style="color:#faad14">12</div><div class="map-stat-label">关注企业</div></div>
-          <div class="map-stat"><div class="map-stat-num" style="color:#f5222d">3</div><div class="map-stat-label">Paradox</div></div>
-          <div class="map-stat"><div class="map-stat-num" style="color:rgba(255,255,255,0.3)">5</div><div class="map-stat-label">数据不足</div></div>
+      
+      <div class="dt-panel">
+        <div class="dt-panel-title">🎨 图例</div>
+        <div class="dt-legend">
+          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div>双减标兵</div>
+          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#facc15;box-shadow:0 0 6px #facc15"></div>关注企业</div>
+          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div>Paradox</div>
+          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#94a3b8"></div>数据不足</div>
+          <div class="dt-legend-item"><span style="color:#f87171">⇢</span> 污染转移</div>
+          <div class="dt-legend-item"><span style="color:#fbbf24">▓</span> 热力网格</div>
         </div>
-        <div class="map-panel-title">🎨 图例</div>
-        <div class="map-legend">
-          <div class="map-legend-item"><div class="map-legend-dot" style="background:#52c41a"></div>🟢 双减标兵（C-P ≥ 0.8）</div>
-          <div class="map-legend-item"><div class="map-legend-dot" style="background:#faad14"></div>🟡 关注企业（0.6 ≤ C-P < 0.8）</div>
-          <div class="map-legend-item"><div class="map-legend-dot" style="background:#fa8c16"></div>🟠 协同失衡（0.4 ≤ C-P < 0.6）</div>
-          <div class="map-legend-item"><div class="map-legend-dot" style="background:#f5222d"></div>🔴 Paradox（C-P < 0.4，闪烁）</div>
-          <div class="map-legend-item"><div class="map-legend-dot" style="background:rgba(150,150,150,0.5)"></div>⚪ 数据不足</div>
-          <div class="map-legend-item"><span style="color:#f5222d">⇢</span> 红色飞线 = 跨区污染转移</div>
+      </div>
+      
+      <div class="dt-panel">
+        <div class="dt-panel-title">🔥 实时告警</div>
+        <div style="font-size:12px;line-height:2;color:rgba(226,232,240,0.6)">
+          <div style="color:#f87171">⚠️ 蓝天工业 C-P 0.38 持续12h</div>
+          <div style="color:#f87171">⚠️ 红星喷涂 C-P 0.35 减碳增污</div>
+          <div style="color:#fbbf24">🔶 鑫达汽修 C-P 0.52 协同失衡</div>
         </div>
-        <div class="map-panel-title">🏭 企业列表（按 C-P 排序）</div>
-        <div class="map-ent-list">
-          <div class="map-ent-item"><div class="map-ent-dot" style="background:#f5222d"></div><div class="map-ent-name">红星喷涂厂</div><div class="map-ent-cp" style="color:#ff7875">0.35</div></div>
-          <div class="map-ent-item"><div class="map-ent-dot" style="background:#f5222d"></div><div class="map-ent-name">蓝天工业涂装</div><div class="map-ent-cp" style="color:#ff7875">0.38</div></div>
-          <div class="map-ent-item"><div class="map-ent-dot" style="background:#fa8c16"></div><div class="map-ent-name">伟达制造</div><div class="map-ent-cp" style="color:#ffd666">0.55</div></div>
-          <div class="map-ent-item"><div class="map-ent-dot" style="background:#faad14"></div><div class="map-ent-name">鑫达汽修</div><div class="map-ent-cp" style="color:#ffd666">0.52</div></div>
-          <div class="map-ent-item"><div class="map-ent-dot" style="background:#faad14"></div><div class="map-ent-name">金辉涂装</div><div class="map-ent-cp" style="color:#ffd666">0.68</div></div>
-          <div class="map-ent-item"><div class="map-ent-dot" style="background:#52c41a"></div><div class="map-ent-name">标杆企业A</div><div class="map-ent-cp" style="color:#95de64">0.88</div></div>
-          <div class="map-ent-item"><div class="map-ent-dot" style="background:#52c41a"></div><div class="map-ent-name">标杆企业B</div><div class="map-ent-cp" style="color:#95de64">0.82</div></div>
+      </div>
+      
+      <div class="dt-panel">
+        <div class="dt-panel-title">🏭 企业列表</div>
+        <div>
+          <div class="dt-ent-item"><div class="dt-ent-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div><div class="dt-ent-name">红星喷涂厂</div><div class="dt-ent-cp" style="color:#f87171">0.35</div></div>
+          <div class="dt-ent-item"><div class="dt-ent-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div><div class="dt-ent-name">蓝天工业涂装</div><div class="dt-ent-cp" style="color:#f87171">0.38</div></div>
+          <div class="dt-ent-item"><div class="dt-ent-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24"></div><div class="dt-ent-name">伟达制造</div><div class="dt-ent-cp" style="color:#fbbf24">0.55</div></div>
+          <div class="dt-ent-item"><div class="dt-ent-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24"></div><div class="dt-ent-name">鑫达汽修</div><div class="dt-ent-cp" style="color:#fbbf24">0.52</div></div>
+          <div class="dt-ent-item"><div class="dt-ent-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div><div class="dt-ent-name">标杆企业A</div><div class="dt-ent-cp" style="color:#4ade80">0.88</div></div>
+          <div class="dt-ent-item"><div class="dt-ent-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div><div class="dt-ent-name">标杆企业B</div><div class="dt-ent-cp" style="color:#4ade80">0.82</div></div>
         </div>
+      </div>
+    </div>
+    
+    <div class="dt-timebar">
+      <button class="dt-timebar-btn">◀</button>
+      <button class="dt-timebar-btn">▶</button>
+      <span class="dt-timebar-label">2026-05-18 09:00</span>
+      <div class="dt-timebar-track">
+        <div class="dt-timebar-fill"></div>
+        <div class="dt-timebar-thumb"></div>
+      </div>
+      <div class="dt-timebar-speed">
+        <span>1x</span>
+        <span class="active">2x</span>
+        <span>4x</span>
       </div>
     </div>
   </div>

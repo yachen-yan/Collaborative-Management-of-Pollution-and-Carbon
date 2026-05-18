@@ -5,96 +5,116 @@
   <title>数据质量AI审核 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    body { background: #f0f2f5; }
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    body { background: #020617; color: #e2e8f0; }
+    .topbar { background: linear-gradient(90deg, #0c4a6e 0%, #0369a1 100%); border-bottom:1px solid rgba(34,211,238,0.2); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
-    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; color:#22d3ee; }
     .audit-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
-    .audit-card { text-align: center; padding: 20px; }
+    .audit-card {
+      text-align: center; padding: 20px;
+      background: rgba(34,211,238,0.05); border:1px solid rgba(34,211,238,0.12);
+      border-radius: 10px; backdrop-filter:blur(8px);
+      transition:all 0.3s;
+    }
+    .audit-card:hover { border-color:rgba(34,211,238,0.25); box-shadow:0 0 20px rgba(34,211,238,0.08); }
     .audit-num { font-size: 32px; font-weight: 700; }
-    .audit-label { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 6px; }
+    .audit-label { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 6px; }
     
     .audit-filters { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
     .audit-filter-btn {
-      padding: 5px 14px; border-radius: 6px; border: 1px solid #d9d9d9;
-      background: #fff; font-size: 13px; cursor: pointer;
+      padding: 6px 16px; border-radius: 6px; border: 1px solid rgba(34,211,238,0.15);
+      background: rgba(34,211,238,0.05); font-size: 13px; cursor: pointer;
+      color: rgba(226,232,240,0.6); transition:all 0.2s;
     }
-    .audit-filter-btn.active { background: #1677ff; color: #fff; border-color: #1677ff; }
-    
-    .audit-table { width: 100%; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .audit-table th, .audit-table td { padding: 12px 16px; text-align: left; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
-    .audit-table th { background: #fafafa; font-weight: 600; }
-    .audit-table tr:hover { background: #fafafa; }
-    .audit-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-    .audit-status.pass { background: #f6ffed; color: #52c41a; }
-    .audit-status.fail { background: #fff1f0; color: #f5222d; }
-    .audit-status.warn { background: #fffbe6; color: #faad14; }
-    .audit-enterprise { display: flex; align-items: center; gap: 8px; }
-    .audit-avatar { width: 28px; height: 28px; border-radius: 50%; background: #e6f4ff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .audit-filter-btn.active { background: rgba(34,211,238,0.15); color: #22d3ee; border-color: rgba(34,211,238,0.4); box-shadow:0 0 12px rgba(34,211,238,0.1); }
+    .audit-filter-btn:hover:not(.active) { border-color:rgba(34,211,238,0.3); }
     
     .rule-panel {
-      background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background: rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1);
+      border-radius: 10px; padding: 20px; margin-bottom: 16px; backdrop-filter:blur(8px);
     }
-    .rule-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+    .rule-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; color:#22d3ee; }
     .rule-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .rule-item {
-      padding: 12px; border-radius: 6px; border: 1px solid #f0f0f0; font-size: 12px;
+      padding: 14px; border-radius: 8px;
+      background: rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.08);
+      font-size: 12px; transition:all 0.2s;
     }
+    .rule-item:hover { border-color:rgba(34,211,238,0.2); }
     .rule-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .rule-item-name { font-weight: 500; font-size: 13px; }
-    .rule-item-desc { color: rgba(0,0,0,0.45); line-height: 1.5; }
-    .rule-item-count { font-size: 11px; margin-top: 6px; }
+    .rule-item-name { font-weight: 500; color:rgba(226,232,240,0.85); }
+    .rule-item-desc { color: rgba(226,232,240,0.4); line-height: 1.5; }
+    .rule-item-count { font-size: 11px; margin-top: 8px; }
+    
+    .audit-table { width: 100%; border-radius: 10px; overflow: hidden; border:1px solid rgba(34,211,238,0.1); }
+    .audit-table th, .audit-table td { padding: 12px 16px; text-align: left; font-size: 13px; border-bottom: 1px solid rgba(34,211,238,0.06); }
+    .audit-table th { background: rgba(34,211,238,0.08); font-weight: 600; color:#22d3ee; }
+    .audit-table tr { background:rgba(34,211,238,0.02); transition:all 0.2s; }
+    .audit-table tr:hover { background: rgba(34,211,238,0.06); }
+    .audit-status { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 4px; font-size: 12px; }
+    .audit-status.pass { background: rgba(34,197,94,0.1); color: #4ade80; border:1px solid rgba(34,197,94,0.2); }
+    .audit-status.fail { background: rgba(239,68,68,0.1); color: #f87171; border:1px solid rgba(239,68,68,0.2); }
+    .audit-status.warn { background: rgba(234,179,8,0.1); color: #fbbf24; border:1px solid rgba(234,179,8,0.2); }
+    .audit-enterprise { display: flex; align-items: center; gap: 8px; }
+    .audit-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(34,211,238,0.15); display: flex; align-items: center; justify-content: center; font-size: 12px; color:#22d3ee; }
     
     .detail-drawer {
-      position: fixed; top: 0; right: -480px; width: 480px; height: 100vh;
-      background: #fff; box-shadow: -4px 0 16px rgba(0,0,0,0.1); z-index: 300;
+      position: fixed; top: 0; right: -520px; width: 520px; height: 100vh;
+      background: rgba(2,6,23,0.98); backdrop-filter:blur(20px);
+      box-shadow: -4px 0 30px rgba(0,0,0,0.5); z-index: 300;
       transition: right 0.3s ease; display: flex; flex-direction: column;
+      border-left:1px solid rgba(34,211,238,0.15);
     }
     .detail-drawer.open { right: 0; }
     .detail-drawer-header {
-      padding: 20px 24px; border-bottom: 1px solid #f0f0f0;
+      padding: 20px 24px; border-bottom: 1px solid rgba(34,211,238,0.1);
       display: flex; justify-content: space-between; align-items: center;
     }
-    .detail-drawer-title { font-size: 16px; font-weight: 600; }
-    .detail-drawer-close { font-size: 20px; cursor: pointer; color: rgba(0,0,0,0.35); }
+    .detail-drawer-title { font-size: 16px; font-weight: 600; color:#22d3ee; }
+    .detail-drawer-close { font-size: 20px; cursor: pointer; color: rgba(226,232,240,0.35); transition:all 0.2s; }
+    .detail-drawer-close:hover { color:#22d3ee; }
     .detail-drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
     .detail-section { margin-bottom: 20px; }
-    .detail-section-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #1677ff; }
-    .detail-data-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
-    .detail-data-row span:first-child { color: rgba(0,0,0,0.45); }
+    .detail-section-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #22d3ee; }
+    .detail-data-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(34,211,238,0.06); font-size: 13px; }
+    .detail-data-row span:first-child { color: rgba(226,232,240,0.4); }
     .detail-data-row span:last-child { font-weight: 500; }
-    .detail-data-row .abnormal { color: #f5222d; }
+    .detail-data-row .abnormal { color: #f87171; }
     .detail-rule-result { padding: 10px 14px; border-radius: 6px; margin-bottom: 8px; font-size: 13px; }
-    .detail-rule-result.pass { background: #f6ffed; border: 1px solid #b7eb8f; }
-    .detail-rule-result.fail { background: #fff1f0; border: 1px solid #ffa39e; }
-    .detail-rule-result.warn { background: #fffbe6; border: 1px solid #ffe58f; }
+    .detail-rule-result.pass { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.15); color:#86efac; }
+    .detail-rule-result.fail { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.15); color:#fca5a5; }
+    .detail-rule-result.warn { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.15); color:#fde047; }
+    
+    .tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+    .tag-green { background: rgba(34,197,94,0.1); color: #4ade80; border:1px solid rgba(34,197,94,0.2); }
+    .tag-yellow { background: rgba(234,179,8,0.1); color: #fbbf24; border:1px solid rgba(234,179,8,0.2); }
+    .tag-red { background: rgba(239,68,68,0.1); color: #f87171; border:1px solid rgba(239,68,68,0.2); }
   </style>
 </head>
 <body>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
-    <div class="user"><span>海淀区生态环境局 · 监测数据科</span><div class="avatar">王</div><span>王监测</span></div>
+    <div class="user"><span>海淀区生态环境局 · 监测数据科</span><div class="avatar" style="background:rgba(34,211,238,0.2);color:#22d3ee">王</div><span>王监测</span></div>
   </div>
   
   <div class="main">
     <div class="page-header">🔍 数据质量 AI 审核</div>
     
     <div class="audit-summary">
-      <div class="card audit-card">
-        <div class="audit-num" style="color:#1677ff">28</div>
+      <div class="audit-card">
+        <div class="audit-num" style="color:#22d3ee">28</div>
         <div class="audit-label">待审核企业</div>
       </div>
-      <div class="card audit-card">
-        <div class="audit-num" style="color:#52c41a">18</div>
+      <div class="audit-card">
+        <div class="audit-num" style="color:#4ade80">18</div>
         <div class="audit-label">审核通过</div>
       </div>
-      <div class="card audit-card">
-        <div class="audit-num" style="color:#f5222d">6</div>
+      <div class="audit-card">
+        <div class="audit-num" style="color:#f87171">6</div>
         <div class="audit-label">退回修改</div>
       </div>
-      <div class="card audit-card">
-        <div class="audit-num" style="color:#faad14">4</div>
+      <div class="audit-card">
+        <div class="audit-num" style="color:#fbbf24">4</div>
         <div class="audit-label">待复核</div>
       </div>
     </div>
@@ -105,32 +125,32 @@
         <div class="rule-item">
           <div class="rule-item-header"><span class="rule-item-name">① 涂料用量/面积比值</span><span class="tag tag-green">通过 26</span></div>
           <div class="rule-item-desc">偏离行业均值 ±50% 标记异常</div>
-          <div class="rule-item-count" style="color:#f5222d">异常 2 家</div>
+          <div class="rule-item-count" style="color:#f87171">异常 2 家</div>
         </div>
         <div class="rule-item">
           <div class="rule-item-header"><span class="rule-item-name">② VOCs 浓度环比</span><span class="tag tag-yellow">通过 24</span></div>
           <div class="rule-item-desc">波动超过 ±30% 标记关注</div>
-          <div class="rule-item-count" style="color:#faad14">关注 4 家</div>
+          <div class="rule-item-count" style="color:#fbbf24">关注 4 家</div>
         </div>
         <div class="rule-item">
           <div class="rule-item-header"><span class="rule-item-name">③ 天然气/RTO时长比值</span><span class="tag tag-red">通过 22</span></div>
           <div class="rule-item-desc">偏离企业历史均值 ±40% 标记异常</div>
-          <div class="rule-item-count" style="color:#f5222d">异常 6 家</div>
+          <div class="rule-item-count" style="color:#f87171">异常 6 家</div>
         </div>
         <div class="rule-item">
           <div class="rule-item-header"><span class="rule-item-name">④ 逻辑一致性</span><span class="tag tag-green">通过 28</span></div>
           <div class="rule-item-desc">出口浓度必须 < 入口浓度</div>
-          <div class="rule-item-count" style="color:#52c41a">全部通过</div>
+          <div class="rule-item-count" style="color:#4ade80">全部通过</div>
         </div>
         <div class="rule-item">
           <div class="rule-item-header"><span class="rule-item-name">⑤ 温度合理性</span><span class="tag tag-green">通过 27</span></div>
           <div class="rule-item-desc">燃烧室温度应在 500-1000°C</div>
-          <div class="rule-item-count" style="color:#faad14">提示 1 家</div>
+          <div class="rule-item-count" style="color:#fbbf24">提示 1 家</div>
         </div>
         <div class="rule-item">
           <div class="rule-item-header"><span class="rule-item-name">⑥ 产量合理性</span><span class="tag tag-green">通过 26</span></div>
           <div class="rule-item-desc">喷涂面积环比变化应 < ±50%</div>
-          <div class="rule-item-count" style="color:#faad14">关注 2 家</div>
+          <div class="rule-item-count" style="color:#fbbf24">关注 2 家</div>
         </div>
       </div>
     </div>
@@ -139,9 +159,9 @@
       <button class="audit-filter-btn active">全部 28</button>
       <button class="audit-filter-btn">待审核 4</button>
       <button class="audit-filter-btn">已通过 18</button>
-      <button class="audit-filter-btn" style="color:#f5222d">已退回 6</button>
+      <button class="audit-filter-btn" style="color:#f87171;border-color:rgba(239,68,68,0.2)">已退回 6</button>
       <div style="flex:1"></div>
-      <span style="font-size:13px;color:rgba(0,0,0,0.45)">2026年5月 月度数据</span>
+      <span style="font-size:13px;color:rgba(226,232,240,0.4)">2026年5月 月度数据</span>
     </div>
     
     <table class="audit-table">
@@ -162,7 +182,7 @@
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status fail">退回</span></td>
-        <td><a href="#" style="color:#1677ff;font-size:12px" onclick="openDetail()">查看</a></td>
+        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
       </tr>
       <tr>
         <td><div class="audit-enterprise"><div class="audit-avatar">红</div>红星喷涂厂</div></td>
@@ -174,7 +194,7 @@
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status pass">通过</span></td>
-        <td><a href="#" style="color:#1677ff;font-size:12px" onclick="openDetail()">查看</a></td>
+        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
       </tr>
       <tr>
         <td><div class="audit-enterprise"><div class="audit-avatar">鑫</div>鑫达汽修</div></td>
@@ -186,7 +206,7 @@
         <td><span class="audit-status warn">!</span></td>
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status pass">通过</span></td>
-        <td><a href="#" style="color:#1677ff;font-size:12px" onclick="openDetail()">查看</a></td>
+        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
       </tr>
       <tr>
         <td><div class="audit-enterprise"><div class="audit-avatar">金</div>金辉涂装</div></td>
@@ -198,7 +218,7 @@
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status pass">通过</span></td>
-        <td><a href="#" style="color:#1677ff;font-size:12px" onclick="openDetail()">查看</a></td>
+        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
       </tr>
       <tr>
         <td><div class="audit-enterprise"><div class="audit-avatar">伟</div>伟达制造</div></td>
@@ -210,12 +230,11 @@
         <td><span class="audit-status pass">✓</span></td>
         <td><span class="audit-status warn">!</span></td>
         <td><span class="audit-status warn">通过</span></td>
-        <td><a href="#" style="color:#1677ff;font-size:12px" onclick="openDetail()">查看</a></td>
+        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
       </tr>
     </table>
   </div>
   
-  <!-- 详情抽屉 -->
   <div class="detail-drawer" id="detailDrawer">
     <div class="detail-drawer-header">
       <span class="detail-drawer-title">🔍 蓝天工业涂装 — 审核详情</span>
@@ -230,7 +249,6 @@
         <div class="detail-data-row"><span>提交时间</span><span>2026-05-18 09:15</span></div>
         <div class="detail-data-row"><span>报告月份</span><span>2026年5月</span></div>
       </div>
-      
       <div class="detail-section">
         <div class="detail-section-title">📊 关键数据</div>
         <div class="detail-data-row"><span>溶剂型涂料</span><span>1,250 kg</span></div>
@@ -239,7 +257,6 @@
         <div class="detail-data-row"><span>天然气消耗</span><span class="abnormal">18,500 Nm³ ↑42%</span></div>
         <div class="detail-data-row"><span>喷涂面积</span><span>1.5 万m²</span></div>
       </div>
-      
       <div class="detail-section">
         <div class="detail-section-title">🔍 6条规则校验结果</div>
         <div class="detail-rule-result pass">✅ 规则① 涂料用量/面积比值 — 正常（偏差 +12%）</div>
@@ -249,16 +266,14 @@
         <div class="detail-rule-result pass">✅ 规则⑤ 温度合理性 — 通过（785°C 在 500-1000°C 范围内）</div>
         <div class="detail-rule-result pass">✅ 规则⑥ 产量合理性 — 通过（面积环比 +8%，在 ±50% 范围内）</div>
       </div>
-      
       <div class="detail-section">
         <div class="detail-section-title">🤖 AI 审核意见</div>
-        <div style="padding:12px;background:#fffbe6;border-radius:6px;font-size:13px;line-height:1.8;border:1px solid #ffe58f">
+        <div style="padding:12px;background:rgba(234,179,8,0.06);border-radius:6px;font-size:13px;line-height:1.8;border:1px solid rgba(234,179,8,0.15);color:#fde047">
           天然气/RTO时长比值偏离企业历史均值 <strong>+42%</strong>，触发规则③异常阈值（±40%）。结合实时双算数据，该企业 RTO 空烧时长占比达 22%，建议退回企业核实天然气消耗数据并说明异常原因。
         </div>
       </div>
-      
       <div style="display:flex;gap:10px;margin-top:20px">
-        <button class="btn btn-default" style="flex:1">📋 查看原始报表</button>
+        <button class="btn btn-default" style="flex:1;background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.2);color:#22d3ee">📋 查看原始报表</button>
         <button class="btn btn-danger" style="flex:1">↩️ 退回修改</button>
         <button class="btn btn-primary" style="flex:1">✅ 强制通过</button>
       </div>
