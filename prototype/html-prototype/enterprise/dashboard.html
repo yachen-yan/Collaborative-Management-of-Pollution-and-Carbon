@@ -16,11 +16,11 @@
     .sidebar-item:hover { background:rgba(34,211,238,0.06); color:#22d3ee; }
     .sidebar-item.active { background:rgba(34,211,238,0.1); color:#22d3ee; border-left-color:#22d3ee; }
     .main { margin-left:200px; margin-top:64px; padding:20px; min-height:calc(100vh - 64px); }
-    .dash-welcome { font-size:16px; font-weight:600; margin-bottom:16px; color:#e2e8f0; }
+    .dash-welcome { font-size:16px; font-weight:600; margin-bottom:16px; color:#e2e8f0; opacity:0; animation:fadeIn 0.6s ease-out 0.1s forwards; }
     .dash-welcome span { color:#22d3ee; }
     .dash-welcome .date { font-size:12px; color:rgba(226,232,240,0.35); font-weight:400; margin-left:10px; }
-    .card-dark { background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:18px; backdrop-filter:blur(8px); transition:all 0.3s; }
-    .card-dark:hover { border-color:rgba(34,211,238,0.2); box-shadow:0 0 20px rgba(34,211,238,0.06); }
+    .card-dark { background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:18px; backdrop-filter:blur(8px); transition:all 0.3s ease; opacity:0; animation:cardEnter 0.5s ease-out forwards; }
+    .card-dark:hover { border-color:rgba(34,211,238,0.2); box-shadow:0 0 20px rgba(34,211,238,0.06); transform:translateY(-2px); }
     .card-title { font-size:14px; font-weight:600; margin-bottom:14px; color:#22d3ee; display:flex; align-items:center; gap:8px; }
     .row { display:flex; gap:14px; margin-bottom:14px; flex-wrap:wrap; }
     .col-4 { flex:0 0 calc(33.333% - 9px); }
@@ -30,13 +30,13 @@
     .col-12 { flex:0 0 100%; }
     .score-card { display:flex; align-items:center; gap:24px; }
     .score-left { text-align:center; min-width:120px; }
-    .score-big { font-size:44px; font-weight:700; line-height:1; }
+    .score-big { font-size:44px; font-weight:700; line-height:1; transition:all 0.3s; }
     .score-level-tag { display:inline-block; margin-top:6px; padding:2px 12px; border-radius:12px; font-size:12px; font-weight:500; }
     .score-details { flex:1; }
     .score-detail-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
     .score-detail-label { width:60px; font-size:12px; color:rgba(226,232,240,0.4); }
     .score-detail-bar { flex:1; height:6px; background:rgba(34,211,238,0.08); border-radius:3px; overflow:hidden; }
-    .score-detail-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+    .score-detail-fill { height:100%; border-radius:3px; width:0; transition:width 1.2s cubic-bezier(0.22,1,0.36,1); }
     .score-detail-value { width:36px; text-align:right; font-size:13px; font-weight:600; }
     .trend-chart { height:180px; position:relative; }
     .trend-chart svg { width:100%; height:100%; }
@@ -50,7 +50,7 @@
     .bubble { position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:#fff; cursor:pointer; transition:transform 0.3s; box-shadow:0 0 12px currentColor; }
     .bubble:hover { transform:scale(1.15); }
     .bubble::after { content:attr(data-label); position:absolute; bottom:-16px; font-size:10px; color:rgba(226,232,240,0.4); white-space:nowrap; }
-    .alert-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:6px; margin-bottom:6px; cursor:pointer; transition:all 0.2s; background:rgba(34,211,238,0.03); border:1px solid rgba(34,211,238,0.06); }
+    .alert-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:6px; margin-bottom:6px; cursor:pointer; transition:all 0.2s; background:rgba(34,211,238,0.03); border:1px solid rgba(34,211,238,0.06); opacity:0; animation:cardEnter 0.4s ease-out forwards; }
     .alert-item:hover { background:rgba(34,211,238,0.06); border-color:rgba(34,211,238,0.12); }
     .alert-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; }
     .alert-icon.red { background:rgba(239,68,68,0.15); }
@@ -60,33 +60,51 @@
     .alert-title { font-size:12px; font-weight:500; color:rgba(226,232,240,0.8); }
     .alert-desc { font-size:11px; color:rgba(226,232,240,0.35); margin-top:1px; }
     .alert-time { font-size:11px; color:rgba(226,232,240,0.25); white-space:nowrap; }
-    .quick-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(34,211,238,0.03); border-radius:8px; cursor:pointer; border:1px solid rgba(34,211,238,0.08); transition:all 0.2s; }
-    .quick-item:hover { border-color:rgba(34,211,238,0.2); transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
-    .quick-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+    .quick-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(34,211,238,0.03); border-radius:8px; cursor:pointer; border:1px solid rgba(34,211,238,0.08); transition:all 0.3s ease; opacity:0; animation:cardEnter 0.4s ease-out forwards; }
+    .quick-item:hover { border-color:rgba(34,211,238,0.25); transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.3), 0 0 12px rgba(34,211,238,0.06); }
+    .quick-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; transition:transform 0.3s; }
+    .quick-item:hover .quick-icon { transform:scale(1.1); }
     .quick-title { font-size:12px; font-weight:500; color:rgba(226,232,240,0.8); }
     .quick-desc { font-size:11px; color:rgba(226,232,240,0.35); margin-top:1px; }
-    .todo-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:6px; border-left:2px solid rgba(34,211,238,0.15); margin-bottom:6px; background:rgba(34,211,238,0.02); cursor:pointer; transition:all 0.2s; }
+    .todo-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:6px; border-left:2px solid rgba(34,211,238,0.15); margin-bottom:6px; background:rgba(34,211,238,0.02); cursor:pointer; transition:all 0.2s; opacity:0; animation:cardEnter 0.4s ease-out forwards; }
     .todo-item:hover { background:rgba(34,211,238,0.05); border-left-color:#22d3ee; }
     .todo-item.urgent { border-left-color:rgba(239,68,68,0.5); background:rgba(239,68,68,0.04); }
     .todo-item.urgent:hover { background:rgba(239,68,68,0.08); }
-    .todo-check { width:14px; height:14px; border-radius:50%; border:2px solid rgba(34,211,238,0.2); flex-shrink:0; }
+    .todo-check { width:14px; height:14px; border-radius:50%; border:2px solid rgba(34,211,238,0.2); flex-shrink:0; transition:all 0.2s; }
+    .todo-item:hover .todo-check { border-color:#22d3ee; background:rgba(34,211,238,0.1); }
     .todo-item.urgent .todo-check { border-color:rgba(239,68,68,0.4); }
     .todo-text { flex:1; font-size:12px; color:rgba(226,232,240,0.7); }
     .todo-deadline { font-size:10px; color:rgba(226,232,240,0.3); white-space:nowrap; }
     .todo-deadline.urgent { color:#f87171; }
     .rt-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-    .rt-item { text-align:center; padding:12px; background:rgba(34,211,238,0.03); border-radius:6px; border:1px solid rgba(34,211,238,0.06); transition:all 0.2s; }
-    .rt-item:hover { border-color:rgba(34,211,238,0.15); transform:translateY(-2px); }
-    .rt-value { font-size:20px; font-weight:700; }
+    .rt-item { text-align:center; padding:12px; background:rgba(34,211,238,0.03); border-radius:6px; border:1px solid rgba(34,211,238,0.06); transition:all 0.3s ease; cursor:pointer; opacity:0; animation:cardEnter 0.4s ease-out forwards; }
+    .rt-item:hover { border-color:rgba(34,211,238,0.2); transform:translateY(-3px); box-shadow:0 4px 16px rgba(0,0,0,0.2), 0 0 12px rgba(34,211,238,0.05); }
+    .rt-value { font-size:20px; font-weight:700; transition:all 0.3s; }
+    .rt-item:hover .rt-value { transform:scale(1.1); }
     .rt-label { font-size:11px; color:rgba(226,232,240,0.35); margin-top:3px; }
     .rt-unit { font-size:10px; color:rgba(226,232,240,0.2); }
     .tag-neon { display:inline-flex; align-items:center; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:500; }
     .tag-neon-red { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
     .tag-neon-yellow { background:rgba(234,179,8,0.1); color:#fbbf24; border:1px solid rgba(234,179,8,0.2); }
     .tag-neon-blue { background:rgba(14,165,233,0.1); color:#7dd3fc; border:1px solid rgba(14,165,233,0.2); }
+    .tag-neon-green { background:rgba(34,197,94,0.1); color:#4ade80; border:1px solid rgba(34,197,94,0.2); }
+
+    /* 进度条shimmer效果 */
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .score-detail-fill.animated {
+      background-size: 200% 100%;
+      background-image: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      animation: shimmer 2s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
+  <!-- 加载动画 -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">INITIALIZING SYSTEM</div>
+  </div>
+
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
@@ -103,44 +121,53 @@
     <div class="dash-welcome">欢迎回来，<span>张环保</span><span class="date">今天是 2026年5月18日 星期一</span></div>
     <div class="row">
       <div class="col-4">
-        <div class="card-dark">
+        <div class="card-dark" style="animation-delay:0.05s">
           <div class="card-title">🎯 污碳协同健康评分</div>
           <div class="score-card">
             <div class="score-left">
-              <div class="score-big" style="color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.3)">68</div>
+              <div class="score-big" style="color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.3)" data-target="68" data-suffix="">0</div>
               <div class="score-level-tag" style="background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.2)">一般</div>
               <div style="font-size:11px;color:rgba(226,232,240,0.25);margin-top:6px">上次更新：09:00</div>
             </div>
             <div class="score-details">
-              <div class="score-detail-row"><span class="score-detail-label">污染分</span><div class="score-detail-bar"><div class="score-detail-fill" style="width:82%;background:linear-gradient(90deg,#4ade80,#22c55e)"></div></div><span class="score-detail-value" style="color:#4ade80">82</span></div>
-              <div class="score-detail-row"><span class="score-detail-label">能效分</span><div class="score-detail-bar"><div class="score-detail-fill" style="width:65%;background:linear-gradient(90deg,#fbbf24,#d97706)"></div></div><span class="score-detail-value" style="color:#fbbf24">65</span></div>
-              <div class="score-detail-row"><span class="score-detail-label">碳排分</span><div class="score-detail-bar"><div class="score-detail-fill" style="width:58%;background:linear-gradient(90deg,#f97316,#ea580c)"></div></div><span class="score-detail-value" style="color:#f97316">58</span></div>
-              <div class="score-detail-row"><span class="score-detail-label">协同分</span><div class="score-detail-bar"><div class="score-detail-fill" style="width:52%;background:linear-gradient(90deg,#ef4444,#dc2626)"></div></div><span class="score-detail-value" style="color:#ef4444">52</span></div>
+              <div class="score-detail-row"><span class="score-detail-label">污染分</span><div class="score-detail-bar"><div class="score-detail-fill animated" style="width:0%;background:linear-gradient(90deg,#4ade80,#22c55e)" data-width="82"></div></div><span class="score-detail-value" style="color:#4ade80" data-target="82">0</span></div>
+              <div class="score-detail-row"><span class="score-detail-label">能效分</span><div class="score-detail-bar"><div class="score-detail-fill animated" style="width:0%;background:linear-gradient(90deg,#fbbf24,#d97706)" data-width="65"></div></div><span class="score-detail-value" style="color:#fbbf24" data-target="65">0</span></div>
+              <div class="score-detail-row"><span class="score-detail-label">碳排分</span><div class="score-detail-bar"><div class="score-detail-fill animated" style="width:0%;background:linear-gradient(90deg,#f97316,#ea580c)" data-width="58"></div></div><span class="score-detail-value" style="color:#f97316" data-target="58">0</span></div>
+              <div class="score-detail-row"><span class="score-detail-label">协同分</span><div class="score-detail-bar"><div class="score-detail-fill animated" style="width:0%;background:linear-gradient(90deg,#ef4444,#dc2626)" data-width="52"></div></div><span class="score-detail-value" style="color:#ef4444" data-target="52">0</span></div>
             </div>
           </div>
         </div>
       </div>
       <div class="col-8">
-        <div class="card-dark">
+        <div class="card-dark" style="animation-delay:0.12s">
           <div class="card-title" style="display:flex;justify-content:space-between">
             <span>📈 C-P 协同指数趋势（近7天）</span>
             <span class="tag-neon tag-neon-red">当前 0.38 极差</span>
           </div>
           <div class="trend-chart">
             <svg viewBox="0 0 600 180" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(14,165,233,0.15)"/>
+                  <stop offset="100%" stop-color="rgba(14,165,233,0.01)"/>
+                </linearGradient>
+              </defs>
               <line x1="45" y1="20" x2="45" y2="150" stroke="rgba(34,211,238,0.08)" stroke-width="1"/>
               <line x1="45" y1="150" x2="580" y2="150" stroke="rgba(34,211,238,0.08)" stroke-width="1"/>
               <line x1="45" y1="80" x2="580" y2="80" stroke="#ef4444" stroke-width="1" stroke-dasharray="6,4"/>
               <text x="585" y="84" font-size="10" fill="#ef4444">阈值 0.5</text>
-              <polygon points="45,150 95,134 145,126 195,118 245,110 295,102 345,94 530,150" fill="rgba(14,165,233,0.06)"/>
-              <polyline points="45,102 95,90 145,84 195,78 245,72 295,66 345,60" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+              <polygon points="45,102 95,90 145,84 195,78 245,72 295,66 345,60 345,150 45,150" fill="url(#areaGrad)"/>
+              <polyline points="45,102 95,90 145,84 195,78 245,72 295,66 345,60" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="45" cy="102" r="3" fill="#020617" stroke="#22d3ee" stroke-width="2"/>
               <circle cx="95" cy="90" r="3" fill="#020617" stroke="#22d3ee" stroke-width="2"/>
               <circle cx="145" cy="84" r="3" fill="#020617" stroke="#22d3ee" stroke-width="2"/>
               <circle cx="195" cy="78" r="3" fill="#020617" stroke="#22d3ee" stroke-width="2"/>
               <circle cx="245" cy="72" r="3" fill="#020617" stroke="#22d3ee" stroke-width="2"/>
               <circle cx="295" cy="66" r="3" fill="#020617" stroke="#22d3ee" stroke-width="2"/>
-              <circle cx="345" cy="60" r="4" fill="#ef4444" stroke="#fff" stroke-width="2"/>
+              <circle cx="345" cy="60" r="5" fill="#ef4444" stroke="#fff" stroke-width="2">
+                <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+              </circle>
               <text x="45" y="168" text-anchor="middle" font-size="10" fill="rgba(226,232,240,0.25)">05-12</text>
               <text x="145" y="168" text-anchor="middle" font-size="10" fill="rgba(226,232,240,0.25)">05-14</text>
               <text x="245" y="168" text-anchor="middle" font-size="10" fill="rgba(226,232,240,0.25)">05-16</text>
@@ -152,7 +179,7 @@
     </div>
     <div class="row">
       <div class="col-6">
-        <div class="card-dark">
+        <div class="card-dark" style="animation-delay:0.19s">
           <div class="card-title" style="display:flex;justify-content:space-between"><span>🫧 污碳协同四象限图</span><span style="font-size:11px;color:rgba(226,232,240,0.3)">横轴：碳排强度 / 纵轴：VOCs去除效率</span></div>
           <div class="quadrant-wrap" id="quadrantWrap">
             <div class="quadrant-bg"></div>
@@ -167,7 +194,7 @@
         </div>
       </div>
       <div class="col-6">
-        <div class="card-dark">
+        <div class="card-dark" style="animation-delay:0.26s">
           <div class="card-title" style="display:flex;justify-content:space-between"><span>🔔 预警通知</span><a href="alerts.html" style="font-size:12px;color:#22d3ee">查看全部 →</a></div>
           <div class="alert-list" id="alertList"></div>
         </div>
@@ -175,13 +202,13 @@
     </div>
     <div class="row">
       <div class="col-6">
-        <div class="card-dark">
+        <div class="card-dark" style="animation-delay:0.33s">
           <div class="card-title">⚡ 快捷入口</div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px" id="quickGrid"></div>
         </div>
       </div>
       <div class="col-6">
-        <div class="card-dark">
+        <div class="card-dark" style="animation-delay:0.40s">
           <div class="card-title">📝 待办任务</div>
           <div id="todoList"></div>
         </div>
@@ -189,17 +216,17 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <div class="card-dark">
+        <div class="card-dark" style="animation-delay:0.47s">
           <div class="card-title">📊 实时双算指标速览（09:00）</div>
           <div class="rt-grid">
-            <div class="rt-item"><div class="rt-value" style="color:#22d3ee">12.5</div><div class="rt-unit">kg/h</div><div class="rt-label">VOCs排放速率</div></div>
-            <div class="rt-item"><div class="rt-value" style="color:#4ade80">94.2%</div><div class="rt-label">VOCs去除效率</div></div>
-            <div class="rt-item"><div class="rt-value" style="color:#f97316">0.42</div><div class="rt-unit">tCO₂/h</div><div class="rt-label">总碳排放</div></div>
-            <div class="rt-item"><div class="rt-value" style="color:#ef4444">0.38</div><div class="rt-label">C-P 协同指数</div></div>
-            <div class="rt-item"><div class="rt-value" style="color:#22d3ee">785</div><div class="rt-unit">°C</div><div class="rt-label">燃烧室温度</div></div>
-            <div class="rt-item"><div class="rt-value" style="color:#fbbf24">1200</div><div class="rt-unit">Nm³/h</div><div class="rt-label">天然气流量</div></div>
-            <div class="rt-item"><div class="rt-value" style="color:#22d3ee">8.3</div><div class="rt-unit">kg/万m²</div><div class="rt-label">VOCs排放强度</div></div>
-            <div class="rt-item"><div class="rt-value" style="color:#f97316">0.28</div><div class="rt-unit">tCO₂/万m²</div><div class="rt-label">碳排强度</div></div>
+            <div class="rt-item" style="animation-delay:0.50s"><div class="rt-value" style="color:#22d3ee" data-target="12.5" data-suffix="">0</div><div class="rt-unit">kg/h</div><div class="rt-label">VOCs排放速率</div></div>
+            <div class="rt-item" style="animation-delay:0.55s"><div class="rt-value" style="color:#4ade80" data-target="94.2" data-suffix="%">0%</div><div class="rt-label">VOCs去除效率</div></div>
+            <div class="rt-item" style="animation-delay:0.60s"><div class="rt-value" style="color:#f97316" data-target="0.42" data-suffix="">0</div><div class="rt-unit">tCO₂/h</div><div class="rt-label">总碳排放</div></div>
+            <div class="rt-item" style="animation-delay:0.65s"><div class="rt-value" style="color:#ef4444" data-target="0.38" data-suffix="">0</div><div class="rt-label">C-P 协同指数</div></div>
+            <div class="rt-item" style="animation-delay:0.70s"><div class="rt-value" style="color:#22d3ee" data-target="785" data-suffix="">0</div><div class="rt-unit">°C</div><div class="rt-label">燃烧室温度</div></div>
+            <div class="rt-item" style="animation-delay:0.75s"><div class="rt-value" style="color:#fbbf24" data-target="1200" data-suffix="">0</div><div class="rt-unit">Nm³/h</div><div class="rt-label">天然气流量</div></div>
+            <div class="rt-item" style="animation-delay:0.80s"><div class="rt-value" style="color:#22d3ee" data-target="8.3" data-suffix="">0</div><div class="rt-unit">kg/万m²</div><div class="rt-label">VOCs排放强度</div></div>
+            <div class="rt-item" style="animation-delay:0.85s"><div class="rt-value" style="color:#f97316" data-target="0.28" data-suffix="">0</div><div class="rt-unit">tCO₂/万m²</div><div class="rt-label">碳排强度</div></div>
           </div>
         </div>
       </div>
@@ -207,6 +234,49 @@
     <div style="height:30px"></div>
   </div>
   <script>
+    // 数字滚动动画
+    function animateNumber(el, target, duration, suffix) {
+      const start = performance.now();
+      const from = 0;
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        const val = from + (target - from) * ease;
+        if (Number.isInteger(target)) {
+          el.textContent = Math.round(val) + suffix;
+        } else {
+          el.textContent = val.toFixed(target < 1 ? 2 : 1) + suffix;
+        }
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // 进度条动画
+    function animateBars() {
+      document.querySelectorAll('.score-detail-fill[data-width]').forEach(bar => {
+        setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, 400);
+      });
+    }
+
+    // 页面加载完成后执行动画
+    window.addEventListener('load', () => {
+      // 隐藏 loader
+      setTimeout(() => {
+        document.getElementById('pageLoader').classList.add('done');
+      }, 600);
+
+      // 数字动画
+      setTimeout(() => {
+        document.querySelectorAll('[data-target]').forEach(el => {
+          const target = parseFloat(el.dataset.target);
+          const suffix = el.dataset.suffix || '';
+          animateNumber(el, target, 1200, suffix);
+        });
+        animateBars();
+      }, 300);
+    });
+
     const qw = document.getElementById('quadrantWrap');
     MOCK_DATA.quadrantBubbles.forEach(b => {
       const el = document.createElement('div');
@@ -224,25 +294,28 @@
       qw.appendChild(el);
     });
     const al = document.getElementById('alertList');
-    MOCK_DATA.alerts.slice(0,4).forEach(a => {
+    MOCK_DATA.alerts.slice(0,4).forEach((a, i) => {
       const iconMap = { paradox: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
       const cls = a.level === 'critical' ? 'red' : a.level === 'warning' ? 'yellow' : 'orange';
       const div = document.createElement('div');
       div.className = 'alert-item';
+      div.style.animationDelay = (0.3 + i * 0.06) + 's';
       div.innerHTML = `<div class="alert-icon ${cls}">${iconMap[a.type] || '🔔'}</div><div class="alert-content"><div class="alert-title">${a.title}${!a.read ? '<span style="color:#ef4444;font-size:9px;margin-left:6px">●</span>' : ''}</div><div class="alert-desc">${a.desc}</div></div><div class="alert-time">${a.time}</div>`;
       al.appendChild(div);
     });
     const qg = document.getElementById('quickGrid');
-    MOCK_DATA.quickLinks.forEach(q => {
+    MOCK_DATA.quickLinks.forEach((q, i) => {
       const div = document.createElement('div');
       div.className = 'quick-item';
+      div.style.animationDelay = (0.35 + i * 0.06) + 's';
       div.innerHTML = `<div class="quick-icon" style="background:${q.bg};color:${q.color}">${q.icon}</div><div><div class="quick-title">${q.title}</div><div class="quick-desc">${q.desc}</div></div>`;
       qg.appendChild(div);
     });
     const tl = document.getElementById('todoList');
-    MOCK_DATA.todos.forEach(t => {
+    MOCK_DATA.todos.forEach((t, i) => {
       const div = document.createElement('div');
       div.className = 'todo-item' + (t.urgent ? ' urgent' : '');
+      div.style.animationDelay = (0.4 + i * 0.06) + 's';
       div.innerHTML = `<div class="todo-check"></div><div class="todo-text">${t.title}</div><div class="todo-deadline${t.urgent ? ' urgent' : ''}">${t.urgent ? '⚠️ ' : ''}截止 ${t.deadline}</div>`;
       tl.appendChild(div);
     });

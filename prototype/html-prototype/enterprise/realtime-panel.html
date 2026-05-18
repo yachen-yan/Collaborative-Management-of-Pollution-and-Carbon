@@ -62,11 +62,12 @@
     .status-name { font-size: 13px; color: rgba(226,232,240,0.4); }
     .status-value { font-size: 18px; font-weight: 600; margin-top: 4px; }
     .status-item.normal { background: #f6ffed; border-color: #b7eb8f; }
-    .status-item.warn { background: #fffbe6; border-color: #ffe58f; }
-    .status-item.danger { background: #fff1f0; border-color: #ffa39e; }
+    .status-item.warn { background: rgba(234,179,8,0.08); border-color: rgba(234,179,8,0.3); }
+    .status-item.danger { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
@@ -208,7 +209,7 @@
               <span class="compare-value">92%</span>
             </div>
           </div>
-          <div style="margin-top:12px;padding:10px;background:#fffbe6;border-radius:6px;font-size:12px;color:#d48806">
+          <div style="margin-top:12px;padding:10px;background:#fffbe6;border-radius:6px;font-size:12px;color:#fbbf24">
             📌 你的 C-P 协同指数低于区域均值 38%，建议立即排查 RTO 运行参数
           </div>
         </div>
@@ -248,7 +249,7 @@
               <div class="status-value" style="color:#f5222d">是</div>
             </div>
           </div>
-          <div style="margin-top:12px;padding:10px;background:#fff1f0;border-radius:6px;font-size:12px;color:#cf1322">
+          <div style="margin-top:12px;padding:10px;background:#fff1f0;border-radius:6px;font-size:12px;color:#f87171">
             🚨 检测到 RTO 空烧：入口 VOCs 浓度 485 mg/m³，天然气流量 1200 Nm³/h，空烧时长占比 22%
           </div>
         </div>

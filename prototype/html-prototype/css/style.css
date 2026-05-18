@@ -212,7 +212,89 @@ a { text-decoration: none; color: inherit; }
 .quick-title { font-size: 14px; font-weight: 500; }
 .quick-desc { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
 
-/* ========== 动画 ========== */
+/* ========== 自定义滚动条（暗色科技风） ========== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(2,6,23,0.5); }
+::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(34,211,238,0.4); }
+
+/* ========== 页面加载动画 ========== */
+.page-loader {
+  position: fixed; inset: 0; background: #020617; z-index: 9999;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+.page-loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-ring {
+  width: 56px; height: 56px; border-radius: 50%;
+  border: 3px solid rgba(34,211,238,0.1); border-top-color: #22d3ee;
+  animation: loaderSpin 1s linear infinite;
+}
+.loader-text {
+  margin-top: 16px; font-size: 13px; color: rgba(226,232,240,0.4);
+  letter-spacing: 2px;
+}
+@keyframes loaderSpin { to { transform: rotate(360deg); } }
+
+/* ========== 数字计数动画 ========== */
+@keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.count-animate { animation: countUp 0.6s ease-out forwards; }
+
+/* ========== 卡片 staggered 入场 ========== */
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.card-enter { animation: cardEnter 0.5s ease-out forwards; opacity: 0; }
+.card-enter:nth-child(1) { animation-delay: 0.05s; }
+.card-enter:nth-child(2) { animation-delay: 0.12s; }
+.card-enter:nth-child(3) { animation-delay: 0.19s; }
+.card-enter:nth-child(4) { animation-delay: 0.26s; }
+.card-enter:nth-child(5) { animation-delay: 0.33s; }
+.card-enter:nth-child(6) { animation-delay: 0.40s; }
+
+/* ========== 脉冲霓虹 ========== */
+@keyframes neonPulse {
+  0%,100% { box-shadow: 0 0 8px currentColor; }
+  50% { box-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
+}
+.neon-pulse { animation: neonPulse 2s ease-in-out infinite; }
+
+/* ========== 扫描线动效 ========== */
+@keyframes scanLine {
+  0% { top: -2px; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.scan-line {
+  position: relative; overflow: hidden;
+}
+.scan-line::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+  animation: scanLine 3s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+/* ========== 悬浮光晕 ========== */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+.hover-glow:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px rgba(34,211,238,0.08);
+  border-color: rgba(34,211,238,0.25);
+}
+
+/* ========== 呼吸灯 ========== */
+@keyframes breathe {
+  0%,100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.breathe { animation: breathe 2s ease-in-out infinite; }
+
+/* ========== 旧动画兼容 ========== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>数据质量AI审核 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/data.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
     .topbar { background: linear-gradient(90deg, #0c4a6e 0%, #0369a1 100%); border-bottom:1px solid rgba(34,211,238,0.2); }
@@ -102,19 +103,19 @@
     
     <div class="audit-summary">
       <div class="audit-card">
-        <div class="audit-num" style="color:#22d3ee">28</div>
+        <div class="audit-num" style="color:#22d3ee" id="statTotal">28</div>
         <div class="audit-label">待审核企业</div>
       </div>
       <div class="audit-card">
-        <div class="audit-num" style="color:#4ade80">18</div>
+        <div class="audit-num" style="color:#4ade80" id="statPass">18</div>
         <div class="audit-label">审核通过</div>
       </div>
       <div class="audit-card">
-        <div class="audit-num" style="color:#f87171">6</div>
+        <div class="audit-num" style="color:#f87171" id="statReject">6</div>
         <div class="audit-label">退回修改</div>
       </div>
       <div class="audit-card">
-        <div class="audit-num" style="color:#fbbf24">4</div>
+        <div class="audit-num" style="color:#fbbf24" id="statPending">4</div>
         <div class="audit-label">待复核</div>
       </div>
     </div>
@@ -156,15 +157,15 @@
     </div>
     
     <div class="audit-filters">
-      <button class="audit-filter-btn active">全部 28</button>
-      <button class="audit-filter-btn">待审核 4</button>
-      <button class="audit-filter-btn">已通过 18</button>
-      <button class="audit-filter-btn" style="color:#f87171;border-color:rgba(239,68,68,0.2)">已退回 6</button>
+      <button class="audit-filter-btn active" onclick="filterReviews(this,'all')">全部</button>
+      <button class="audit-filter-btn" onclick="filterReviews(this,'pending')">待审核</button>
+      <button class="audit-filter-btn" onclick="filterReviews(this,'passed')">已通过</button>
+      <button class="audit-filter-btn" onclick="filterReviews(this,'rejected')">已退回</button>
       <div style="flex:1"></div>
       <span style="font-size:13px;color:rgba(226,232,240,0.4)">2026年5月 月度数据</span>
     </div>
     
-    <table class="audit-table">
+    <table class="audit-table" id="auditTable">
       <tr>
         <th>企业</th>
         <th>提交时间</th>
@@ -172,117 +173,178 @@
         <th>综合结果</th>
         <th>操作</th>
       </tr>
-      <tr>
-        <td><div class="audit-enterprise"><div class="audit-avatar">蓝</div>蓝天工业涂装</div></td>
-        <td>05-18 09:15</td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status warn">!</span></td>
-        <td><span class="audit-status fail">✗</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status fail">退回</span></td>
-        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
-      </tr>
-      <tr>
-        <td><div class="audit-enterprise"><div class="audit-avatar">红</div>红星喷涂厂</div></td>
-        <td>05-18 08:30</td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">通过</span></td>
-        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
-      </tr>
-      <tr>
-        <td><div class="audit-enterprise"><div class="audit-avatar">鑫</div>鑫达汽修</div></td>
-        <td>05-17 16:45</td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status warn">!</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">通过</span></td>
-        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
-      </tr>
-      <tr>
-        <td><div class="audit-enterprise"><div class="audit-avatar">金</div>金辉涂装</div></td>
-        <td>05-17 14:20</td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">通过</span></td>
-        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
-      </tr>
-      <tr>
-        <td><div class="audit-enterprise"><div class="audit-avatar">伟</div>伟达制造</div></td>
-        <td>05-16 11:00</td>
-        <td><span class="audit-status warn">!</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status pass">✓</span></td>
-        <td><span class="audit-status warn">!</span></td>
-        <td><span class="audit-status warn">通过</span></td>
-        <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail()">查看</a></td>
-      </tr>
+      <!-- 动态填充 -->
     </table>
   </div>
   
   <div class="detail-drawer" id="detailDrawer">
     <div class="detail-drawer-header">
-      <span class="detail-drawer-title">🔍 蓝天工业涂装 — 审核详情</span>
+      <span class="detail-drawer-title" id="drawerTitle">🔍 审核详情</span>
       <span class="detail-drawer-close" onclick="closeDetail()">✕</span>
     </div>
-    <div class="detail-drawer-body">
-      <div class="detail-section">
-        <div class="detail-section-title">📋 企业基本信息</div>
-        <div class="detail-data-row"><span>企业名称</span><span>蓝天工业涂装有限公司</span></div>
-        <div class="detail-data-row"><span>统一社会信用代码</span><span>91110108MA0012345</span></div>
-        <div class="detail-data-row"><span>所属行业</span><span>汽车零部件涂装</span></div>
-        <div class="detail-data-row"><span>提交时间</span><span>2026-05-18 09:15</span></div>
-        <div class="detail-data-row"><span>报告月份</span><span>2026年5月</span></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">📊 关键数据</div>
-        <div class="detail-data-row"><span>溶剂型涂料</span><span>1,250 kg</span></div>
-        <div class="detail-data-row"><span>水性涂料</span><span>680 kg</span></div>
-        <div class="detail-data-row"><span>RTO 运行时长</span><span>520 h</span></div>
-        <div class="detail-data-row"><span>天然气消耗</span><span class="abnormal">18,500 Nm³ ↑42%</span></div>
-        <div class="detail-data-row"><span>喷涂面积</span><span>1.5 万m²</span></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">🔍 6条规则校验结果</div>
-        <div class="detail-rule-result pass">✅ 规则① 涂料用量/面积比值 — 正常（偏差 +12%）</div>
-        <div class="detail-rule-result warn">⚠️ 规则② VOCs浓度环比 — 关注（波动 +32%，接近阈值）</div>
-        <div class="detail-rule-result fail">❌ 规则③ 天然气/RTO时长比值 — 异常（偏离历史均值 +42%，超过 ±40% 阈值）</div>
-        <div class="detail-rule-result pass">✅ 规则④ 逻辑一致性 — 通过（出口28 < 入口485）</div>
-        <div class="detail-rule-result pass">✅ 规则⑤ 温度合理性 — 通过（785°C 在 500-1000°C 范围内）</div>
-        <div class="detail-rule-result pass">✅ 规则⑥ 产量合理性 — 通过（面积环比 +8%，在 ±50% 范围内）</div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">🤖 AI 审核意见</div>
-        <div style="padding:12px;background:rgba(234,179,8,0.06);border-radius:6px;font-size:13px;line-height:1.8;border:1px solid rgba(234,179,8,0.15);color:#fde047">
-          天然气/RTO时长比值偏离企业历史均值 <strong>+42%</strong>，触发规则③异常阈值（±40%）。结合实时双算数据，该企业 RTO 空烧时长占比达 22%，建议退回企业核实天然气消耗数据并说明异常原因。
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:20px">
-        <button class="btn btn-default" style="flex:1;background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.2);color:#22d3ee">📋 查看原始报表</button>
-        <button class="btn btn-danger" style="flex:1">↩️ 退回修改</button>
-        <button class="btn btn-primary" style="flex:1">✅ 强制通过</button>
-      </div>
+    <div class="detail-drawer-body" id="drawerBody">
+      <!-- 动态填充 -->
     </div>
   </div>
   
   <script>
-    function openDetail() { document.getElementById('detailDrawer').classList.add('open'); }
-    function closeDetail() { document.getElementById('detailDrawer').classList.remove('open'); }
+    let currentReviewId = null;
+    let currentFilter = 'all';
+
+    const DEMO_ROWS = [
+      { id: 'REV-20260518-001', enterprise: '蓝天工业涂装', avatar: '蓝', submitAt: '05-18 09:15', r1: 'pass', r2: 'warn', r3: 'fail', r4: 'pass', r5: 'pass', r6: 'pass', result: 'fail', resultText: '退回' },
+      { id: 'REV-20260518-002', enterprise: '红星喷涂厂', avatar: '红', submitAt: '05-18 08:30', r1: 'pass', r2: 'pass', r3: 'pass', r4: 'pass', r5: 'pass', r6: 'pass', result: 'pass', resultText: '通过' },
+      { id: 'REV-20260517-001', enterprise: '鑫达汽修', avatar: '鑫', submitAt: '05-17 16:45', r1: 'pass', r2: 'pass', r3: 'pass', r4: 'pass', r5: 'warn', r6: 'pass', result: 'pass', resultText: '通过' },
+      { id: 'REV-20260517-002', enterprise: '金辉涂装', avatar: '金', submitAt: '05-17 14:20', r1: 'pass', r2: 'pass', r3: 'pass', r4: 'pass', r5: 'pass', r6: 'pass', result: 'pass', resultText: '通过' },
+      { id: 'REV-20260516-001', enterprise: '伟达制造', avatar: '伟', submitAt: '05-16 11:00', r1: 'warn', r2: 'pass', r3: 'pass', r4: 'pass', r5: 'pass', r6: 'warn', result: 'warn', resultText: '通过' },
+    ];
+
+    function syncReviews() {
+      const reviews = DataStore.getReviews();
+      // 用 DataStore 中的真实状态覆盖演示数据
+      DEMO_ROWS.forEach(row => {
+        const r = reviews.find(x => x.id === row.id);
+        if (r) {
+          row.result = r.statusCode === 'passed' ? 'pass' : (r.statusCode === 'rejected' ? 'fail' : 'warn');
+          row.resultText = r.status === '已通过' ? '通过' : (r.status === '已退回' ? '退回' : r.status);
+        }
+      });
+    }
+
+    function renderStats() {
+      const reviews = DataStore.getReviews();
+      document.getElementById('statTotal').textContent = DEMO_ROWS.length;
+      document.getElementById('statPass').textContent = reviews.filter(r => r.statusCode === 'passed').length;
+      document.getElementById('statReject').textContent = reviews.filter(r => r.statusCode === 'rejected').length;
+      document.getElementById('statPending').textContent = reviews.filter(r => r.statusCode === 'pending').length;
+    }
+
+    function renderTable() {
+      syncReviews();
+      const reviews = DataStore.getReviews();
+      const filtered = currentFilter === 'all' ? DEMO_ROWS : DEMO_ROWS.filter(r => {
+        const rev = reviews.find(x => x.id === r.id);
+        return rev && rev.statusCode === currentFilter;
+      });
+
+      const tbody = document.getElementById('auditTable');
+      let html = `<tr>
+        <th>企业</th><th>提交时间</th>
+        <th>规则①</th><th>规则②</th><th>规则③</th><th>规则④</th><th>规则⑤</th><th>规则⑥</th>
+        <th>综合结果</th><th>操作</th>
+      </tr>`;
+
+      filtered.forEach(row => {
+        const statusHtml = (s) => {
+          const map = { pass: '<span class="audit-status pass">✓</span>', warn: '<span class="audit-status warn">!</span>', fail: '<span class="audit-status fail">✗</span>' };
+          return map[s] || '';
+        };
+        const resultMap = { pass: 'pass', warn: 'warn', fail: 'fail' };
+        html += `<tr>
+          <td><div class="audit-enterprise"><div class="audit-avatar">${row.avatar}</div>${row.enterprise}</div></td>
+          <td>${row.submitAt}</td>
+          <td>${statusHtml(row.r1)}</td><td>${statusHtml(row.r2)}</td><td>${statusHtml(row.r3)}</td>
+          <td>${statusHtml(row.r4)}</td><td>${statusHtml(row.r5)}</td><td>${statusHtml(row.r6)}</td>
+          <td><span class="audit-status ${resultMap[row.result]}">${row.resultText}</span></td>
+          <td><a href="#" style="color:#22d3ee;font-size:12px" onclick="openDetail('${row.id}');return false">查看</a></td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function filterReviews(el, type) {
+      document.querySelectorAll('.audit-filter-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      currentFilter = type;
+      renderTable();
+    }
+
+    function openDetail(id) {
+      currentReviewId = id;
+      const row = DEMO_ROWS.find(r => r.id === id);
+      if (!row) return;
+      const reviews = DataStore.getReviews();
+      const rev = reviews.find(r => r.id === id);
+
+      document.getElementById('drawerTitle').textContent = `🔍 ${row.enterprise} — 审核详情`;
+
+      let actionBtns = '';
+      if (rev && rev.statusCode === 'pending') {
+        actionBtns = `
+          <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="btn btn-default" style="flex:1;background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.2);color:#22d3ee" onclick="viewReport()">📋 查看原始报表</button>
+            <button class="btn btn-danger" style="flex:1" onclick="doAudit('reject')">↩️ 退回修改</button>
+            <button class="btn btn-primary" style="flex:1" onclick="doAudit('pass')">✅ 审核通过</button>
+          </div>`;
+      } else {
+        actionBtns = `
+          <div style="display:flex;gap:10px;margin-top:20px">
+            <button class="btn btn-default" style="flex:1;background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.2);color:#22d3ee" onclick="viewReport()">📋 查看原始报表</button>
+            <div style="flex:1;text-align:center;padding:10px;color:rgba(226,232,240,0.4);font-size:13px">
+              ${rev.statusCode === 'passed' ? '✅ 该报告已审核通过' : '↩️ 该报告已退回修改'}
+            </div>
+          </div>`;
+      }
+
+      document.getElementById('drawerBody').innerHTML = `
+        <div class="detail-section">
+          <div class="detail-section-title">📋 企业基本信息</div>
+          <div class="detail-data-row"><span>企业名称</span><span>${row.enterprise}有限公司</span></div>
+          <div class="detail-data-row"><span>提交时间</span><span>2026-${row.submitAt}</span></div>
+          <div class="detail-data-row"><span>报告月份</span><span>2026年5月</span></div>
+          <div class="detail-data-row"><span>当前状态</span><span>${rev ? rev.status : '待审核'}</span></div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title">📊 关键数据</div>
+          <div class="detail-data-row"><span>溶剂型涂料</span><span>1,250 kg</span></div>
+          <div class="detail-data-row"><span>水性涂料</span><span>680 kg</span></div>
+          <div class="detail-data-row"><span>RTO 运行时长</span><span>520 h</span></div>
+          <div class="detail-data-row"><span>天然气消耗</span><span class="abnormal">18,500 Nm³ ↑42%</span></div>
+          <div class="detail-data-row"><span>喷涂面积</span><span>1.5 万m²</span></div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title">🔍 6条规则校验结果</div>
+          <div class="detail-rule-result ${row.r1}">${row.r1 === 'pass' ? '✅' : (row.r1 === 'warn' ? '⚠️' : '❌')} 规则① 涂料用量/面积比值 — ${row.r1 === 'pass' ? '正常' : (row.r1 === 'warn' ? '关注' : '异常')}</div>
+          <div class="detail-rule-result ${row.r2}">${row.r2 === 'pass' ? '✅' : (row.r2 === 'warn' ? '⚠️' : '❌')} 规则② VOCs浓度环比 — ${row.r2 === 'pass' ? '正常' : (row.r2 === 'warn' ? '关注' : '异常')}</div>
+          <div class="detail-rule-result ${row.r3}">${row.r3 === 'pass' ? '✅' : (row.r3 === 'warn' ? '⚠️' : '❌')} 规则③ 天然气/RTO时长比值 — ${row.r3 === 'pass' ? '正常' : (row.r3 === 'warn' ? '关注' : '异常')}</div>
+          <div class="detail-rule-result ${row.r4}">${row.r4 === 'pass' ? '✅' : (row.r4 === 'warn' ? '⚠️' : '❌')} 规则④ 逻辑一致性 — ${row.r4 === 'pass' ? '通过' : (row.r4 === 'warn' ? '关注' : '异常')}</div>
+          <div class="detail-rule-result ${row.r5}">${row.r5 === 'pass' ? '✅' : (row.r5 === 'warn' ? '⚠️' : '❌')} 规则⑤ 温度合理性 — ${row.r5 === 'pass' ? '通过' : (row.r5 === 'warn' ? '关注' : '异常')}</div>
+          <div class="detail-rule-result ${row.r6}">${row.r6 === 'pass' ? '✅' : (row.r6 === 'warn' ? '⚠️' : '❌')} 规则⑥ 产量合理性 — ${row.r6 === 'pass' ? '通过' : (row.r6 === 'warn' ? '关注' : '异常')}</div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title">🤖 AI 审核意见</div>
+          <div style="padding:12px;background:rgba(234,179,8,0.06);border-radius:6px;font-size:13px;line-height:1.8;border:1px solid rgba(234,179,8,0.15);color:#fde047">
+            天然气/RTO时长比值偏离企业历史均值 <strong>+42%</strong>，触发规则③异常阈值（±40%）。结合实时双算数据，该企业 RTO 空烧时长占比达 22%，建议退回企业核实天然气消耗数据并说明异常原因。
+          </div>
+        </div>
+        ${actionBtns}
+      `;
+      document.getElementById('detailDrawer').classList.add('open');
+    }
+
+    function closeDetail() {
+      document.getElementById('detailDrawer').classList.remove('open');
+      currentReviewId = null;
+    }
+
+    function doAudit(action) {
+      if (!currentReviewId) return;
+      const updates = action === 'pass'
+        ? { status: '已通过', statusCode: 'passed', checker: '王监测', result: '通过', comments: '数据完整，逻辑一致' }
+        : { status: '已退回', statusCode: 'rejected', checker: '王监测', result: '退回', comments: '天然气数据与上月偏差过大，请核实' };
+      DataStore.updateReview(currentReviewId, updates);
+      showToast(action === 'pass' ? '✅ 审核已通过' : '↩️ 已退回修改', action === 'pass' ? 'success' : 'warn');
+      renderStats();
+      renderTable();
+      closeDetail();
+    }
+
+    function viewReport() {
+      showToast('正在打开原始报表...', 'info');
+    }
+
+    renderStats();
+    renderTable();
   </script>
 </body>
 </html>

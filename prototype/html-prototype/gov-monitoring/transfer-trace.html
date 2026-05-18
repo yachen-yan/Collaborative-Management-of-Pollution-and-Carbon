@@ -13,7 +13,7 @@
     .back-link { font-size: 13px; color: #1677ff; margin-bottom: 12px; display: inline-block; }
     
     .alert-banner {
-      background: #fff1f0; border: 1px solid #ffa39e; border-radius: 8px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px;
       padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px;
     }
     .alert-banner-icon { font-size: 32px; }
@@ -35,8 +35,8 @@
       position: absolute; padding: 10px 16px; border-radius: 8px; font-size: 13px;
       text-align: center; min-width: 120px;
     }
-    .trace-zone.from { background: #fff1f0; border: 2px solid #f5222d; top: 30%; left: 15%; }
-    .trace-zone.to { background: #fffbe6; border: 2px solid #faad14; top: 30%; right: 15%; }
+    .trace-zone.from { background: rgba(239,68,68,0.08); border: 2px solid #f87171; top: 30%; left: 15%; }
+    .trace-zone.to { background: rgba(234,179,8,0.08); border: 2px solid #fbbf24; top: 30%; right: 15%; }
     .trace-zone-name { font-weight: 600; margin-bottom: 4px; }
     .trace-zone-stat { font-size: 11px; color: rgba(226,232,240,0.4); }
     .trace-arrow {
@@ -50,7 +50,7 @@
     .trace-arrow-label {
       position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
       font-size: 11px; color: #f5222d; font-weight: 600; white-space: nowrap;
-      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid #ffa39e;
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2);
     }
     .trace-flyline {
       position: absolute; height: 2px; background: linear-gradient(90deg, transparent, #f5222d, transparent);
@@ -128,7 +128,7 @@
           <div class="trace-zone-stat">海淀区李村工业区</div>
           <div class="trace-zone-stat" style="color:#f5222d">VOCs ↑70%</div>
         </div>
-        <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(0,0,0,0.35);background:#fff;padding:4px 12px;border-radius:4px;border:1px solid #f0f0f0">
+        <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(226,232,240,0.35);background:rgba(34,211,238,0.05);padding:4px 12px;border-radius:4px;border:1px solid rgba(34,211,238,0.1)">
           距离：12km | 关联时长：3个月 | 置信度：85%
         </div>
       </div>

@@ -4,16 +4,17 @@
   <meta charset="UTF-8">
   <title>调度指令详情 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/data.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
     .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
-    .back-link { font-size: 13px; color: #1677ff; margin-bottom: 12px; display: inline-block; }
+    .back-link { font-size: 13px; color: #22d3ee; margin-bottom: 12px; display: inline-block; }
     .back-link:hover { text-decoration: underline; }
     
     .dispatch-header {
       background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 20px 24px;
-      margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
       display: flex; justify-content: space-between; align-items: flex-start;
     }
     .dispatch-header-left { flex: 1; }
@@ -22,29 +23,30 @@
     .dispatch-status {
       padding: 4px 14px; border-radius: 4px; font-size: 13px; font-weight: 500;
     }
-    .dispatch-status.executing { background: #e6f4ff; color: #1677ff; }
-    .dispatch-status.pending { background: #fffbe6; color: #d48806; }
-    .dispatch-status.closed { background: #f6ffed; color: #389e0d; }
+    .dispatch-status.dispatched { background: rgba(34,211,238,0.08); color: #22d3ee; border: 1px solid rgba(34,211,238,0.2); }
+    .dispatch-status.received { background: rgba(59,130,246,0.08); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+    .dispatch-status.feedback { background: rgba(234,179,8,0.08); color: #fbbf24; border: 1px solid rgba(234,179,8,0.2); }
+    .dispatch-status.reviewed { background: rgba(167,139,250,0.08); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+    .dispatch-status.closed { background: rgba(34,197,94,0.08); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
     
     .timeline-vertical { position: relative; padding-left: 28px; }
     .timeline-vertical::before {
       content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px;
-      width: 2px; background: #f0f0f0;
+      width: 2px; background: rgba(34,211,238,0.1);
     }
     .tl-item { position: relative; padding-bottom: 24px; }
     .tl-item::before {
       content: ""; position: absolute; left: -24px; top: 4px; width: 12px; height: 12px;
-      border-radius: 50%; background: #d9d9d9; border: 2px solid #fff; box-shadow: 0 0 0 2px #f0f0f0;
+      border-radius: 50%; background: #334155; border: 2px solid rgba(34,211,238,0.1);
     }
-    .tl-item.active::before { background: #1677ff; box-shadow: 0 0 0 2px #1677ff; }
-    .tl-item.done::before { background: #52c41a; box-shadow: 0 0 0 2px #52c41a; }
-    .tl-item.current::before { background: #faad14; box-shadow: 0 0 0 2px #faad14; }
+    .tl-item.active::before { background: #22d3ee; box-shadow: 0 0 0 2px rgba(34,211,238,0.3), 0 0 8px rgba(34,211,238,0.3); }
+    .tl-item.done::before { background: #4ade80; box-shadow: 0 0 0 2px rgba(34,197,94,0.3); }
+    .tl-item.current::before { background: #fbbf24; box-shadow: 0 0 0 2px rgba(234,179,8,0.3), 0 0 8px rgba(234,179,8,0.3); }
     .tl-time { font-size: 12px; color: rgba(226,232,240,0.3); margin-bottom: 4px; }
     .tl-card {
-      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 16px 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid rgba(34,211,238,0.08);
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.08); border-radius: 8px; padding: 16px 20px;
     }
-    .tl-card.active { border-color: #1677ff; background: #e6f4ff; }
+    .tl-card.active { border-color: rgba(34,211,238,0.2); background: rgba(34,211,238,0.06); }
     .tl-card-title { font-weight: 600; margin-bottom: 8px; font-size: 14px; }
     .tl-card-content { font-size: 13px; color: rgba(226,232,240,0.6); line-height: 1.8; }
     .tl-card-content strong { color: #e2e8f0; }
@@ -54,24 +56,23 @@
     .dispatch-left { display: flex; flex-direction: column; gap: 16px; }
     .dispatch-right { display: flex; flex-direction: column; gap: 16px; }
     
-    .info-card { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 16px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .info-card-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-    .info-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+    .info-card { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 16px 20px; }
+    .info-card-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #22d3ee; }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid rgba(34,211,238,0.06); }
     .info-row:last-child { border-bottom: none; }
     .info-row span:first-child { color: rgba(226,232,240,0.4); }
     .info-row span:last-child { font-weight: 500; }
     
     .action-box {
       background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-    .action-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+    .action-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: #22d3ee; }
     .action-textarea {
       width: 100%; min-height: 100px; padding: 10px 12px;
       border: 1px solid rgba(34,211,238,0.15); border-radius: 6px; font-size: 13px;
-      resize: vertical; outline: none;
+      resize: vertical; outline: none; background: rgba(2,6,23,0.5); color: #e2e8f0;
     }
-    .action-textarea:focus { border-color: #1677ff; }
+    .action-textarea:focus { border-color: #22d3ee; }
     .action-btns { display: flex; gap: 10px; margin-top: 12px; }
     .action-btns .btn { flex: 1; font-size: 13px; }
     
@@ -94,13 +95,13 @@
     
     <div class="dispatch-header">
       <div class="dispatch-header-left">
-        <div class="dispatch-title">📋 调度指令 DSP-20260518-001</div>
-        <div class="dispatch-meta">
+        <div class="dispatch-title" id="dTitle">📋 调度指令 DSP-20260518-001</div>
+        <div class="dispatch-meta" id="dMeta">
           类型：自查自纠建议 | 目标企业：蓝天工业涂装有限公司<br>
           关联预警：ALT-20260518-001（Paradox 风险预警）| 截止期限：2026-05-19 18:00
         </div>
       </div>
-      <span class="dispatch-status executing">🟡 处置中（企业已签收）</span>
+      <span class="dispatch-status dispatched" id="dStatus">🟡 已下发</span>
     </div>
     
     <div class="dispatch-body">
@@ -108,7 +109,7 @@
         <!-- 时间轴 -->
         <div class="info-card">
           <div class="info-card-title">⏱️ 处理进度</div>
-          <div class="timeline-vertical">
+          <div class="timeline-vertical" id="timeline">
             <div class="tl-item done">
               <div class="tl-time">2026-05-18 09:15</div>
               <div class="tl-card">
@@ -124,32 +125,28 @@
                 <div class="tl-actor">👤 下发人：李管理（管理科）</div>
               </div>
             </div>
-            <div class="tl-item done">
-              <div class="tl-time">2026-05-18 09:20</div>
+            <div class="tl-item" id="stepReceive">
+              <div class="tl-time">待完成</div>
               <div class="tl-card">
                 <div class="tl-card-title">📩 企业签收</div>
-                <div class="tl-card-content">蓝天工业涂装有限公司已签收该调度指令</div>
-                <div class="tl-actor">👤 签收人：张环保</div>
+                <div class="tl-card-content">等待企业签收该调度指令</div>
               </div>
             </div>
-            <div class="tl-item current">
-              <div class="tl-time">当前阶段</div>
-              <div class="tl-card active">
-                <div class="tl-card-title">📝 等待企业整改反馈</div>
-                <div class="tl-card-content">
-                  企业正在整改中，剩余时间：<strong style="color:#f5222d">18 小时 30 分</strong><br>
-                  超期将自动触发催办（短信 + 站内消息）
-                </div>
+            <div class="tl-item" id="stepFeedback">
+              <div class="tl-time">待完成</div>
+              <div class="tl-card">
+                <div class="tl-card-title">📝 企业整改反馈</div>
+                <div class="tl-card-content">等待企业提交整改措施和证明材料</div>
               </div>
             </div>
-            <div class="tl-item">
+            <div class="tl-item" id="stepReview">
               <div class="tl-time">待完成</div>
               <div class="tl-card">
                 <div class="tl-card-title">🔍 监测科复核</div>
                 <div class="tl-card-content">企业提交整改反馈后，监测数据科进行数据复核</div>
               </div>
             </div>
-            <div class="tl-item">
+            <div class="tl-item" id="stepClose">
               <div class="tl-time">待完成</div>
               <div class="tl-card">
                 <div class="tl-card-title">✅ 销号闭环</div>
@@ -160,13 +157,13 @@
         </div>
         
         <!-- 操作区 -->
-        <div class="action-box">
-          <div class="action-title">✏️ 管理科操作</div>
-          <textarea class="action-textarea" placeholder="输入催办备注或复核意见..."></textarea>
-          <div class="action-btns">
-            <button class="btn btn-default">⏰ 发送催办</button>
-            <button class="btn btn-primary">✅ 复核通过，销号</button>
-            <button class="btn btn-danger">↩️ 退回补充</button>
+        <div class="action-box" id="actionBox">
+          <div class="action-title" id="actionTitle">✏️ 管理科操作</div>
+          <textarea class="action-textarea" id="actionNote" placeholder="输入催办备注或复核意见..."></textarea>
+          <div class="action-btns" id="actionBtns">
+            <button class="btn btn-default" onclick="doAction('remind')">⏰ 发送催办</button>
+            <button class="btn btn-primary" onclick="doAction('review')">✅ 复核通过，销号</button>
+            <button class="btn btn-danger" onclick="doAction('reject')">↩️ 退回补充</button>
           </div>
         </div>
       </div>
@@ -183,8 +180,8 @@
         <div class="info-card">
           <div class="info-card-title">🚨 关联预警信息</div>
           <div class="info-row"><span>预警编号</span><span>ALT-20260518-001</span></div>
-          <div class="info-row"><span>预警类型</span><span style="color:#f5222d">Paradox 风险</span></div>
-          <div class="info-row"><span>C-P 协同指数</span><span style="color:#f5222d;font-weight:700">0.38</span></div>
+          <div class="info-row"><span>预警类型</span><span style="color:#f87171">Paradox 风险</span></div>
+          <div class="info-row"><span>C-P 协同指数</span><span style="color:#f87171;font-weight:700">0.38</span></div>
           <div class="info-row"><span>持续时间</span><span>12 小时</span></div>
           <div class="info-row"><span>判定类型</span><span>减污增碳陷阱</span></div>
         </div>
@@ -200,15 +197,115 @@
         
         <div class="info-card">
           <div class="info-card-title">📜 操作留痕</div>
-          <div style="font-size:12px;color:rgba(0,0,0,0.45);line-height:2">
+          <div style="font-size:12px;color:rgba(226,232,240,0.35);line-height:2" id="logArea">
             09:15 李管理 创建调度指令<br>
             09:15 系统 自动推送至企业<br>
-            09:20 张环保 签收指令<br>
-            09:20 系统 记录签收时间
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    const DISPATCH_ID = 'DSP-20260518-001';
+
+    function renderDispatch() {
+      const dispatches = DataStore.getDispatches();
+      const d = dispatches.find(x => x.id === DISPATCH_ID) || dispatches[0];
+      if (!d) return;
+
+      // 更新头部状态
+      const statusMap = {
+        dispatched: { cls: 'dispatched', text: '📤 已下发' },
+        received:   { cls: 'received',   text: '📩 已签收' },
+        feedback:   { cls: 'feedback',   text: '📝 整改中' },
+        reviewed:   { cls: 'reviewed',   text: '🔍 已复核' },
+        closed:     { cls: 'closed',     text: '✅ 已销号' },
+      };
+      const sm = statusMap[d.statusCode] || statusMap.dispatched;
+      document.getElementById('dStatus').className = 'dispatch-status ' + sm.cls;
+      document.getElementById('dStatus').textContent = sm.text;
+      document.getElementById('dTitle').textContent = `📋 调度指令 ${d.id}`;
+
+      // 更新时间轴
+      const stepEls = ['stepReceive', 'stepFeedback', 'stepReview', 'stepClose'];
+      stepEls.forEach((id, idx) => {
+        const el = document.getElementById(id);
+        const stepIdx = idx + 1; // 0=下发, 1=签收...
+        if (stepIdx < d.step) {
+          el.className = 'tl-item done';
+          el.querySelector('.tl-time').textContent = '已完成';
+        } else if (stepIdx === d.step) {
+          el.className = 'tl-item current';
+          el.querySelector('.tl-time').textContent = '当前阶段';
+          el.querySelector('.tl-card').classList.add('active');
+        } else {
+          el.className = 'tl-item';
+          el.querySelector('.tl-time').textContent = '待完成';
+        }
+      });
+
+      // 更新操作区
+      const btns = document.getElementById('actionBtns');
+      const title = document.getElementById('actionTitle');
+      if (d.statusCode === 'closed') {
+        title.textContent = '✅ 该调度指令已闭环销号';
+        btns.innerHTML = '<div style="color:#4ade80;font-size:13px;text-align:center;padding:10px">🎉 任务已完成，无需进一步操作</div>';
+      } else if (d.statusCode === 'dispatched') {
+        title.textContent = '⏳ 等待企业签收';
+        btns.innerHTML = `
+          <button class="btn btn-default" onclick="doAction('remind')">⏰ 发送催办</button>
+          <button class="btn btn-primary" onclick="doAction('advance')">📩 模拟企业签收</button>
+        `;
+      } else if (d.statusCode === 'received') {
+        title.textContent = '⏳ 等待企业整改反馈';
+        btns.innerHTML = `
+          <button class="btn btn-default" onclick="doAction('remind')">⏰ 发送催办</button>
+          <button class="btn btn-primary" onclick="doAction('advance')">📝 模拟企业提交整改</button>
+        `;
+      } else if (d.statusCode === 'feedback') {
+        title.textContent = '🔍 监测科复核';
+        btns.innerHTML = `
+          <button class="btn btn-danger" onclick="doAction('reject')">↩️ 退回补充</button>
+          <button class="btn btn-primary" onclick="doAction('advance')">✅ 复核通过，销号</button>
+        `;
+      }
+    }
+
+    function doAction(action) {
+      const note = document.getElementById('actionNote').value;
+      const logArea = document.getElementById('logArea');
+      const now = new Date().toTimeString().slice(0,5);
+
+      if (action === 'remind') {
+        showToast('催办通知已发送至企业', 'warn');
+        logArea.innerHTML += `${now} 李管理 发送催办${note ? '：' + note : ''}<br>`;
+      } else if (action === 'reject') {
+        showToast('已退回企业补充材料', 'error');
+        logArea.innerHTML += `${now} 李管理 退回补充${note ? '：' + note : ''}<br>`;
+      } else if (action === 'advance') {
+        const result = DataStore.advanceDispatch(DISPATCH_ID);
+        if (result) {
+          showToast(`状态已推进：${result.status}`, 'success');
+          logArea.innerHTML += `${now} 系统 状态更新为「${result.status}」<br>`;
+          renderDispatch();
+        }
+      } else if (action === 'review') {
+        const dispatches = DataStore.getDispatches();
+        const idx = dispatches.findIndex(d => d.id === DISPATCH_ID);
+        if (idx >= 0) {
+          dispatches[idx].step = 4;
+          dispatches[idx].status = '已销号';
+          dispatches[idx].statusCode = 'closed';
+          DataStore.setDispatches(dispatches);
+          showToast('复核通过，已销号', 'success');
+          logArea.innerHTML += `${now} 李监测 复核通过，销号${note ? '：' + note : ''}<br>`;
+          renderDispatch();
+        }
+      }
+    }
+
+    renderDispatch();
+  </script>
 </body>
 </html>
