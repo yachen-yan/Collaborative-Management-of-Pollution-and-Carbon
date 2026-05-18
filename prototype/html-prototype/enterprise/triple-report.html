@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>三评合一报告 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
+    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: rgba(0,0,0,0.45); margin-bottom: 20px; }
+    
+    .report-header {
+      background: linear-gradient(135deg, #1677ff 0%, #36cfc9 100%);
+      color: #fff; padding: 28px; border-radius: 8px; margin-bottom: 20px;
+    }
+    .report-header-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .report-header-info { font-size: 13px; opacity: 0.9; }
+    .report-header-badge {
+      display: inline-block; margin-top: 12px; padding: 4px 14px;
+      background: rgba(255,255,255,0.2); border-radius: 12px; font-size: 13px;
+    }
+    
+    .score-overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .score-box { text-align: center; padding: 20px; }
+    .score-box-ring {
+      width: 90px; height: 90px; margin: 0 auto 10px; position: relative;
+    }
+    .score-box-ring svg { transform: rotate(-90deg); }
+    .score-box-value {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      font-size: 22px; font-weight: 700;
+    }
+    .score-box-label { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 4px; }
+    .score-box-grade { font-size: 12px; margin-top: 4px; font-weight: 500; }
+    
+    .ai-summary {
+      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 8px;
+      padding: 16px 20px; margin-bottom: 20px;
+    }
+    .ai-summary-title { font-weight: 600; color: #52c41a; margin-bottom: 8px; }
+    .ai-summary-text { font-size: 14px; line-height: 1.8; color: rgba(0,0,0,0.75); }
+    .ai-summary-text strong { color: #f5222d; }
+    
+    .detail-section { margin-bottom: 20px; }
+    .detail-section-title {
+      font-size: 15px; font-weight: 600; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .detail-item {
+      padding: 14px; border-radius: 6px; background: #fafafa;
+    }
+    .detail-item-name { font-size: 12px; color: rgba(0,0,0,0.45); margin-bottom: 4px; }
+    .detail-item-value { font-size: 18px; font-weight: 600; }
+    .detail-item-desc { font-size: 11px; color: rgba(0,0,0,0.35); margin-top: 2px; }
+    
+    .priority-list { margin-top: 8px; }
+    .priority-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border-radius: 6px; margin-bottom: 8px; background: #fafafa;
+    }
+    .priority-rank {
+      width: 24px; height: 24px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: 12px;
+      font-weight: 600; color: #fff; flex-shrink: 0;
+    }
+    .priority-rank.p1 { background: #f5222d; }
+    .priority-rank.p2 { background: #fa8c16; }
+    .priority-rank.p3 { background: #faad14; }
+    .priority-text { flex: 1; font-size: 13px; }
+    .priority-score { font-size: 12px; color: rgba(0,0,0,0.45); }
+    
+    .report-actions {
+      display: flex; gap: 12px; justify-content: center; margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
+  </div>
+  <div class="sidebar">
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
+    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📋</span>月度数据填报</a>
+    <a href="realtime-panel.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时双算看板</a>
+    <a href="simulator.html" class="sidebar-item"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
+    <a href="triple-report.html" class="sidebar-item active"><span class="sidebar-icon">📑</span>三评合一报告</a>
+    <a href="alerts.html" class="sidebar-item"><span class="sidebar-icon">🔔</span>预警中心</a>
+  </div>
+  
+  <div class="main">
+    <div class="page-header">📑 三评合一智能报告</div>
+    <div class="page-sub">报告周期：2026年5月 | 生成时间：2026-06-05 08:30 | 类型：自动生成</div>
+    
+    <div class="report-header">
+      <div class="report-header-title">🏭 蓝天工业涂装有限公司 — 污-能-碳三评合一报告</div>
+      <div class="report-header-info">
+        统一社会信用代码：91110108MA0012345 | 行业：汽车零部件涂装<br>
+        报告周期：2026年5月1日 — 2026年5月31日
+      </div>
+      <div class="report-header-badge">📋 三评合一 | 🏷️ 工业涂装 MVP 专版</div>
+    </div>
+    
+    <!-- 四大评分 -->
+    <div class="score-overview">
+      <div class="card score-box">
+        <div class="score-box-ring">
+          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#52c41a" stroke-width="8" stroke-dasharray="191 239" stroke-linecap="round"/></svg>
+          <div class="score-box-value" style="color:#52c41a">82</div>
+        </div>
+        <div class="score-box-label">污染评价（P）</div>
+        <div class="score-box-grade" style="color:#52c41a">🟢 良</div>
+      </div>
+      <div class="card score-box">
+        <div class="score-box-ring">
+          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#faad14" stroke-width="8" stroke-dasharray="151 239" stroke-linecap="round"/></svg>
+          <div class="score-box-value" style="color:#faad14">65</div>
+        </div>
+        <div class="score-box-label">能效评价（E）</div>
+        <div class="score-box-grade" style="color:#faad14">🟡 一般</div>
+      </div>
+      <div class="card score-box">
+        <div class="score-box-ring">
+          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#fa8c16" stroke-width="8" stroke-dasharray="136 239" stroke-linecap="round"/></svg>
+          <div class="score-box-value" style="color:#fa8c16">58</div>
+        </div>
+        <div class="score-box-label">碳排评价（C）</div>
+        <div class="score-box-grade" style="color:#fa8c16">🟠 较差</div>
+      </div>
+      <div class="card score-box">
+        <div class="score-box-ring">
+          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#f5222d" stroke-width="8" stroke-dasharray="91 239" stroke-linecap="round"/></svg>
+          <div class="score-box-value" style="color:#f5222d">0.52</div>
+        </div>
+        <div class="score-box-label">C-P 协同指数</div>
+        <div class="score-box-grade" style="color:#f5222d">🔴 差</div>
+      </div>
+    </div>
+    
+    <!-- AI 摘要 -->
+    <div class="ai-summary">
+      <div class="ai-summary-title">🤖 AI 核心结论</div>
+      <div class="ai-summary-text">
+        本月整体评级为<strong>「一般」</strong>，存在明显短板。<strong>最优先改进项：减少 RTO 空烧</strong>。近30天内 RTO 空烧时长占比达 18%，导致天然气消耗环比增加 35%，碳排评价得分仅 58 分。污染评价 82 分表现良好，VOCs 达标率 100%，但协同分仅 52 分，C-P 协同指数 0.52 处于「差」等级。建议立即调整喷涂排班至集中时段，并检查蓄热体是否堵塞。
+      </div>
+    </div>
+    
+    <!-- 污染评价详情 -->
+    <div class="card detail-section">
+      <div class="detail-section-title">🌫️ 污染评价详情（P = 82分）</div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-item-name">VOCs 达标率</div>
+          <div class="detail-item-value" style="color:#52c41a">100%</div>
+          <div class="detail-item-desc">满分40分 → 40分</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-name">去除效率</div>
+          <div class="detail-item-value" style="color:#52c41a">94.2%</div>
+          <div class="detail-item-desc">满分30分 → 28分</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-name">涂料结构优化</div>
+          <div class="detail-item-value" style="color:#faad14">14分</div>
+          <div class="detail-item-desc">满分30分 → 14分（水性漆占比偏低）</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 能效评价详情 -->
+    <div class="card detail-section">
+      <div class="detail-section-title">⚡ 能效评价详情（E = 65分）</div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-item-name">热回收效率</div>
+          <div class="detail-item-value" style="color:#faad14">87%</div>
+          <div class="detail-item-desc">满分40分 → 24分（<95%）</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-name">空烧控制</div>
+          <div class="detail-item-value" style="color:#f5222d">18%</div>
+          <div class="detail-item-desc">满分30分 → 15分（空烧占比过高）</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-name">能源结构</div>
+          <div class="detail-item-value" style="color:#faad14">26分</div>
+          <div class="detail-item-desc">满分30分 → 26分</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 碳排评价详情 -->
+    <div class="card detail-section">
+      <div class="detail-section-title">🌱 碳排评价详情（C = 58分）</div>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-item-name">碳排强度对标</div>
+          <div class="detail-item-value" style="color:#fa8c16">0.28</div>
+          <div class="detail-item-desc">tCO₂/万m²，满分40分 → 20分（>P75）</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-name">配额余量</div>
+          <div class="detail-item-value" style="color:#faad14">68%</div>
+          <div class="detail-item-desc">满分30分 → 22分</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-item-name">减碳潜力</div>
+          <div class="detail-item-value" style="color:#faad14">16分</div>
+          <div class="detail-item-desc">满分30分 → 16分</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 改进优先级 -->
+    <div class="card detail-section">
+      <div class="detail-section-title">🎯 改进优先级建议</div>
+      <div class="priority-list">
+        <div class="priority-item">
+          <div class="priority-rank p1">1</div>
+          <div class="priority-text"><strong>减少 RTO 空烧</strong> — 调整喷涂排班至集中时段，目标空烧占比 < 5%</div>
+          <div class="priority-score">预期提升 +12分</div>
+        </div>
+        <div class="priority-item">
+          <div class="priority-rank p2">2</div>
+          <div class="priority-text"><strong>提升热回收效率</strong> — 检查蓄热体堵塞情况，清洗或更换蓄热体</div>
+          <div class="priority-score">预期提升 +8分</div>
+        </div>
+        <div class="priority-item">
+          <div class="priority-rank p3">3</div>
+          <div class="priority-text"><strong>提高水性涂料占比</strong> — 逐步替换溶剂型涂料，降低涂料隐含碳</div>
+          <div class="priority-score">预期提升 +6分</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="report-actions">
+      <button class="btn btn-default btn-lg">📊 查看历史报告</button>
+      <button class="btn btn-primary btn-lg">📥 导出 PDF 报告</button>
+    </div>
+    
+    <div style="height:40px"></div>
+  </div>
+</body>
+</html>

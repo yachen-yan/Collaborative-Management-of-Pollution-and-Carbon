@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>悖论模拟器 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
+    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .page-sub { font-size: 13px; color: rgba(0,0,0,0.45); margin-bottom: 24px; }
+    
+    /* 步骤条 */
+    .step-bar { display: flex; align-items: center; margin-bottom: 28px; }
+    .step-item { display: flex; align-items: center; gap: 8px; }
+    .step-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 600; flex-shrink: 0;
+      border: 2px solid #d9d9d9; color: rgba(0,0,0,0.35); background: #fff;
+    }
+    .step-item.active .step-circle { border-color: #1677ff; color: #1677ff; background: #e6f4ff; }
+    .step-item.done .step-circle { border-color: #52c41a; color: #fff; background: #52c41a; }
+    .step-text { font-size: 14px; color: rgba(0,0,0,0.45); }
+    .step-item.active .step-text { color: rgba(0,0,0,0.88); font-weight: 500; }
+    .step-line { flex: 1; height: 2px; background: #f0f0f0; margin: 0 12px; }
+    .step-line.done { background: #52c41a; }
+    
+    /* 步骤内容 */
+    .step-content { display: none; }
+    .step-content.active { display: block; animation: fadeIn 0.4s ease; }
+    
+    /* 工艺选择 */
+    .process-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .process-card {
+      border: 2px solid #f0f0f0; border-radius: 8px; padding: 20px;
+      cursor: pointer; transition: all 0.2s; position: relative;
+    }
+    .process-card:hover { border-color: #1677ff; box-shadow: 0 2px 12px rgba(22,119,255,0.1); }
+    .process-card.selected { border-color: #1677ff; background: #e6f4ff; }
+    .process-card .check {
+      position: absolute; top: 12px; right: 12px; width: 20px; height: 20px;
+      border-radius: 50%; border: 2px solid #d9d9d9; display: flex;
+      align-items: center; justify-content: center; font-size: 12px;
+    }
+    .process-card.selected .check { background: #1677ff; border-color: #1677ff; color: #fff; }
+    .process-icon { font-size: 32px; margin-bottom: 10px; }
+    .process-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .process-desc { font-size: 12px; color: rgba(0,0,0,0.45); line-height: 1.6; }
+    .process-params { margin-top: 10px; display: flex; gap: 12px; }
+    .process-param { font-size: 11px; padding: 3px 8px; background: #f5f5f5; border-radius: 4px; }
+    
+    /* 参数输入 */
+    .param-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .param-item label { display: block; margin-bottom: 6px; font-size: 13px; color: rgba(0,0,0,0.65); }
+    .param-item label .unit { color: rgba(0,0,0,0.35); font-size: 12px; margin-left: 4px; }
+    .param-item input, .param-item select {
+      width: 100%; padding: 10px 12px; border: 1px solid #d9d9d9;
+      border-radius: 6px; font-size: 14px; outline: none;
+    }
+    .param-item input:focus { border-color: #1677ff; }
+    
+    /* 对比箭头 */
+    .vs-arrow {
+      text-align: center; padding: 12px; font-size: 20px; color: #1677ff; font-weight: 700;
+    }
+    
+    /* 结果页 */
+    .result-banner {
+      padding: 24px; border-radius: 8px; text-align: center; margin-bottom: 24px;
+    }
+    .result-banner.trap {
+      background: linear-gradient(135deg, #fff1f0 0%, #fff7e6 100%);
+      border: 2px solid #f5222d;
+    }
+    .result-banner.good {
+      background: linear-gradient(135deg, #f6ffed 0%, #e6fffb 100%);
+      border: 2px solid #52c41a;
+    }
+    .result-icon { font-size: 48px; margin-bottom: 8px; }
+    .result-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .result-desc { font-size: 14px; color: rgba(0,0,0,0.65); }
+    
+    .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .result-card { text-align: center; padding: 20px; }
+    .result-value { font-size: 28px; font-weight: 700; }
+    .result-label { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 6px; }
+    .result-change { font-size: 12px; margin-top: 4px; }
+    .result-change.up { color: #52c41a; }
+    .result-change.down { color: #f5222d; }
+    
+    .suggestion-box {
+      background: #e6f4ff; border: 1px solid #91caff; border-radius: 8px;
+      padding: 16px; margin-bottom: 20px;
+    }
+    .suggestion-title { font-weight: 600; color: #1677ff; margin-bottom: 8px; }
+    .suggestion-list { font-size: 13px; line-height: 2; }
+    .suggestion-list li { margin-left: 18px; }
+    
+    .history-table { width: 100%; }
+    .history-table th, .history-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+    .history-table th { color: rgba(0,0,0,0.45); font-weight: 500; background: #fafafa; }
+    
+    .btn-nav {
+      display: flex; justify-content: space-between; margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
+  </div>
+  <div class="sidebar">
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
+    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📋</span>月度数据填报</a>
+    <a href="realtime-panel.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时双算看板</a>
+    <a href="simulator.html" class="sidebar-item active"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
+    <a href="triple-report.html" class="sidebar-item"><span class="sidebar-icon">📑</span>三评合一报告</a>
+    <a href="alerts.html" class="sidebar-item"><span class="sidebar-icon">🔔</span>预警中心</a>
+  </div>
+  
+  <div class="main">
+    <div class="page-header">🔮 悖论模拟器</div>
+    <div class="page-sub">涂装技改预评估：输入当前工艺与拟改造工艺，AI 模拟计算 VOCs、能耗、碳排变化及 C-P 协同指数</div>
+    
+    <!-- 步骤条 -->
+    <div class="step-bar">
+      <div class="step-item active" id="step1Item">
+        <div class="step-circle" id="step1Circle">1</div>
+        <span class="step-text">选择工艺</span>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-item" id="step2Item">
+        <div class="step-circle" id="step2Circle">2</div>
+        <span class="step-text">输入参数</span>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-item" id="step3Item">
+        <div class="step-circle" id="step3Circle">3</div>
+        <span class="step-text">查看结果</span>
+      </div>
+    </div>
+    
+    <!-- 步骤1：选择工艺 -->
+    <div class="step-content active" id="step1">
+      <div class="card">
+        <div style="font-size:15px;font-weight:600;margin-bottom:16px">🎨 当前工艺（底漆）</div>
+        <div class="process-grid" id="currentProcess">
+          <div class="process-card selected" onclick="selectProcess(this,'current')">
+            <div class="check">✓</div>
+            <div class="process-icon">🛢️</div>
+            <div class="process-name">溶剂型涂料（聚氨酯漆）</div>
+            <div class="process-desc">VOCs 产生系数 0.50-0.65 kg/kg，碳排放因子 2.5 kg CO₂/kg，常温烘干</div>
+            <div class="process-params">
+              <span class="process-param">VOCs: 400-600 mg/m³</span>
+              <span class="process-param">烘干: 常温-40°C</span>
+            </div>
+          </div>
+          <div class="process-card" onclick="selectProcess(this,'current')">
+            <div class="check"></div>
+            <div class="process-icon">💧</div>
+            <div class="process-name">水性涂料（双组分）</div>
+            <div class="process-desc">VOCs 产生系数 0.05-0.10 kg/kg，碳排放因子 1.8 kg CO₂/kg，需加热烘干</div>
+            <div class="process-params">
+              <span class="process-param">VOCs: 50-150 mg/m³</span>
+              <span class="process-param">烘干: 60-80°C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card" style="margin-top:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:16px">🎯 拟改造工艺（底漆）</div>
+        <div class="process-grid" id="targetProcess">
+          <div class="process-card" onclick="selectProcess(this,'target')">
+            <div class="check"></div>
+            <div class="process-icon">💧</div>
+            <div class="process-name">水性涂料（单组分）</div>
+            <div class="process-desc">VOCs 产生系数 0.08-0.15 kg/kg，碳排放因子 1.8 kg CO₂/kg，需加热烘干</div>
+            <div class="process-params">
+              <span class="process-param">VOCs: 50-150 mg/m³</span>
+              <span class="process-param">烘干: 60-80°C</span>
+            </div>
+          </div>
+          <div class="process-card" onclick="selectProcess(this,'target')">
+            <div class="check"></div>
+            <div class="process-icon">✨</div>
+            <div class="process-name">粉末涂料</div>
+            <div class="process-desc">VOCs 产生系数 ≈0，碳排放因子 1.2 kg CO₂/kg，高温烘干</div>
+            <div class="process-params">
+              <span class="process-param">VOCs: ≈0 mg/m³</span>
+              <span class="process-param">烘干: 160-200°C</span>
+            </div>
+          </div>
+          <div class="process-card" onclick="selectProcess(this,'target')">
+            <div class="check"></div>
+            <div class="process-icon">🔷</div>
+            <div class="process-name">高固体分涂料</div>
+            <div class="process-desc">VOCs 产生系数 0.30-0.45 kg/kg，碳排放因子 2.0 kg CO₂/kg，中温烘干</div>
+            <div class="process-params">
+              <span class="process-param">VOCs: 200-400 mg/m³</span>
+              <span class="process-param">烘干: 40-60°C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-nav">
+        <span></span>
+        <button class="btn btn-primary" onclick="goStep(2)">下一步：输入参数 →</button>
+      </div>
+    </div>
+    
+    <!-- 步骤2：输入参数 -->
+    <div class="step-content" id="step2">
+      <div class="card">
+        <div style="font-size:15px;font-weight:600;margin-bottom:16px">📋 基础生产参数</div>
+        <div class="param-grid">
+          <div class="param-item">
+            <label>年喷涂面积<span class="unit">万 m²</span></label>
+            <input type="number" id="sprayAreaYear" value="18">
+          </div>
+          <div class="param-item">
+            <label>年运行天数<span class="unit">天</span></label>
+            <input type="number" id="runDays" value="300">
+          </div>
+          <div class="param-item">
+            <label>日均运行时长<span class="unit">h</span></label>
+            <input type="number" id="dailyHours" value="10">
+          </div>
+          <div class="param-item">
+            <label>当前涂料年用量<span class="unit">kg</span></label>
+            <input type="number" id="paintUsage" value="15000">
+          </div>
+          <div class="param-item">
+            <label>当前天然气单价<span class="unit">元/Nm³</span></label>
+            <input type="number" id="gasPrice" value="3.2">
+          </div>
+          <div class="param-item">
+            <label>当前电价<span class="unit">元/kWh</span></label>
+            <input type="number" id="elecPrice" value="0.8">
+          </div>
+        </div>
+      </div>
+      
+      <div class="card" style="margin-top:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:16px">🔥 RTO 运行参数</div>
+        <div class="param-grid">
+          <div class="param-item">
+            <label>RTO 设计风量<span class="unit">m³/h</span></label>
+            <input type="number" value="5000">
+          </div>
+          <div class="param-item">
+            <label>当前燃烧室温度<span class="unit">°C</span></label>
+            <input type="number" value="785">
+          </div>
+          <div class="param-item">
+            <label>拟设定燃烧室温度<span class="unit">°C</span></label>
+            <input type="number" value="760">
+          </div>
+        </div>
+      </div>
+      
+      <div class="btn-nav">
+        <button class="btn btn-default" onclick="goStep(1)">← 上一步</button>
+        <button class="btn btn-primary" onclick="goStep(3)">🚀 开始模拟计算</button>
+      </div>
+    </div>
+    
+    <!-- 步骤3：查看结果 -->
+    <div class="step-content" id="step3">
+      <div class="result-banner trap" id="resultBanner">
+        <div class="result-icon">⚠️</div>
+        <div class="result-title" style="color:#f5222d">减污增碳陷阱</div>
+        <div class="result-desc">水性涂料切换后 VOCs 预计降低 60%，但天然气消耗预计增加 35%，C-P 协同指数将从 0.75 降至 0.48</div>
+      </div>
+      
+      <div class="row">
+        <div class="col-3">
+          <div class="card result-card">
+            <div class="result-value" style="color:#52c41a">-60%</div>
+            <div class="result-label">VOCs 排放变化</div>
+            <div class="result-change up">↓ 大幅下降</div>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="card result-card">
+            <div class="result-value" style="color:#f5222d">+35%</div>
+            <div class="result-label">天然气消耗变化</div>
+            <div class="result-change down">↑ 显著增加</div>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="card result-card">
+            <div class="result-value" style="color:#f5222d">+28%</div>
+            <div class="result-label">碳排放变化</div>
+            <div class="result-change down">↑ 碳排增加</div>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="card result-card">
+            <div class="result-value" style="color:#f5222d">0.48</div>
+            <div class="result-label">预测 C-P 协同指数</div>
+            <div class="result-change down">↓ 从 0.75 降至 0.48</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="suggestion-box">
+        <div class="suggestion-title">💡 AI 优化建议</div>
+        <ol class="suggestion-list">
+          <li>同步引入<strong>热泵辅助烘干</strong>，可将天然气消耗增量控制在 10% 以内</li>
+          <li>建议采用<strong>沸石转轮浓缩 + RTO</strong> 组合工艺，降低 RTO 运行负荷</li>
+          <li>优化喷涂排班，<strong>集中生产时段</strong>，减少 RTO 空烧时长</li>
+          <li>引入<strong>余热回收系统</strong>，预计可提升热回收效率至 95% 以上</li>
+        </ol>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">📜 模拟历史记录</div>
+        <table class="history-table">
+          <tr><th>时间</th><th>当前工艺</th><th>拟改造工艺</th><th>预测 C-P</th><th>判定</th></tr>
+          <tr><td>2026-05-18 09:15</td><td>溶剂型涂料</td><td>水性涂料（单组分）</td><td style="color:#f5222d">0.48</td><td><span class="tag tag-red">减污增碳陷阱</span></td></tr>
+          <tr><td>2026-05-10 14:22</td><td>溶剂型涂料</td><td>粉末涂料</td><td style="color:#fa8c16">0.52</td><td><span class="tag tag-orange">协同失衡</span></td></tr>
+          <tr><td>2026-04-28 10:05</td><td>溶剂型涂料</td><td>高固体分涂料</td><td style="color:#faad14">0.68</td><td><span class="tag tag-yellow">良</span></td></tr>
+        </table>
+      </div>
+      
+      <div class="btn-nav">
+        <button class="btn btn-default" onclick="goStep(2)">← 重新输入参数</button>
+        <div>
+          <button class="btn btn-default" onclick="goStep(1)">🔄 重新选择工艺</button>
+          <button class="btn btn-primary" style="margin-left:8px">💾 保存评估结果</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let currentStep = 1;
+    function goStep(n) {
+      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('step' + n).classList.add('active');
+      
+      // 更新步骤条
+      for (let i = 1; i <= 3; i++) {
+        const item = document.getElementById('step' + i + 'Item');
+        const circle = document.getElementById('step' + i + 'Circle');
+        const line = document.getElementById('line' + (i-1));
+        item.classList.remove('active', 'done');
+        if (i < n) {
+          item.classList.add('done');
+          circle.textContent = '✓';
+          if (line) line.classList.add('done');
+        } else if (i === n) {
+          item.classList.add('active');
+          circle.textContent = i;
+        } else {
+          circle.textContent = i;
+        }
+        if (i >= n && line) line.classList.remove('done');
+      }
+      currentStep = n;
+      window.scrollTo(0, 0);
+    }
+    
+    function selectProcess(el, type) {
+      const container = type === 'current' ? document.getElementById('currentProcess') : document.getElementById('targetProcess');
+      container.querySelectorAll('.process-card').forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('.check').textContent = '';
+      });
+      el.classList.add('selected');
+      el.querySelector('.check').textContent = '✓';
+    }
+  </script>
+</body>
+</html>

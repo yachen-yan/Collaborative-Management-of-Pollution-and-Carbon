@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>月度数据填报 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/data.js"></script>
+  <style>
+    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
+    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+    .form-section { margin-bottom: 24px; }
+    .form-section-title {
+      font-size: 15px; font-weight: 600; margin-bottom: 14px;
+      padding-left: 10px; border-left: 3px solid #1677ff;
+    }
+    .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .form-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .form-item label { display: block; margin-bottom: 6px; font-size: 13px; color: rgba(0,0,0,0.65); }
+    .form-item label .unit { color: rgba(0,0,0,0.35); font-size: 12px; margin-left: 4px; }
+    .form-item input, .form-item select {
+      width: 100%; padding: 9px 12px; border: 1px solid #d9d9d9;
+      border-radius: 6px; font-size: 14px; outline: none;
+    }
+    .form-item input:focus, .form-item select:focus { border-color: #1677ff; }
+    .form-item input.warning { border-color: #faad14; background: #fffbe6; }
+    .form-item input.error { border-color: #f5222d; background: #fff1f0; }
+    .form-hint {
+      font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 4px;
+    }
+    .form-hint.warn { color: #faad14; }
+    .form-hint.error { color: #f5222d; }
+    .ocr-section {
+      border: 2px dashed #d9d9d9; border-radius: 8px; padding: 32px;
+      text-align: center; background: #fafafa; cursor: pointer;
+      transition: all 0.2s; margin-bottom: 20px;
+    }
+    .ocr-section:hover { border-color: #1677ff; background: #e6f4ff; }
+    .ocr-section.dragover { border-color: #1677ff; background: #e6f4ff; }
+    .ocr-icon { font-size: 48px; margin-bottom: 12px; }
+    .ocr-text { font-size: 14px; color: rgba(0,0,0,0.65); }
+    .ocr-sub { font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 6px; }
+    .ocr-files { margin-top: 16px; text-align: left; }
+    .ocr-file-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: #fff; border-radius: 6px; margin-bottom: 8px;
+      border: 1px solid #e8e8e8;
+    }
+    .ocr-file-icon { font-size: 24px; }
+    .ocr-file-info { flex: 1; }
+    .ocr-file-name { font-size: 13px; }
+    .ocr-file-status { font-size: 11px; color: #52c41a; margin-top: 2px; }
+    .ocr-file-status.processing { color: #1677ff; }
+    .ocr-progress { width: 120px; height: 4px; background: #f0f0f0; border-radius: 2px; }
+    .ocr-progress-bar { height: 100%; background: #1677ff; border-radius: 2px; transition: width 0.3s; }
+    .ocr-fill-result {
+      margin: 16px 0; padding: 12px 16px; background: #f6ffed;
+      border: 1px solid #b7eb8f; border-radius: 6px; font-size: 13px;
+    }
+    .ocr-fill-result-title { font-weight: 600; color: #52c41a; margin-bottom: 6px; }
+    .ocr-fill-row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .ocr-fill-row span:first-child { color: rgba(0,0,0,0.45); }
+    .ocr-fill-row span:last-child { font-weight: 500; }
+    .ocr-fill-row .low-conf { color: #faad14; }
+    .btn-bar {
+      display: flex; gap: 12px; justify-content: center; margin-top: 32px; padding-top: 24px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .btn-lg { padding: 10px 32px; font-size: 15px; }
+    .validation-panel {
+      position: fixed; right: 24px; top: 88px; width: 280px;
+      background: #fff; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      padding: 16px; z-index: 200;
+    }
+    .validation-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+    .validation-item {
+      display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px;
+    }
+    .validation-icon { width: 16px; text-align: center; }
+    .validation-item.pass { color: #52c41a; }
+    .validation-item.fail { color: #f5222d; }
+    .validation-item.warn { color: #faad14; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
+  </div>
+  <div class="sidebar">
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
+    <a href="monthly-report.html" class="sidebar-item active"><span class="sidebar-icon">📋</span>月度数据填报</a>
+    <a href="realtime-panel.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时双算看板</a>
+    <a href="simulator.html" class="sidebar-item"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
+    <a href="triple-report.html" class="sidebar-item"><span class="sidebar-icon">📑</span>三评合一报告</a>
+    <a href="alerts.html" class="sidebar-item"><span class="sidebar-icon">🔔</span>预警中心</a>
+  </div>
+  
+  <div class="main">
+    <div class="page-header">📋 2026年5月 月度运行数据填报</div>
+    
+    <!-- OCR上传区 -->
+    <div class="ocr-section" id="ocrZone" onclick="triggerUpload()">
+      <div class="ocr-icon">📤</div>
+      <div class="ocr-text">点击上传《排污许可执行报告》或《危险废物台账》</div>
+      <div class="ocr-sub">支持 PDF / Excel / JPG / PNG，系统自动 OCR 提取关键字段</div>
+      <div class="ocr-files" id="ocrFiles" style="display:none"></div>
+    </div>
+    
+    <!-- 涂料消耗 -->
+    <div class="card form-section">
+      <div class="form-section-title">🎨 涂料消耗</div>
+      <div class="form-grid">
+        <div class="form-item">
+          <label>溶剂型涂料<span class="unit">kg</span></label>
+          <input type="number" id="solventPaint" value="1250" onchange="validate()">
+          <div class="form-hint">上月：1180 kg</div>
+        </div>
+        <div class="form-item">
+          <label>水性涂料<span class="unit">kg</span></label>
+          <input type="number" id="waterPaint" value="680" onchange="validate()">
+          <div class="form-hint">上月：520 kg</div>
+        </div>
+        <div class="form-item">
+          <label>粉末涂料<span class="unit">kg</span></label>
+          <input type="number" id="powderPaint" value="320" onchange="validate()">
+          <div class="form-hint">上月：300 kg</div>
+        </div>
+        <div class="form-item">
+          <label>高固体分涂料<span class="unit">kg</span></label>
+          <input type="number" id="highSolidPaint" value="450" onchange="validate()">
+          <div class="form-hint">上月：480 kg</div>
+        </div>
+        <div class="form-item">
+          <label>稀释剂<span class="unit">kg</span></label>
+          <input type="number" id="thinner" value="380" onchange="validate()">
+        </div>
+        <div class="form-item">
+          <label>固化剂<span class="unit">kg</span></label>
+          <input type="number" id="hardener" value="210" onchange="validate()">
+        </div>
+      </div>
+    </div>
+    
+    <!-- RTO运行数据 -->
+    <div class="card form-section">
+      <div class="form-section-title">🔥 RTO 运行数据</div>
+      <div class="form-grid">
+        <div class="form-item">
+          <label>RTO 运行时长<span class="unit">h</span></label>
+          <input type="number" id="rtoHours" value="520" onchange="validate()">
+        </div>
+        <div class="form-item">
+          <label>天然气消耗量<span class="unit">Nm³</span></label>
+          <input type="number" id="rtoGas" value="18500" class="warning" onchange="validate()">
+          <div class="form-hint warn">⚠️ 偏离历史均值 +42%，请核实</div>
+        </div>
+        <div class="form-item">
+          <label>入口 NMHC 浓度<span class="unit">mg/m³</span></label>
+          <input type="number" id="inletNmethane" value="485" onchange="validate()">
+        </div>
+        <div class="form-item">
+          <label>出口 NMHC 浓度<span class="unit">mg/m³</span></label>
+          <input type="number" id="outletNmethane" value="28" onchange="validate()">
+        </div>
+        <div class="form-item">
+          <label>燃烧室平均温度<span class="unit">°C</span></label>
+          <input type="number" id="chamberTemp" value="785" onchange="validate()">
+        </div>
+        <div class="form-item">
+          <label>喷涂面积<span class="unit">万 m²</span></label>
+          <input type="number" id="sprayArea" value="1.5" onchange="validate()">
+        </div>
+      </div>
+    </div>
+    
+    <!-- 电表数据 -->
+    <div class="card form-section">
+      <div class="form-section-title">⚡ 能源消耗</div>
+      <div class="form-grid form-grid-2">
+        <div class="form-item">
+          <label>当月用电量<span class="unit">kWh</span></label>
+          <input type="number" value="42000">
+        </div>
+        <div class="form-item">
+          <label>当月用水量<span class="unit">t</span></label>
+          <input type="number" value="850">
+        </div>
+      </div>
+    </div>
+    
+    <!-- 提交 -->
+    <div class="btn-bar">
+      <button class="btn btn-default btn-lg" onclick="saveDraft()">💾 保存草稿</button>
+      <button class="btn btn-primary btn-lg" onclick="submitReport()">✅ 提交审核</button>
+    </div>
+    
+    <!-- AI校验面板 -->
+    <div class="validation-panel" id="valPanel">
+      <div class="validation-title">🤖 AI 数据校验</div>
+      <div class="validation-item pass"><span class="validation-icon">✓</span>涂料用量/面积比值</div>
+      <div class="validation-item warn"><span class="validation-icon">!</span>VOCs 浓度环比波动</div>
+      <div class="validation-item fail"><span class="validation-icon">✗</span>天然气/RTO 时长比值</div>
+      <div class="validation-item pass"><span class="validation-icon">✓</span>逻辑一致性</div>
+      <div class="validation-item pass"><span class="validation-icon">✓</span>温度合理性</div>
+      <div class="validation-item pass"><span class="validation-icon">✓</span>产量合理性</div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;font-size:12px;color:#f5222d">
+        ⚠️ 1项异常，提交后将被退回
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function triggerUpload() {
+      const zone = document.getElementById('ocrZone');
+      const files = document.getElementById('ocrFiles');
+      zone.style.pointerEvents = 'none';
+      zone.querySelector('.ocr-text').textContent = '正在解析文档...';
+      zone.querySelector('.ocr-sub').textContent = 'OCR 识别中，请稍候';
+      
+      setTimeout(() => {
+        zone.style.display = 'none';
+        files.style.display = 'block';
+        files.innerHTML = `
+          <div class="ocr-file-item">
+            <span class="ocr-file-icon">📄</span>
+            <div class="ocr-file-info">
+              <div class="ocr-file-name">排污许可执行报告_202605.pdf</div>
+              <div class="ocr-file-status">✅ OCR 解析完成，置信度 92%</div>
+            </div>
+          </div>
+          <div class="ocr-fill-result">
+            <div class="ocr-fill-result-title">🎯 已自动回填以下字段</div>
+            <div class="ocr-fill-row"><span>溶剂型涂料</span><span>1250 kg ✓</span></div>
+            <div class="ocr-fill-row"><span>水性涂料</span><span>680 kg ✓</span></div>
+            <div class="ocr-fill-row"><span>RTO 运行时长</span><span>520 h ✓</span></div>
+            <div class="ocr-fill-row"><span>天然气消耗</span><span class="low-conf">18500 Nm³ ?</span></div>
+            <div style="margin-top:6px;font-size:11px;color:#faad14">⚠️ 天然气消耗量识别置信度较低，请手动核对</div>
+          </div>
+        `;
+      }, 1500);
+    }
+    
+    function validate() {
+      // 简单校验演示
+      const gas = document.getElementById('rtoGas');
+      if (parseInt(gas.value) > 15000) {
+        gas.className = 'warning';
+      } else {
+        gas.className = '';
+      }
+    }
+    
+    function saveDraft() {
+      alert('✅ 草稿已保存（本地演示）');
+    }
+    
+    function submitReport() {
+      alert('📤 数据已提交至监测数据科审核（本地演示）');
+    }
+  </script>
+</body>
+</html>

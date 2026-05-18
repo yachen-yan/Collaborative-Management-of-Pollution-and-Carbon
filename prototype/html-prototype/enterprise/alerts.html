@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>预警中心 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
+    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; }
+    
+    .filter-bar {
+      display: flex; gap: 12px; margin-bottom: 16px; align-items: center;
+    }
+    .filter-btn {
+      padding: 5px 14px; border-radius: 6px; border: 1px solid #d9d9d9;
+      background: #fff; font-size: 13px; cursor: pointer; transition: all 0.2s;
+    }
+    .filter-btn.active { background: #1677ff; color: #fff; border-color: #1677ff; }
+    .filter-btn:hover:not(.active) { border-color: #1677ff; color: #1677ff; }
+    
+    .alert-card {
+      display: flex; gap: 14px; padding: 16px 20px;
+      background: #fff; border-radius: 8px; margin-bottom: 10px;
+      border-left: 4px solid #d9d9d9; cursor: pointer;
+      transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .alert-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    .alert-card.unread { background: #fff; }
+    .alert-card.read { background: #fafafa; opacity: 0.85; }
+    .alert-card.critical { border-left-color: #f5222d; }
+    .alert-card.warning { border-left-color: #faad14; }
+    .alert-card.info { border-left-color: #1677ff; }
+    
+    .alert-card-icon {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .alert-card-icon.critical { background: #fff1f0; }
+    .alert-card-icon.warning { background: #fffbe6; }
+    .alert-card-icon.info { background: #e6f4ff; }
+    
+    .alert-card-body { flex: 1; }
+    .alert-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .alert-card-title { font-size: 14px; font-weight: 600; }
+    .alert-card-title .dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: #f5222d; margin-left: 6px; vertical-align: middle;
+    }
+    .alert-card-time { font-size: 12px; color: rgba(0,0,0,0.35); white-space: nowrap; margin-left: 12px; }
+    .alert-card-desc { font-size: 13px; color: rgba(0,0,0,0.55); line-height: 1.6; }
+    .alert-card-tags { margin-top: 8px; display: flex; gap: 6px; }
+    
+    .alert-detail-modal {
+      display: none; position: fixed; top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.5); z-index: 300; align-items: center; justify-content: center;
+    }
+    .alert-detail-modal.active { display: flex; }
+    .alert-detail-box {
+      width: 640px; max-height: 80vh; background: #fff; border-radius: 12px;
+      overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .alert-detail-header {
+      padding: 20px 24px; border-bottom: 1px solid #f0f0f0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .alert-detail-title { font-size: 16px; font-weight: 600; }
+    .alert-detail-close { font-size: 20px; cursor: pointer; color: rgba(0,0,0,0.35); }
+    .alert-detail-close:hover { color: rgba(0,0,0,0.65); }
+    .alert-detail-body { padding: 20px 24px; overflow-y: auto; max-height: calc(80vh - 60px); }
+    
+    .diag-section { margin-bottom: 16px; }
+    .diag-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #1677ff; }
+    .diag-box {
+      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 6px;
+      padding: 12px 16px; font-size: 13px; line-height: 1.8;
+    }
+    .diag-box.warn { background: #fffbe6; border-color: #ffe58f; }
+    .diag-data-row {
+      display: flex; justify-content: space-between; padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0; font-size: 13px;
+    }
+    .diag-data-row:last-child { border-bottom: none; }
+    .diag-data-row span:first-child { color: rgba(0,0,0,0.45); }
+    .diag-data-row span:last-child { font-weight: 500; }
+    
+    .suggest-list { margin-top: 8px; }
+    .suggest-item {
+      display: flex; gap: 8px; padding: 8px 0; font-size: 13px;
+    }
+    .suggest-num {
+      width: 20px; height: 20px; border-radius: 50%; background: #1677ff;
+      color: #fff; font-size: 11px; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0;
+    }
+    .suggest-text { flex: 1; line-height: 1.6; }
+    
+    .stats-bar { display: flex; gap: 16px; margin-bottom: 16px; }
+    .stats-item { padding: 10px 16px; background: #fafafa; border-radius: 6px; text-align: center; }
+    .stats-num { font-size: 20px; font-weight: 700; }
+    .stats-label { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
+  </div>
+  <div class="sidebar">
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
+    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📋</span>月度数据填报</a>
+    <a href="realtime-panel.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时双算看板</a>
+    <a href="simulator.html" class="sidebar-item"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
+    <a href="triple-report.html" class="sidebar-item"><span class="sidebar-icon">📑</span>三评合一报告</a>
+    <a href="alerts.html" class="sidebar-item active"><span class="sidebar-icon">🔔</span>预警中心</a>
+  </div>
+  
+  <div class="main">
+    <div class="page-header">
+      <span>🔔 预警中心</span>
+      <button class="btn btn-default" style="font-size:13px" onclick="markAllRead()">✓ 全部标记已读</button>
+    </div>
+    
+    <div class="stats-bar">
+      <div class="stats-item"><div class="stats-num" style="color:#f5222d">2</div><div class="stats-label">未读预警</div></div>
+      <div class="stats-item"><div class="stats-num" style="color:#f5222d">1</div><div class="stats-label">Paradox风险</div></div>
+      <div class="stats-item"><div class="stats-num" style="color:#faad14">1</div><div class="stats-label">协同失衡</div></div>
+      <div class="stats-item"><div class="stats-num" style="color:#1677ff">1</div><div class="stats-label">数据异常</div></div>
+      <div class="stats-item"><div class="stats-num" style="color:rgba(0,0,0,0.45)">4</div><div class="stats-label">本月累计</div></div>
+    </div>
+    
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterAlerts(this,'all')">全部</button>
+      <button class="filter-btn" onclick="filterAlerts(this,'paradox')">Paradox风险</button>
+      <button class="filter-btn" onclick="filterAlerts(this,'imbalance')">协同失衡</button>
+      <button class="filter-btn" onclick="filterAlerts(this,'data')">数据异常</button>
+      <button class="filter-btn" onclick="filterAlerts(this,'permit')">证件到期</button>
+    </div>
+    
+    <div id="alertList">
+      <div class="alert-card critical unread" onclick="openDetail(1)">
+        <div class="alert-card-icon critical">⚠️</div>
+        <div class="alert-card-body">
+          <div class="alert-card-header">
+            <span class="alert-card-title">Paradox 风险预警<span class="dot"></span></span>
+            <span class="alert-card-time">今天 09:00</span>
+          </div>
+          <div class="alert-card-desc">C-P 协同指数 0.38，已连续 12h 低于 0.4，疑似 RTO 空烧导致「减污增碳陷阱」</div>
+          <div class="alert-card-tags">
+            <span class="tag tag-red">C-P < 0.4</span>
+            <span class="tag tag-red">减污增碳</span>
+            <span class="tag tag-orange">持续12h</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="alert-card warning unread" onclick="openDetail(2)">
+        <div class="alert-card-icon warning">🔶</div>
+        <div class="alert-card-body">
+          <div class="alert-card-header">
+            <span class="alert-card-title">协同失衡预警<span class="dot"></span></span>
+            <span class="alert-card-time">昨天 18:30</span>
+          </div>
+          <div class="alert-card-desc">C-P 协同指数 0.42，持续低于 0.6 超过 4h，天然气消耗环比激增</div>
+          <div class="alert-card-tags">
+            <span class="tag tag-yellow">C-P < 0.6</span>
+            <span class="tag tag-yellow">持续4h</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="alert-card warning read" onclick="openDetail(3)">
+        <div class="alert-card-icon warning">📋</div>
+        <div class="alert-card-body">
+          <div class="alert-card-header">
+            <span class="alert-card-title">数据异常预警</span>
+            <span class="alert-card-time">05-15</span>
+          </div>
+          <div class="alert-card-desc">5月月度上报中天然气/RTO时长比值偏离历史均值 45%，请核实数据</div>
+          <div class="alert-card-tags">
+            <span class="tag tag-yellow">偏离+42%</span>
+            <span class="tag tag-blue">待复核</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="alert-card info read" onclick="openDetail(4)">
+        <div class="alert-card-icon info">📄</div>
+        <div class="alert-card-body">
+          <div class="alert-card-header">
+            <span class="alert-card-title">证件到期提醒</span>
+            <span class="alert-card-time">05-10</span>
+          </div>
+          <div class="alert-card-desc">排污许可证将于 21 天后到期（2026-12-31），请及时办理续期</div>
+          <div class="alert-card-tags">
+            <span class="tag tag-blue">剩余21天</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="height:40px"></div>
+  </div>
+  
+  <!-- 详情弹窗 -->
+  <div class="alert-detail-modal" id="detailModal">
+    <div class="alert-detail-box">
+      <div class="alert-detail-header">
+        <span class="alert-detail-title">🩺 AI 诊断报告 — Paradox 风险预警</span>
+        <span class="alert-detail-close" onclick="closeDetail()">✕</span>
+      </div>
+      <div class="alert-detail-body">
+        <div class="diag-section">
+          <div class="diag-title">📊 异常数据快照</div>
+          <div class="card" style="padding:12px 16px">
+            <div class="diag-data-row"><span>C-P 协同指数</span><span style="color:#f5222d;font-weight:700">0.38（极差）</span></div>
+            <div class="diag-data-row"><span>VOCs 排放速率</span><span>12.5 kg/h（↓ 8.2%）</span></div>
+            <div class="diag-data-row"><span>天然气流量</span><span>1200 Nm³/h（↑ 35%）</span></div>
+            <div class="diag-data-row"><span>燃烧室温度</span><span>785°C</span></div>
+            <div class="diag-data-row"><span>空烧时长占比</span><span style="color:#f5222d">22%</span></div>
+            <div class="diag-data-row"><span>持续时间</span><span>12 小时</span></div>
+          </div>
+        </div>
+        
+        <div class="diag-section">
+          <div class="diag-title">🔍 根因分析</div>
+          <div class="diag-box warn">
+            <strong>根因：RTO 空烧时长占比过高（22%）</strong><br>
+            入口 VOCs 浓度 485 mg/m³ 处于较低水平，但天然气流量维持 1200 Nm³/h 的高位运行。结合生产排班数据，发现近 3 日喷涂作业分散在 4 个时段，RTO 启停频繁导致空烧累积。<br><br>
+            <strong>关联判定：</strong>符合「减污增碳陷阱」典型特征 — VOCs 下降伴随天然气激增，产量变化 < 10%。
+          </div>
+        </div>
+        
+        <div class="diag-section">
+          <div class="diag-title">💡 AI 改进建议</div>
+          <div class="suggest-list">
+            <div class="suggest-item"><div class="suggest-num">1</div><div class="suggest-text"><strong>调整喷涂排班</strong>：将分散的 4 个时段合并为 2 个集中时段（8-12时、13-17时），预计可减少空烧时长 60%</div></div>
+            <div class="suggest-item"><div class="suggest-num">2</div><div class="suggest-text"><strong>检查蓄热体</strong>：热回收效率已降至 87%，建议清洗或更换蓄热陶瓷，恢复至 95% 以上</div></div>
+            <div class="suggest-item"><div class="suggest-num">3</div><div class="suggest-text"><strong>优化燃烧室温度</strong>：当前 785°C，可适当下调至 760°C，在保证分解效率的前提下降低天然气消耗</div></div>
+          </div>
+        </div>
+        
+        <div class="diag-section">
+          <div class="diag-title">📋 处理记录</div>
+          <div class="card" style="padding:12px 16px;font-size:13px">
+            <div style="color:rgba(0,0,0,0.45)">⏳ 待企业签收整改 → 企业反馈整改情况 → 监测科复核 → 销号</div>
+          </div>
+        </div>
+        
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1">✅ 已知晓，开始整改</button>
+          <button class="btn btn-default" style="flex:1">📝 提交整改说明</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function openDetail(id) {
+      document.getElementById('detailModal').classList.add('active');
+    }
+    function closeDetail() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+    function filterAlerts(el, type) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+    function markAllRead() {
+      document.querySelectorAll('.alert-card.unread').forEach(c => {
+        c.classList.remove('unread');
+        c.classList.add('read');
+        const dot = c.querySelector('.dot');
+        if (dot) dot.remove();
+      });
+    }
+    document.getElementById('detailModal').addEventListener('click', e => {
+      if (e.target === document.getElementById('detailModal')) closeDetail();
+    });
+  </script>
+</body>
+</html>

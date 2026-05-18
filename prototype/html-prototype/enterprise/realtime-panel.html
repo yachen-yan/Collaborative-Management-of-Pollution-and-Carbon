@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>实时双算看板 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/data.js"></script>
+  <style>
+    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
+    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; }
+    .page-header .update-time { font-size: 13px; color: rgba(0,0,0,0.45); font-weight: 400; }
+    .rt-big-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .rt-big-card { text-align: center; padding: 24px 16px; }
+    .rt-big-value { font-size: 36px; font-weight: 700; line-height: 1.1; }
+    .rt-big-label { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 8px; }
+    .rt-big-unit { font-size: 12px; color: rgba(0,0,0,0.35); margin-top: 2px; }
+    .rt-big-trend { font-size: 12px; margin-top: 6px; }
+    .rt-big-trend.up { color: #f5222d; }
+    .rt-big-trend.down { color: #52c41a; }
+    .rt-big-trend::before { content: "↑ "; }
+    .rt-big-trend.down::before { content: "↓ "; }
+    
+    .chart-card { padding: 20px; }
+    .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .chart-title { font-size: 15px; font-weight: 600; }
+    .chart-legend { display: flex; gap: 16px; font-size: 12px; }
+    .chart-legend-item { display: flex; align-items: center; gap: 4px; }
+    .chart-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+    
+    .mini-chart { height: 180px; position: relative; }
+    .mini-chart svg { width: 100%; height: 100%; }
+    .mini-line { fill: none; stroke-width: 2; stroke-linecap: round; }
+    .mini-area { opacity: 0.1; }
+    .mini-dot { r: 3; fill: #fff; stroke-width: 2; }
+    .mini-label { font-size: 10px; fill: rgba(0,0,0,0.35); }
+    .mini-axis { stroke: #f0f0f0; stroke-width: 1; }
+    
+    .compare-section { margin-top: 8px; }
+    .compare-bar {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .compare-label { width: 80px; font-size: 12px; color: rgba(0,0,0,0.45); }
+    .compare-track { flex: 1; height: 20px; background: #f0f0f0; border-radius: 4px; position: relative; }
+    .compare-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .compare-value { width: 50px; text-align: right; font-size: 13px; font-weight: 500; }
+    .compare-marker {
+      position: absolute; top: -4px; width: 2px; height: 28px;
+      background: #f5222d; border-radius: 1px;
+    }
+    .compare-marker::after {
+      content: attr(data-label); position: absolute; top: -16px; left: -12px;
+      font-size: 10px; color: #f5222d; white-space: nowrap;
+    }
+    
+    .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .status-item {
+      padding: 14px; border-radius: 8px; text-align: center;
+      border: 1px solid #f0f0f0;
+    }
+    .status-icon { font-size: 28px; margin-bottom: 6px; }
+    .status-name { font-size: 13px; color: rgba(0,0,0,0.45); }
+    .status-value { font-size: 18px; font-weight: 600; margin-top: 4px; }
+    .status-item.normal { background: #f6ffed; border-color: #b7eb8f; }
+    .status-item.warn { background: #fffbe6; border-color: #ffe58f; }
+    .status-item.danger { background: #fff1f0; border-color: #ffa39e; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
+  </div>
+  <div class="sidebar">
+    <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
+    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📋</span>月度数据填报</a>
+    <a href="realtime-panel.html" class="sidebar-item active"><span class="sidebar-icon">📊</span>实时双算看板</a>
+    <a href="simulator.html" class="sidebar-item"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
+    <a href="triple-report.html" class="sidebar-item"><span class="sidebar-icon">📑</span>三评合一报告</a>
+    <a href="alerts.html" class="sidebar-item"><span class="sidebar-icon">🔔</span>预警中心</a>
+  </div>
+  
+  <div class="main">
+    <div class="page-header">
+      <span>📊 实时双算结果看板</span>
+      <span class="update-time">⏱️ 数据更新时间：2026-05-18 09:00（每5分钟刷新）</span>
+    </div>
+    
+    <!-- 核心指标大卡 -->
+    <div class="rt-big-grid">
+      <div class="card rt-big-card">
+        <div class="rt-big-value" style="color:#1677ff">12.5</div>
+        <div class="rt-big-unit">kg/h</div>
+        <div class="rt-big-label">VOCs 排放速率</div>
+        <div class="rt-big-trend down">环比 -8.2%</div>
+      </div>
+      <div class="card rt-big-card">
+        <div class="rt-big-value" style="color:#52c41a">94.2%</div>
+        <div class="rt-big-label">VOCs 去除效率</div>
+        <div class="rt-big-trend up">环比 +1.5%</div>
+      </div>
+      <div class="card rt-big-card">
+        <div class="rt-big-value" style="color:#fa8c16">0.42</div>
+        <div class="rt-big-unit">tCO₂/h</div>
+        <div class="rt-big-label">总碳排放</div>
+        <div class="rt-big-trend up">环比 +18.6%</div>
+      </div>
+      <div class="card rt-big-card">
+        <div class="rt-big-value" style="color:#f5222d">0.38</div>
+        <div class="rt-big-label">C-P 协同指数</div>
+        <div class="rt-big-trend up">环比 -15.6%</div>
+      </div>
+    </div>
+    
+    <!-- 图表区 -->
+    <div class="row">
+      <div class="col-6">
+        <div class="card chart-card">
+          <div class="chart-header">
+            <span class="chart-title">📈 VOCs 排放速率（近24h）</span>
+            <div class="chart-legend">
+              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#1677ff"></div>本企业</div>
+              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#d9d9d9"></div>区域均值</div>
+            </div>
+          </div>
+          <div class="mini-chart">
+            <svg viewBox="0 0 400 160">
+              <line x1="40" y1="20" x2="40" y2="140" class="mini-axis"/>
+              <line x1="40" y1="140" x2="380" y2="140" class="mini-axis"/>
+              <!-- 区域均值虚线 -->
+              <polyline points="40,85 90,82 140,88 190,80 240,86 290,83 340,87 380,84" fill="none" stroke="#d9d9d9" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <!-- 本企业 -->
+              <polygon points="40,100 90,95 140,105 190,90 240,85 290,80 340,75 380,70" class="mini-area" style="fill:rgba(22,119,255,0.08)"/>
+              <polyline points="40,100 90,95 140,105 190,90 240,85 290,80 340,75 380,70" class="mini-line" style="stroke:#1677ff"/>
+              <circle cx="40" cy="100" class="mini-dot" style="stroke:#1677ff"/>
+              <circle cx="90" cy="95" class="mini-dot" style="stroke:#1677ff"/>
+              <circle cx="140" cy="105" class="mini-dot" style="stroke:#1677ff"/>
+              <circle cx="190" cy="90" class="mini-dot" style="stroke:#1677ff"/>
+              <circle cx="240" cy="85" class="mini-dot" style="stroke:#1677ff"/>
+              <circle cx="290" cy="80" class="mini-dot" style="stroke:#1677ff"/>
+              <circle cx="340" cy="75" class="mini-dot" style="stroke:#1677ff"/>
+              <circle cx="380" cy="70" class="mini-dot" style="stroke:#1677ff;r:5"/>
+              <text x="40" y="156" class="mini-label" text-anchor="middle">00:00</text>
+              <text x="140" y="156" class="mini-label" text-anchor="middle">08:00</text>
+              <text x="240" y="156" class="mini-label" text-anchor="middle">16:00</text>
+              <text x="340" y="156" class="mini-label" text-anchor="middle" fill="#1677ff" font-weight="bold">现在</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card chart-card">
+          <div class="chart-header">
+            <span class="chart-title">🔥 天然气消耗量（近24h）</span>
+          </div>
+          <div class="mini-chart">
+            <svg viewBox="0 0 400 160">
+              <line x1="40" y1="20" x2="40" y2="140" class="mini-axis"/>
+              <line x1="40" y1="140" x2="380" y2="140" class="mini-axis"/>
+              <polyline points="40,110 90,108 140,112 190,100 240,95 290,88 340,82 380,75" class="mini-line" style="stroke:#fa8c16"/>
+              <circle cx="380" cy="75" class="mini-dot" style="stroke:#fa8c16;r:5"/>
+              <text x="40" y="156" class="mini-label" text-anchor="middle">00:00</text>
+              <text x="140" y="156" class="mini-label" text-anchor="middle">08:00</text>
+              <text x="240" y="156" class="mini-label" text-anchor="middle">16:00</text>
+              <text x="380" y="156" class="mini-label" text-anchor="middle" fill="#fa8c16" font-weight="bold">现在</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 同区域对比 + 设备状态 -->
+    <div class="row">
+      <div class="col-6">
+        <div class="card">
+          <div class="card-title">📊 同区域同行业对比（脱敏）</div>
+          <div class="compare-section">
+            <div class="compare-bar">
+              <span class="compare-label">VOCs排放强度</span>
+              <div class="compare-track">
+                <div class="compare-fill" style="width:65%;background:#1677ff"></div>
+                <div class="compare-marker" style="left:50%" data-label="均值"></div>
+              </div>
+              <span class="compare-value">8.3</span>
+            </div>
+            <div class="compare-bar">
+              <span class="compare-label">碳排强度</span>
+              <div class="compare-track">
+                <div class="compare-fill" style="width:85%;background:#fa8c16"></div>
+                <div class="compare-marker" style="left:55%" data-label="均值"></div>
+              </div>
+              <span class="compare-value">0.28</span>
+            </div>
+            <div class="compare-bar">
+              <span class="compare-label">C-P 协同指数</span>
+              <div class="compare-track">
+                <div class="compare-fill" style="width:38%;background:#f5222d"></div>
+                <div class="compare-marker" style="left:62%" data-label="均值"></div>
+              </div>
+              <span class="compare-value">0.38</span>
+            </div>
+            <div class="compare-bar">
+              <span class="compare-label">RTO能效</span>
+              <div class="compare-track">
+                <div class="compare-fill" style="width:78%;background:#52c41a"></div>
+                <div class="compare-marker" style="left:70%" data-label="均值"></div>
+              </div>
+              <span class="compare-value">92%</span>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:10px;background:#fffbe6;border-radius:6px;font-size:12px;color:#d48806">
+            📌 你的 C-P 协同指数低于区域均值 38%，建议立即排查 RTO 运行参数
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card">
+          <div class="card-title">🔧 关键设备实时状态</div>
+          <div class="status-grid">
+            <div class="status-item normal">
+              <div class="status-icon">🌡️</div>
+              <div class="status-name">燃烧室温度</div>
+              <div class="status-value" style="color:#52c41a">785°C</div>
+            </div>
+            <div class="status-item normal">
+              <div class="status-icon">💨</div>
+              <div class="status-name">废气风量</div>
+              <div class="status-value" style="color:#52c41a">4200 m³/h</div>
+            </div>
+            <div class="status-item warn">
+              <div class="status-icon">⛽</div>
+              <div class="status-name">天然气流量</div>
+              <div class="status-value" style="color:#faad14">1200 Nm³/h</div>
+            </div>
+            <div class="status-item danger">
+              <div class="status-icon">🔥</div>
+              <div class="status-name">热回收效率</div>
+              <div class="status-value" style="color:#f5222d">87%</div>
+            </div>
+            <div class="status-item normal">
+              <div class="status-icon">⚡</div>
+              <div class="status-name">电表功率</div>
+              <div class="status-value" style="color:#52c41a">45 kW</div>
+            </div>
+            <div class="status-item danger">
+              <div class="status-icon">⚠️</div>
+              <div class="status-name">空烧判定</div>
+              <div class="status-value" style="color:#f5222d">是</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:10px;background:#fff1f0;border-radius:6px;font-size:12px;color:#cf1322">
+            🚨 检测到 RTO 空烧：入口 VOCs 浓度 485 mg/m³，天然气流量 1200 Nm³/h，空烧时长占比 22%
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="height:40px"></div>
+  </div>
+</body>
+</html>
