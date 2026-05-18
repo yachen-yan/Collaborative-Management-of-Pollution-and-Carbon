@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>污碳协同AI监管平台 — 原型导航</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .nav-wrap {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+      color: #fff; padding: 40px;
+    }
+    .nav-title { font-size: 36px; font-weight: 700; margin-bottom: 8px; text-align: center; }
+    .nav-sub { font-size: 16px; opacity: 0.85; margin-bottom: 48px; text-align: center; }
+    .nav-grid {
+      display: grid; grid-template-columns: repeat(3, 300px);
+      gap: 24px; max-width: 960px;
+    }
+    .nav-card {
+      background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
+      border-radius: 12px; padding: 32px; text-align: center;
+      border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
+      transition: all 0.3s; color: #fff;
+    }
+    .nav-card:hover {
+      background: rgba(255,255,255,0.2); transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .nav-card-icon { font-size: 48px; margin-bottom: 16px; }
+    .nav-card-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .nav-card-desc { font-size: 13px; opacity: 0.75; line-height: 1.6; }
+    .nav-info {
+      margin-top: 48px; padding: 16px 32px;
+      background: rgba(255,255,255,0.1); border-radius: 8px;
+      font-size: 13px; opacity: 0.7; text-align: center;
+    }
+    .nav-info span { margin: 0 12px; }
+    @media (max-width: 960px) {
+      .nav-grid { grid-template-columns: 1fr; max-width: 400px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-wrap">
+    <div class="nav-title">🌿 污碳协同 AI 监管平台</div>
+    <div class="nav-sub">工业涂装行业 VOCs 与碳排放协同监测预警 — 原型演示</div>
+    
+    <div class="nav-grid">
+      <a href="enterprise/login.html" class="nav-card">
+        <div class="nav-card-icon">🏭</div>
+        <div class="nav-card-title">工业企业端</div>
+        <div class="nav-card-desc">
+          工作台 · 月度填报 · 实时看板<br>
+          悖论模拟器 · 三评报告 · 预警中心
+        </div>
+      </a>
+      <a href="gov-dashboard/index.html" class="nav-card">
+        <div class="nav-card-icon">📊</div>
+        <div class="nav-card-title">政府管理科</div>
+        <div class="nav-card-desc">
+          协同管控指挥大屏 · 调度指令<br>
+          LLM 政务助手 · 自然语言报表
+        </div>
+      </a>
+      <a href="gov-monitoring/index.html" class="nav-card">
+        <div class="nav-card-icon">🗺️</div>
+        <div class="nav-card-title">监测数据科</div>
+        <div class="nav-card-desc">
+          3D GIS 监测台 · 数据质量审核<br>
+          企业详情透视 · 监测月报
+        </div>
+      </a>
+    </div>
+    
+    <div class="nav-info">
+      <span>📅 版本：MVP v1.0</span>
+      <span>📁 项目：工业涂装专版</span>
+      <span>🔖 日期：2026-05-18</span>
+    </div>
+  </div>
+</body>
+</html>

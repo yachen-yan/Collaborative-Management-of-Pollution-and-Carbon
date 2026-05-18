@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>企业登录 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .login-bg {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+      overflow: hidden;
+    }
+    .login-bg::before {
+      content: ""; position: absolute; top: -50%; left: -50%; right: -50%; bottom: -50%;
+      background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 30%, rgba(255,255,255,0.06) 0%, transparent 40%);
+      animation: bgMove 20s ease-in-out infinite;
+    }
+    @keyframes bgMove {
+      0%, 100% { transform: translate(0,0) rotate(0deg); }
+      50% { transform: translate(20px, -20px) rotate(2deg); }
+    }
+    .login-box {
+      position: relative; z-index: 1;
+      width: 440px; background: #fff; border-radius: 16px;
+      padding: 48px 40px; margin: 80px auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .login-logo { text-align: center; margin-bottom: 8px; }
+    .login-logo-icon {
+      width: 64px; height: 64px; border-radius: 16px;
+      background: linear-gradient(135deg, #1677ff, #36cfc9);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 32px; margin-bottom: 16px;
+    }
+    .login-logo-title { font-size: 22px; font-weight: 600; color: rgba(0,0,0,0.88); }
+    .login-logo-sub { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 6px; }
+    .login-tabs {
+      display: flex; margin: 28px 0 20px; border-bottom: 1px solid #d9d9d9;
+    }
+    .login-tab {
+      flex: 1; text-align: center; padding: 10px;
+      font-size: 15px; color: rgba(0,0,0,0.45); cursor: pointer;
+      position: relative; transition: color 0.2s;
+    }
+    .login-tab.active { color: #1677ff; font-weight: 500; }
+    .login-tab.active::after {
+      content: ""; position: absolute; bottom: -1px; left: 20%; right: 20%;
+      height: 2px; background: #1677ff; border-radius: 2px;
+    }
+    .login-input-wrap {
+      position: relative; margin-bottom: 18px;
+    }
+    .login-input-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: rgba(0,0,0,0.25); font-size: 16px;
+    }
+    .login-input {
+      width: 100%; padding: 11px 12px 11px 40px;
+      border: 1px solid #d9d9d9; border-radius: 8px;
+      font-size: 14px; outline: none; transition: all 0.2s;
+    }
+    .login-input:focus { border-color: #1677ff; box-shadow: 0 0 0 3px rgba(22,119,255,0.1); }
+    .login-code-row { display: flex; gap: 12px; }
+    .login-code-row .login-input-wrap { flex: 1; }
+    .login-code-btn {
+      padding: 11px 16px; background: #1677ff; color: #fff;
+      border: none; border-radius: 8px; font-size: 13px; cursor: pointer;
+      white-space: nowrap; transition: background 0.2s;
+    }
+    .login-code-btn:hover { background: #4096ff; }
+    .login-options {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px; font-size: 13px;
+    }
+    .login-remember { display: flex; align-items: center; gap: 6px; color: rgba(0,0,0,0.45); cursor: pointer; }
+    .login-forgot { color: #1677ff; cursor: pointer; }
+    .login-forgot:hover { text-decoration: underline; }
+    .login-submit {
+      width: 100%; padding: 12px; background: #1677ff; color: #fff;
+      border: none; border-radius: 8px; font-size: 16px; font-weight: 500;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .login-submit:hover { background: #4096ff; }
+    .login-footer {
+      text-align: center; margin-top: 24px; font-size: 12px;
+      color: rgba(0,0,0,0.35); line-height: 1.8;
+    }
+    .login-footer a { color: #1677ff; }
+    .login-demo-accounts {
+      margin-top: 20px; padding: 14px; background: #f6ffed;
+      border: 1px solid #b7eb8f; border-radius: 8px; font-size: 12px;
+    }
+    .login-demo-accounts-title { font-weight: 600; color: #52c41a; margin-bottom: 6px; }
+    .login-demo-account { color: rgba(0,0,0,0.65); cursor: pointer; padding: 2px 0; }
+    .login-demo-account:hover { color: #1677ff; }
+    .login-demo-account span { color: #1677ff; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="login-bg"></div>
+  
+  <div class="login-box fade-in">
+    <div class="login-logo">
+      <div class="login-logo-icon">🌿</div>
+      <div class="login-logo-title">污碳协同 AI 监管平台</div>
+      <div class="login-logo-sub">工业涂装行业 VOCs 与碳排放协同监测预警</div>
+    </div>
+    
+    <div class="login-tabs">
+      <div class="login-tab active" onclick="switchTab(this, 'pwd')">账号密码登录</div>
+      <div class="login-tab" onclick="switchTab(this, 'sms')">短信验证码登录</div>
+    </div>
+    
+    <!-- 密码登录 -->
+    <div id="login-pwd">
+      <div class="login-input-wrap">
+        <span class="login-input-icon">👤</span>
+        <input class="login-input" placeholder="请输入统一社会信用代码 / 手机号" value="91110108MA0012345">
+      </div>
+      <div class="login-input-wrap">
+        <span class="login-input-icon">🔒</span>
+        <input class="login-input" type="password" placeholder="请输入密码" value="demo1234">
+      </div>
+      <div class="login-options">
+        <label class="login-remember"><input type="checkbox" checked> 记住我</label>
+        <span class="login-forgot">忘记密码？</span>
+      </div>
+      <button class="login-submit" onclick="doLogin()">登 录</button>
+    </div>
+    
+    <!-- 短信登录（隐藏） -->
+    <div id="login-sms" style="display:none">
+      <div class="login-input-wrap">
+        <span class="login-input-icon">📱</span>
+        <input class="login-input" placeholder="请输入手机号" value="138****5678">
+      </div>
+      <div class="login-code-row">
+        <div class="login-input-wrap">
+          <span class="login-input-icon">🔢</span>
+          <input class="login-input" placeholder="请输入验证码">
+        </div>
+        <button class="login-code-btn">获取验证码</button>
+      </div>
+      <div class="login-options" style="margin-top:18px">
+        <label class="login-remember"><input type="checkbox" checked> 记住我</label>
+      </div>
+      <button class="login-submit" onclick="doLogin()">登 录</button>
+    </div>
+    
+    <div class="login-demo-accounts">
+      <div class="login-demo-accounts-title">🎯 原型演示快速入口</div>
+      <div class="login-demo-account" onclick="doLogin()">🏭 <span>企业端</span> — 蓝天工业涂装有限公司</div>
+      <div class="login-demo-account" style="margin-top:4px">🏛️ <span>管理科</span> — 协同管控指挥大屏（开发中）</div>
+      <div class="login-demo-account" style="margin-top:4px">🗺️ <span>监测科</span> — 3D GIS 监测台（开发中）</div>
+    </div>
+    
+    <div class="login-footer">
+      登录即表示同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a><br>
+      © 2026 污碳协同AI监管平台 · 技术支持：生态环境局
+    </div>
+  </div>
+  
+  <script>
+    function switchTab(el, type) {
+      document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('login-pwd').style.display = type === 'pwd' ? 'block' : 'none';
+      document.getElementById('login-sms').style.display = type === 'sms' ? 'block' : 'none';
+    }
+    function doLogin() {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>
