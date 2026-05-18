@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>报告PDF预览 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: #525659; }
+    .pdf-wrap { max-width: 800px; margin: 30px auto; }
+    .pdf-page {
+      background: #fff; min-height: 1100px; padding: 60px 60px 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin-bottom: 20px;
+    }
+    .pdf-header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid #1677ff; }
+    .pdf-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: rgba(0,0,0,0.88); }
+    .pdf-sub { font-size: 14px; color: rgba(0,0,0,0.45); line-height: 1.8; }
+    .pdf-section { margin-bottom: 28px; }
+    .pdf-section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; padding-left: 10px; border-left: 3px solid #1677ff; color: rgba(0,0,0,0.88); }
+    .pdf-section-title.sub { font-size: 14px; border-left-color: #36cfc9; }
+    .pdf-p { font-size: 13px; line-height: 1.8; color: rgba(0,0,0,0.75); text-indent: 2em; margin-bottom: 8px; }
+    .pdf-p.no-indent { text-indent: 0; }
+    .pdf-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0; }
+    .pdf-table th, .pdf-table td { padding: 8px 10px; text-align: left; border: 1px solid #d9d9d9; }
+    .pdf-table th { background: #f5f5f5; font-weight: 600; }
+    .pdf-table tr:nth-child(even) { background: #fafafa; }
+    .pdf-score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 16px 0; }
+    .pdf-score-item { text-align: center; padding: 16px; background: #fafafa; border-radius: 6px; }
+    .pdf-score-value { font-size: 28px; font-weight: 700; }
+    .pdf-score-label { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 4px; }
+    .pdf-score-grade { font-size: 11px; margin-top: 4px; font-weight: 500; }
+    .pdf-ai-box {
+      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 6px;
+      padding: 14px 18px; font-size: 13px; line-height: 1.8;
+    }
+    .pdf-ai-box strong { color: #52c41a; }
+    .pdf-footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0f0f0; font-size: 11px; color: rgba(0,0,0,0.35); }
+    
+    .pdf-toolbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 48px;
+      background: #323639; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px; z-index: 200;
+    }
+    .pdf-toolbar-title { font-size: 14px; color: #fff; }
+    .pdf-toolbar-actions { display: flex; gap: 10px; }
+    .pdf-toolbar-btn {
+      padding: 6px 14px; background: #4a4a4a; color: #fff; border: none;
+      border-radius: 4px; font-size: 13px; cursor: pointer;
+    }
+    .pdf-toolbar-btn:hover { background: #5a5a5a; }
+    .pdf-toolbar-btn.primary { background: #1677ff; }
+    .pdf-toolbar-btn.primary:hover { background: #4096ff; }
+  </style>
+</head>
+<body>
+  <div class="pdf-toolbar">
+    <span class="pdf-toolbar-title">📑 三评合一报告预览 — 蓝天工业涂装有限公司_202605.pdf</span>
+    <div class="pdf-toolbar-actions">
+      <button class="pdf-toolbar-btn" onclick="history.back()">← 返回</button>
+      <button class="pdf-toolbar-btn primary">📥 下载 PDF</button>
+      <button class="pdf-toolbar-btn primary">🖨️ 打印</button>
+    </div>
+  </div>
+  
+  <div class="pdf-wrap" style="padding-top:48px">
+    <div class="pdf-page">
+      <div class="pdf-header">
+        <div class="pdf-title">污-能-碳三评合一报告</div>
+        <div class="pdf-sub">
+          蓝天工业涂装有限公司<br>
+          报告周期：2026年5月 | 生成日期：2026年6月5日<br>
+          统一社会信用代码：91110108MA0012345
+        </div>
+      </div>
+      
+      <div class="pdf-section">
+        <div class="pdf-section-title">一、综合评分概览</div>
+        <div class="pdf-score-grid">
+          <div class="pdf-score-item">
+            <div class="pdf-score-value" style="color:#52c41a">82</div>
+            <div class="pdf-score-label">污染评价（P）</div>
+            <div class="pdf-score-grade" style="color:#52c41a">🟢 良</div>
+          </div>
+          <div class="pdf-score-item">
+            <div class="pdf-score-value" style="color:#faad14">65</div>
+            <div class="pdf-score-label">能效评价（E）</div>
+            <div class="pdf-score-grade" style="color:#faad14">🟡 一般</div>
+          </div>
+          <div class="pdf-score-item">
+            <div class="pdf-score-value" style="color:#fa8c16">58</div>
+            <div class="pdf-score-label">碳排评价（C）</div>
+            <div class="pdf-score-grade" style="color:#fa8c16">🟠 较差</div>
+          </div>
+          <div class="pdf-score-item">
+            <div class="pdf-score-value" style="color:#f5222d">0.52</div>
+            <div class="pdf-score-label">C-P 协同指数</div>
+            <div class="pdf-score-grade" style="color:#f5222d">🔴 差</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="pdf-section">
+        <div class="pdf-section-title">二、AI 核心结论</div>
+        <div class="pdf-ai-box">
+          <strong>本月整体评级为「一般」，存在明显短板。</strong>最优先改进项：减少 RTO 空烧。近30天内 RTO 空烧时长占比达 18%，导致天然气消耗环比增加 35%，碳排评价得分仅 58 分。污染评价 82 分表现良好，VOCs 达标率 100%，但协同分仅 52 分，C-P 协同指数 0.52 处于「差」等级。建议立即调整喷涂排班至集中时段，并检查蓄热体是否堵塞。
+        </div>
+      </div>
+      
+      <div class="pdf-section">
+        <div class="pdf-section-title">三、污染评价详情（P = 82分）</div>
+        <table class="pdf-table">
+          <tr><th>评价维度</th><th>得分</th><th>满分</th><th>说明</th></tr>
+          <tr><td>VOCs 达标率</td><td>40</td><td>40</td><td>本月 VOCs 100% 达标</td></tr>
+          <tr><td>去除效率</td><td>28</td><td>30</td><td>平均去除效率 94.2%</td></tr>
+          <tr><td>涂料结构优化</td><td>14</td><td>30</td><td>水性涂料占比 35%，偏低</td></tr>
+        </table>
+      </div>
+      
+      <div class="pdf-section">
+        <div class="pdf-section-title">四、能效评价详情（E = 65分）</div>
+        <table class="pdf-table">
+          <tr><th>评价维度</th><th>得分</th><th>满分</th><th>说明</th></tr>
+          <tr><td>热回收效率</td><td>24</td><td>40</td><td>当前 87%，低于 95% 优秀线</td></tr>
+          <tr><td>空烧控制</td><td>15</td><td>30</td><td>空烧占比 18%，严重超标</td></tr>
+          <tr><td>能源结构</td><td>26</td><td>30</td><td>天然气为主，清洁能源占比低</td></tr>
+        </table>
+      </div>
+      
+      <div class="pdf-section">
+        <div class="pdf-section-title">五、碳排评价详情（C = 58分）</div>
+        <table class="pdf-table">
+          <tr><th>评价维度</th><th>得分</th><th>满分</th><th>说明</th></tr>
+          <tr><td>碳排强度对标</td><td>20</td><td>40</td><td>0.28 tCO₂/万m²，高于区域 P75</td></tr>
+          <tr><td>配额余量</td><td>22</td><td>30</td><td>年度配额使用 32%，余量充足</td></tr>
+          <tr><td>减碳潜力</td><td>16</td><td>30</td><td>RTO 优化空间较大</td></tr>
+        </table>
+      </div>
+      
+      <div class="pdf-section">
+        <div class="pdf-section-title">六、改进优先级建议</div>
+        <p class="pdf-p no-indent"><strong>优先级 1（紧急）：</strong>减少 RTO 空烧 — 调整喷涂排班至集中时段，目标空烧占比 < 5%，预期提升 +12分</p>
+        <p class="pdf-p no-indent"><strong>优先级 2（重要）：</strong>提升热回收效率 — 检查蓄热体堵塞情况，清洗或更换蓄热陶瓷，预期提升 +8分</p>
+        <p class="pdf-p no-indent"><strong>优先级 3（建议）：</strong>提高水性涂料占比 — 逐步替换溶剂型涂料，降低涂料隐含碳，预期提升 +6分</p>
+      </div>
+      
+      <div class="pdf-footer">
+        本报告由 AI 自动生成，数据来源于企业月度上报及实时双算引擎<br>
+        污碳协同AI监管平台 · 工业涂装 MVP 专版 · 2026-06-05
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>自然语言报表 — 污碳协同AI监管平台</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: #f0f2f5; }
+    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .main { margin-left: 0; margin-top: 64px; padding: 24px; }
+    .report-wrap { max-width: 1000px; margin: 0 auto; }
+    .report-header-bar {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+    }
+    .report-title { font-size: 20px; font-weight: 600; }
+    .report-actions { display: flex; gap: 10px; }
+    .report-card { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .report-section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .report-section-title::before { content: ""; display: inline-block; width: 4px; height: 16px; background: #1677ff; border-radius: 2px; }
+    
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .stat-box { text-align: center; padding: 20px; background: #fafafa; border-radius: 8px; }
+    .stat-num { font-size: 32px; font-weight: 700; }
+    .stat-label { font-size: 13px; color: rgba(0,0,0,0.45); margin-top: 6px; }
+    
+    .chart-placeholder {
+      height: 220px; background: #fafafa; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px dashed #d9d9d9; margin-bottom: 16px;
+    }
+    .chart-bar-demo {
+      display: flex; align-items: flex-end; gap: 16px; height: 160px; padding: 0 40px;
+    }
+    .chart-bar-item { text-align: center; }
+    .chart-bar-fill { width: 48px; border-radius: 4px 4px 0 0; transition: height 0.6s; }
+    .chart-bar-label { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 8px; }
+    .chart-bar-value { font-size: 11px; color: rgba(0,0,0,0.35); }
+    
+    .pie-demo { display: flex; align-items: center; justify-content: center; gap: 40px; }
+    .pie-ring { width: 120px; height: 120px; border-radius: 50%; position: relative; }
+    .pie-ring svg { transform: rotate(-90deg); }
+    .pie-legend { display: flex; flex-direction: column; gap: 8px; }
+    .pie-legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .pie-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+    
+    .trend-line-demo {
+      height: 180px; position: relative; padding: 20px 40px 30px;
+    }
+    .trend-line-demo svg { width: 100%; height: 100%; }
+    
+    .conclusion-box {
+      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 8px;
+      padding: 16px 20px; font-size: 14px; line-height: 1.8;
+    }
+    .conclusion-box strong { color: #52c41a; }
+    
+    .report-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .report-table th, .report-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+    .report-table th { background: #fafafa; font-weight: 600; }
+    .report-table tr:hover { background: #fafafa; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>海淀区生态环境局</span><div class="avatar">李</div><span>李管理</span></div>
+  </div>
+  
+  <div class="main">
+    <div class="report-wrap">
+      <div class="report-header-bar">
+        <div class="report-title">📊 2026年4月 张镇工业园 Paradox 风险统计报告</div>
+        <div class="report-actions">
+          <button class="btn btn-default">🖨️ 打印</button>
+          <button class="btn btn-primary">📥 导出 Word</button>
+          <button class="btn btn-primary">📥 导出 PDF</button>
+        </div>
+      </div>
+      
+      <div class="report-card">
+        <div class="report-section-title">📈 核心指标</div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-num" style="color:#f5222d">7</div>
+            <div class="stat-label">Paradox 事件总数</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:#fa8c16">5</div>
+            <div class="stat-label">减污增碳陷阱</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:#faad14">2</div>
+            <div class="stat-label">减碳增污陷阱</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:#52c41a">88%</div>
+            <div class="stat-label">闭环处置率</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="report-card">
+        <div class="report-section-title">📊 Paradox 类型分布</div>
+        <div class="chart-placeholder">
+          <div class="pie-demo">
+            <div class="pie-ring">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#f0f0f0" stroke-width="16"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#f5222d" stroke-width="16" stroke-dasharray="157 314" stroke-linecap="round"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#faad14" stroke-width="16" stroke-dasharray="78 314" stroke-dashoffset="-157" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="pie-legend">
+              <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#f5222d"></div>减污增碳 5起 (71%)</div>
+              <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#faad14"></div>减碳增污 2起 (29%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="report-card">
+        <div class="report-section-title">📈 企业 Paradox 事件统计</div>
+        <div class="chart-placeholder">
+          <div class="chart-bar-demo">
+            <div class="chart-bar-item">
+              <div class="chart-bar-fill" style="height:140px;background:linear-gradient(180deg,#f5222d,#cf1322)"></div>
+              <div class="chart-bar-label">蓝天工业</div>
+              <div class="chart-bar-value">3起</div>
+            </div>
+            <div class="chart-bar-item">
+              <div class="chart-bar-fill" style="height:90px;background:linear-gradient(180deg,#fa8c16,#d48806)"></div>
+              <div class="chart-bar-label">红星喷涂</div>
+              <div class="chart-bar-value">2起</div>
+            </div>
+            <div class="chart-bar-item">
+              <div class="chart-bar-fill" style="height:45px;background:linear-gradient(180deg,#faad14,#d48806)"></div>
+              <div class="chart-bar-label">鑫达汽修</div>
+              <div class="chart-bar-value">1起</div>
+            </div>
+            <div class="chart-bar-item">
+              <div class="chart-bar-fill" style="height:45px;background:linear-gradient(180deg,#faad14,#d48806)"></div>
+              <div class="chart-bar-label">金辉涂装</div>
+              <div class="chart-bar-value">1起</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="report-card">
+        <div class="report-section-title">📉 区域协同指数变化趋势</div>
+        <div class="trend-line-demo">
+          <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="40" y2="140" stroke="#f0f0f0" stroke-width="1"/>
+            <line x1="40" y1="140" x2="560" y2="140" stroke="#f0f0f0" stroke-width="1"/>
+            <line x1="40" y1="80" x2="560" y2="80" stroke="#f5222d" stroke-width="1" stroke-dasharray="6,4"/>
+            <text x="565" y="84" font-size="10" fill="#f5222d">关注线 70</text>
+            <polyline points="40,60 120,65 200,55 280,70 360,85 440,90 520,82 560,78" fill="none" stroke="#1677ff" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="40" cy="60" r="3" fill="#1677ff"/>
+            <circle cx="120" cy="65" r="3" fill="#1677ff"/>
+            <circle cx="200" cy="55" r="3" fill="#1677ff"/>
+            <circle cx="280" cy="70" r="3" fill="#1677ff"/>
+            <circle cx="360" cy="85" r="3" fill="#f5222d"/>
+            <circle cx="440" cy="90" r="3" fill="#f5222d"/>
+            <circle cx="520" cy="82" r="3" fill="#1677ff"/>
+            <circle cx="560" cy="78" r="4" fill="#1677ff" stroke="#fff" stroke-width="2"/>
+            <text x="40" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/1</text>
+            <text x="200" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/10</text>
+            <text x="360" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/20</text>
+            <text x="520" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/30</text>
+          </svg>
+        </div>
+      </div>
+      
+      <div class="report-card">
+        <div class="report-section-title">📋 事件明细表</div>
+        <table class="report-table">
+          <tr><th>日期</th><th>企业</th><th>类型</th><th>C-P最低</th><th>根因</th><th>状态</th></tr>
+          <tr><td>04-28</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.35</td><td>RTO空烧22%</td><td>整改中</td></tr>
+          <tr><td>04-25</td><td>红星喷涂厂</td><td><span class="tag tag-red">减污增碳</span></td><td>0.38</td><td>过度燃烧</td><td>已销号</td></tr>
+          <tr><td>04-22</td><td>鑫达汽修</td><td><span class="tag tag-yellow">减碳增污</span></td><td>0.42</td><td>温度设定过低</td><td>整改中</td></tr>
+          <tr><td>04-18</td><td>金辉涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.40</td><td>涂料切换未调参</td><td>已销号</td></tr>
+          <tr><td>04-15</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.36</td><td>RTO低效运行</td><td>已销号</td></tr>
+          <tr><td>04-10</td><td>红星喷涂厂</td><td><span class="tag tag-yellow">减碳增污</span></td><td>0.45</td><td>蓄热体老化</td><td>已销号</td></tr>
+          <tr><td>04-05</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.37</td><td>RTO空烧18%</td><td>已销号</td></tr>
+        </table>
+      </div>
+      
+      <div class="report-card">
+        <div class="report-section-title">🤖 AI 分析结论</div>
+        <div class="conclusion-box">
+          <strong>核心发现：</strong>4月 paradox 事件较 3月增加 40%（3月 5起 → 4月 7起），主要原因为季节性订单增长导致 RTO 超负荷运行。<br><br>
+          <strong>重点风险企业：</strong>蓝天工业涂装（3起/月）连续出现 RTO 空烧问题，建议纳入重点监管名单，限期整改。<br><br>
+          <strong>改进建议：</strong>① 强化错峰调度管理 ② 推广热泵辅助烘干技术 ③ 建立 RTO 空烧实时预警机制
+        </div>
+      </div>
+      
+      <div style="height:40px"></div>
+    </div>
+  </div>
+</body>
+</html>

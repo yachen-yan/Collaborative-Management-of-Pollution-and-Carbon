@@ -22,7 +22,7 @@
       background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
       border-radius: 12px; padding: 32px; text-align: center;
       border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
-      transition: all 0.3s; color: #fff;
+      transition: all 0.3s; color: #fff; text-decoration: none;
     }
     .nav-card:hover {
       background: rgba(255,255,255,0.2); transform: translateY(-4px);
@@ -37,15 +37,30 @@
       font-size: 13px; opacity: 0.7; text-align: center;
     }
     .nav-info span { margin: 0 12px; }
+    .nav-pages {
+      margin-top: 32px; display: grid; grid-template-columns: repeat(3, 280px);
+      gap: 16px; max-width: 880px;
+    }
+    .nav-page-item {
+      background: rgba(255,255,255,0.08); border-radius: 8px;
+      padding: 14px 18px; font-size: 13px; text-align: left;
+      border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;
+    }
+    .nav-page-item:hover { background: rgba(255,255,255,0.15); }
+    .nav-page-item a { color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-page-item .page-name { font-weight: 500; }
+    .nav-page-item .page-status { margin-left: auto; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+    .nav-page-item .page-status.done { background: rgba(82,196,26,0.3); }
+    .nav-page-item .page-status.beta { background: rgba(250,173,20,0.3); }
     @media (max-width: 960px) {
-      .nav-grid { grid-template-columns: 1fr; max-width: 400px; }
+      .nav-grid, .nav-pages { grid-template-columns: 1fr; max-width: 400px; }
     }
   </style>
 </head>
 <body>
   <div class="nav-wrap">
     <div class="nav-title">🌿 污碳协同 AI 监管平台</div>
-    <div class="nav-sub">工业涂装行业 VOCs 与碳排放协同监测预警 — 原型演示</div>
+    <div class="nav-sub">工业涂装行业 VOCs 与碳排放协同监测预警 — 高保真可交互原型</div>
     
     <div class="nav-grid">
       <a href="enterprise/login.html" class="nav-card">
@@ -74,10 +89,59 @@
       </a>
     </div>
     
+    <div class="nav-pages">
+      <div class="nav-page-item">
+        <a href="enterprise/login.html"><span>🔐</span><span class="page-name">企业登录</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="enterprise/dashboard.html"><span>🏠</span><span class="page-name">企业工作台</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="enterprise/monthly-report.html"><span>📋</span><span class="page-name">月度数据填报</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="enterprise/realtime-panel.html"><span>📊</span><span class="page-name">实时双算看板</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="enterprise/simulator.html"><span>🔮</span><span class="page-name">悖论模拟器</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="enterprise/triple-report.html"><span>📑</span><span class="page-name">三评合一报告</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="enterprise/alerts.html"><span>🔔</span><span class="page-name">预警中心</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="enterprise/report-preview.html"><span>📄</span><span class="page-name">报告PDF预览</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="gov-dashboard/index.html"><span>📺</span><span class="page-name">协同管控指挥大屏</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="gov-dashboard/llm-assistant.html"><span>🤖</span><span class="page-name">LLM政务助手</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="gov-dashboard/report-result.html"><span>📈</span><span class="page-name">自然语言报表</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="gov-monitoring/index.html"><span>🌐</span><span class="page-name">3D GIS监测台</span><span class="page-status beta">占位</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="gov-monitoring/data-audit.html"><span>🔍</span><span class="page-name">数据质量审核</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="gov-monitoring/enterprise-detail.html"><span>🏭</span><span class="page-name">企业详情透视</span><span class="page-status done">完成</span></a>
+      </div>
+      <div class="nav-page-item">
+        <a href="gov-monitoring/monthly-monitor.html"><span>📰</span><span class="page-name">监测月报</span><span class="page-status done">完成</span></a>
+      </div>
+    </div>
+    
     <div class="nav-info">
       <span>📅 版本：MVP v1.0</span>
       <span>📁 项目：工业涂装专版</span>
       <span>🔖 日期：2026-05-18</span>
+      <span>📄 共 15 个页面</span>
     </div>
   </div>
 </body>
