@@ -8,40 +8,23 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; overflow:hidden; }
     .dt-wrap { width:100vw; height:100vh; position:relative; }
-    .dt-header {
-      position:absolute; top:0; left:0; right:0; z-index:1000;
-      height:56px; background:rgba(2,6,23,0.9); backdrop-filter:blur(12px);
-      border-bottom:1px solid rgba(34,211,238,0.15);
-      display:flex; align-items:center; justify-content:space-between; padding:0 20px;
-    }
+    .dt-header { position:absolute; top:0; left:0; right:0; z-index:1000; height:56px; background:rgba(2,6,23,0.9); backdrop-filter:blur(12px); border-bottom:1px solid rgba(34,211,238,0.15); display:flex; align-items:center; justify-content:space-between; padding:0 20px; }
     .dt-header-title { font-size:16px; font-weight:600; display:flex; align-items:center; gap:10px; }
-    .dt-header-title .pulse-dot {
-      width:8px; height:8px; border-radius:50%; background:#22d3ee;
-      box-shadow:0 0 8px #22d3ee, 0 0 20px rgba(34,211,238,0.4);
-      animation:pulseDot 2s ease-in-out infinite;
-    }
+    .dt-header-title .pulse-dot { width:8px; height:8px; border-radius:50%; background:#22d3ee; box-shadow:0 0 8px #22d3ee, 0 0 20px rgba(34,211,238,0.4); animation:pulseDot 2s ease-in-out infinite; }
     @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.4} }
     .dt-header-nav { display:flex; gap:8px; }
-    .dt-header-nav a {
-      padding:5px 14px; border-radius:6px; font-size:12px;
-      color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1);
-      text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05);
-    }
+    .dt-header-nav a { padding:5px 14px; border-radius:6px; font-size:12px; color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1); text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05); }
     .dt-header-nav a:hover, .dt-header-nav a.active { color:#22d3ee; border-color:rgba(34,211,238,0.4); background:rgba(34,211,238,0.1); box-shadow:0 0 12px rgba(34,211,238,0.15); }
     #map { position:absolute; top:56px; left:0; right:320px; bottom:44px; z-index:1; background:#0f172a; }
-    .dt-sidebar {
-      position:absolute; top:56px; right:0; width:320px; bottom:44px;
-      background:rgba(2,6,23,0.95); backdrop-filter:blur(12px);
-      border-left:1px solid rgba(34,211,238,0.1); overflow-y:auto; padding:16px; z-index:100;
-    }
+    .dt-sidebar { position:absolute; top:56px; right:0; width:320px; bottom:44px; background:rgba(2,6,23,0.95); backdrop-filter:blur(12px); border-left:1px solid rgba(34,211,238,0.1); overflow-y:auto; padding:16px; z-index:100; }
     .dt-sidebar::-webkit-scrollbar { width:4px }
     .dt-sidebar::-webkit-scrollbar-thumb { background:rgba(34,211,238,0.2); border-radius:2px }
     .dt-panel { background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:14px; margin-bottom:12px; }
     .dt-panel-title { font-size:13px; font-weight:600; margin-bottom:10px; color:#22d3ee; display:flex; align-items:center; gap:6px; }
     .dt-panel-title::before { content:""; display:inline-block; width:3px; height:14px; background:#22d3ee; border-radius:2px; }
     .dt-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .dt-stat-item { text-align:center; padding:10px; background:rgba(34,211,238,0.05); border-radius:6px; border:1px solid rgba(34,211,238,0.08); transition:all 0.2s; }
-    .dt-stat-item:hover { border-color:rgba(34,211,238,0.2); }
+    .dt-stat-item { text-align:center; padding:10px; background:rgba(34,211,238,0.05); border-radius:6px; border:1px solid rgba(34,211,238,0.08); transition:all 0.2s; cursor:pointer; }
+    .dt-stat-item:hover { border-color:rgba(34,211,238,0.25); box-shadow:0 0 12px rgba(34,211,238,0.08); }
     .dt-stat-num { font-size:20px; font-weight:700; }
     .dt-stat-label { font-size:10px; color:rgba(226,232,240,0.4); margin-top:2px; }
     .dt-ent-item { display:flex; align-items:center; gap:8px; padding:8px; border-radius:6px; margin-bottom:4px; cursor:pointer; font-size:12px; transition:all 0.2s; }
@@ -50,19 +33,21 @@
     .dt-ent-name { flex:1; color:rgba(226,232,240,0.7); }
     .dt-ent-cp { font-family:monospace; font-size:12px; }
     .dt-legend { display:flex; flex-wrap:wrap; gap:8px; }
-    .dt-legend-item { display:flex; align-items:center; gap:4px; font-size:11px; color:rgba(226,232,240,0.5); }
+    .dt-legend-item { display:flex; align-items:center; gap:4px; font-size:11px; color:rgba(226,232,240,0.5); cursor:pointer; padding:3px 6px; border-radius:4px; transition:all 0.2s; }
+    .dt-legend-item:hover { background:rgba(34,211,238,0.08); color:#22d3ee; }
     .dt-legend-dot { width:8px; height:8px; border-radius:50%; }
-    .dt-timebar {
-      position:fixed; bottom:0; left:0; right:320px; height:44px;
-      background:rgba(2,6,23,0.95); border-top:1px solid rgba(34,211,238,0.15);
-      display:flex; align-items:center; padding:0 20px; gap:16px; z-index:100;
-    }
+    .dt-alert-item { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; margin-bottom:4px; cursor:pointer; font-size:12px; transition:all 0.2s; border-left:2px solid transparent; }
+    .dt-alert-item:hover { background:rgba(34,211,238,0.06); border-left-color:#22d3ee; }
+    .dt-alert-item.red:hover { background:rgba(239,68,68,0.08); border-left-color:#f87171; }
+    .dt-alert-item.yellow:hover { background:rgba(234,179,8,0.06); border-left-color:#fbbf24; }
+    .dt-timebar { position:fixed; bottom:0; left:0; right:320px; height:44px; background:rgba(2,6,23,0.95); border-top:1px solid rgba(34,211,238,0.15); display:flex; align-items:center; padding:0 20px; gap:16px; z-index:100; }
     .dt-timebar-btn { width:28px; height:28px; border-radius:50%; border:1px solid rgba(34,211,238,0.3); background:rgba(34,211,238,0.1); color:#22d3ee; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
     .dt-timebar-btn:hover { background:rgba(34,211,238,0.2); box-shadow:0 0 10px rgba(34,211,238,0.2); }
     .dt-timebar-track { flex:1; height:3px; background:rgba(34,211,238,0.15); border-radius:2px; position:relative; }
     .dt-timebar-fill { position:absolute; left:0; top:0; height:100%; width:65%; background:linear-gradient(90deg,#0ea5e9,#22d3ee); border-radius:2px; }
     .dt-timebar-thumb { position:absolute; top:-5px; left:65%; width:14px; height:14px; background:#22d3ee; border-radius:50%; cursor:pointer; box-shadow:0 0 10px #22d3ee; }
     .dt-timebar-label { font-size:11px; color:#22d3ee; font-family:monospace; min-width:100px; }
+
     /* Leaflet自定义 */
     .leaflet-container { background:#0f172a !important; }
     .bubble-marker { text-align:center; }
@@ -71,7 +56,9 @@
       font-size:10px; font-weight:700; color:#fff; cursor:pointer;
       box-shadow:0 0 12px currentColor; border:2px solid rgba(255,255,255,0.3);
       animation:bubbleFloat 3s ease-in-out infinite;
+      transition:all 0.3s;
     }
+    .bubble-marker-inner:hover { transform:scale(1.15); }
     .bubble-marker-inner.red { background:radial-gradient(circle,rgba(239,68,68,0.9),rgba(220,38,38,0.6)); animation:bubbleFloat 3s ease-in-out infinite,bubblePulse 2s ease-in-out infinite; }
     .bubble-marker-inner.green { background:radial-gradient(circle,rgba(34,197,94,0.9),rgba(22,163,74,0.6)); }
     .bubble-marker-inner.yellow { background:radial-gradient(circle,rgba(234,179,8,0.9),rgba(202,138,4,0.6)); }
@@ -79,6 +66,15 @@
     .bubble-label { font-size:10px; color:rgba(226,232,240,0.6); margin-top:2px; text-shadow:0 0 4px rgba(0,0,0,0.8); white-space:nowrap; }
     @keyframes bubbleFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
     @keyframes bubblePulse { 0%,100%{box-shadow:0 0 12px #ef4444} 50%{box-shadow:0 0 24px #ef4444,0 0 40px rgba(239,68,68,0.4)} }
+    @keyframes flashBlink { 0%,100%{opacity:1;transform:scale(1)} 25%{opacity:0.3;transform:scale(1.3)} 50%{opacity:1;transform:scale(1)} 75%{opacity:0.3;transform:scale(1.3)} }
+    .flash-active { animation:flashBlink 0.6s ease-in-out 5 !important; z-index:999 !important; }
+
+    /* 飞线动画 */
+    .fly-line-path { fill:none; stroke-linecap:round; stroke-linejoin:round; }
+    .fly-line-anim { stroke-dasharray:12 8; animation:dashMove 1.5s linear infinite; }
+    @keyframes dashMove { to { stroke-dashoffset:-40; } }
+    .fly-particle { animation:particleFlow 2s ease-in-out infinite; }
+    @keyframes particleFlow { 0%{opacity:0;transform:scale(0)} 20%{opacity:1;transform:scale(1)} 80%{opacity:1} 100%{opacity:0;transform:scale(0)} }
   </style>
 </head>
 <body>
@@ -100,40 +96,30 @@
       <div class="dt-panel">
         <div class="dt-panel-title">📊 辖区概览</div>
         <div class="dt-stat-grid">
-          <div class="dt-stat-item"><div class="dt-stat-num" style="color:#4ade80">8</div><div class="dt-stat-label">双减标兵</div></div>
-          <div class="dt-stat-item"><div class="dt-stat-num" style="color:#fbbf24">12</div><div class="dt-stat-label">关注企业</div></div>
-          <div class="dt-stat-item"><div class="dt-stat-num" style="color:#f87171">3</div><div class="dt-stat-label">Paradox</div></div>
-          <div class="dt-stat-item"><div class="dt-stat-num" style="color:#94a3b8">5</div><div class="dt-stat-label">数据不足</div></div>
+          <div class="dt-stat-item" onclick="flyToType('green')"><div class="dt-stat-num" style="color:#4ade80">8</div><div class="dt-stat-label">双减标兵</div></div>
+          <div class="dt-stat-item" onclick="flyToType('yellow')"><div class="dt-stat-num" style="color:#fbbf24">12</div><div class="dt-stat-label">关注企业</div></div>
+          <div class="dt-stat-item" onclick="flyToType('red')"><div class="dt-stat-num" style="color:#f87171">3</div><div class="dt-stat-label">Paradox</div></div>
+          <div class="dt-stat-item" onclick="flyToType('gray')"><div class="dt-stat-num" style="color:#94a3b8">5</div><div class="dt-stat-label">数据不足</div></div>
         </div>
+        <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px;text-align:center">辖区企业总数：28家 | 建档率 100%</div>
       </div>
       <div class="dt-panel">
-        <div class="dt-panel-title">🎨 图例</div>
+        <div class="dt-panel-title">🎨 图例（点击筛选定位）</div>
         <div class="dt-legend">
-          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div>双减标兵（C-P≥0.8）</div>
-          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24"></div>关注企业</div>
-          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div>Paradox（C-P<0.4）</div>
-          <div class="dt-legend-item"><div class="dt-legend-dot" style="background:#94a3b8"></div>数据不足</div>
-          <div class="dt-legend-item"><span style="color:#f87171">⇢</span> 污染转移飞线</div>
+          <div class="dt-legend-item" onclick="flyToType('green')"><div class="dt-legend-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div>双减标兵（C-P≥0.8）</div>
+          <div class="dt-legend-item" onclick="flyToType('yellow')"><div class="dt-legend-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24"></div>关注企业（0.4≤C-P<0.8）</div>
+          <div class="dt-legend-item" onclick="flyToType('red')"><div class="dt-legend-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div>Paradox（C-P<0.4）</div>
+          <div class="dt-legend-item" onclick="flyToType('gray')"><div class="dt-legend-dot" style="background:#94a3b8"></div>数据不足</div>
+          <div class="dt-legend-item" onclick="showAllFlyLines()"><span style="color:#f87171">⇢</span> 污染转移飞线</div>
         </div>
       </div>
       <div class="dt-panel">
-        <div class="dt-panel-title">🔥 实时告警</div>
-        <div style="font-size:12px;line-height:2;color:rgba(226,232,240,0.6)">
-          <div style="color:#f87171">⚠️ 蓝天工业 C-P 0.38 持续12h</div>
-          <div style="color:#f87171">⚠️ 红星喷涂 C-P 0.35 减碳增污</div>
-          <div style="color:#fbbf24">🔶 鑫达汽修 C-P 0.52 协同失衡</div>
-        </div>
+        <div class="dt-panel-title">🔥 实时告警（点击定位）</div>
+        <div id="alertList"></div>
       </div>
       <div class="dt-panel">
         <div class="dt-panel-title">🏭 企业列表（按 C-P 排序）</div>
-        <div>
-          <div class="dt-ent-item" onclick="flyToEnt(116.65,40.42)"><div class="dt-ent-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div><div class="dt-ent-name">红星喷涂厂</div><div class="dt-ent-cp" style="color:#f87171">0.35</div></div>
-          <div class="dt-ent-item" onclick="flyToEnt(116.58,40.35)"><div class="dt-ent-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div><div class="dt-ent-name">蓝天工业涂装</div><div class="dt-ent-cp" style="color:#f87171">0.38</div></div>
-          <div class="dt-ent-item" onclick="flyToEnt(116.72,40.28)"><div class="dt-ent-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24"></div><div class="dt-ent-name">伟达制造</div><div class="dt-ent-cp" style="color:#fbbf24">0.55</div></div>
-          <div class="dt-ent-item" onclick="flyToEnt(116.55,40.38)"><div class="dt-ent-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24"></div><div class="dt-ent-name">鑫达汽修</div><div class="dt-ent-cp" style="color:#fbbf24">0.52</div></div>
-          <div class="dt-ent-item" onclick="flyToEnt(116.62,40.32)"><div class="dt-ent-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div><div class="dt-ent-name">标杆企业A</div><div class="dt-ent-cp" style="color:#4ade80">0.88</div></div>
-          <div class="dt-ent-item" onclick="flyToEnt(116.68,40.30)"><div class="dt-ent-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div><div class="dt-ent-name">标杆企业B</div><div class="dt-ent-cp" style="color:#4ade80">0.82</div></div>
-        </div>
+        <div id="entList"></div>
       </div>
     </div>
     <div class="dt-timebar">
@@ -146,54 +132,201 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // 怀柔区中心坐标
+    // ========== 怀柔区中心 ==========
     const HUAIROU_CENTER = [40.32, 116.63];
     const map = L.map('map', { zoomControl:false, attributionControl:false }).setView(HUAIROU_CENTER, 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom:19, subdomains:'abcd' }).addTo(map);
 
-    // CartoDB暗色瓦片（免费，适合科技风）
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19, subdomains:'abcd'
-    }).addTo(map);
-
-    // 企业数据（怀柔区内模拟坐标）
+    // ========== 28家企业数据（与辖区概览数量对应） ==========
     const enterprises = [
-      { name:'红星喷涂厂', lat:40.42, lng:116.65, cp:0.35, type:'red', size:32 },
-      { name:'蓝天工业涂装', lat:40.35, lng:116.58, cp:0.38, type:'red', size:34 },
+      // Paradox 3家（红色）
+      { name:'红星喷涂厂', lat:40.42, lng:116.65, cp:0.35, type:'red', size:32, alert:'C-P 0.35 减碳增污 | 燃烧室温度680°C' },
+      { name:'蓝天工业涂装', lat:40.35, lng:116.58, cp:0.38, type:'red', size:34, alert:'C-P 0.38 持续12h | RTO空烧22%' },
+      { name:'永昌喷涂', lat:40.30, lng:116.52, cp:0.39, type:'red', size:28, alert:'C-P 0.39 协同失衡 | 天然气激增' },
+      // 关注企业 12家（黄色）
       { name:'鑫达汽修', lat:40.38, lng:116.55, cp:0.52, type:'yellow', size:26 },
       { name:'伟达制造', lat:40.28, lng:116.72, cp:0.55, type:'yellow', size:24 },
       { name:'金辉涂装', lat:40.25, lng:116.60, cp:0.68, type:'yellow', size:22 },
+      { name:'鸿运汽修', lat:40.33, lng:116.48, cp:0.48, type:'yellow', size:22 },
+      { name:'大成涂装', lat:40.40, lng:116.70, cp:0.58, type:'yellow', size:24 },
+      { name:'华兴制造', lat:40.22, lng:116.65, cp:0.62, type:'yellow', size:22 },
+      { name:'恒通喷涂', lat:40.45, lng:116.58, cp:0.45, type:'yellow', size:22 },
+      { name:'顺风汽修', lat:40.27, lng:116.55, cp:0.50, type:'yellow', size:20 },
+      { name:'荣达工业', lat:40.37, lng:116.68, cp:0.56, type:'yellow', size:22 },
+      { name:'宏宇涂装', lat:40.32, lng:116.52, cp:0.60, type:'yellow', size:20 },
+      { name:'信达制造', lat:40.29, lng:116.60, cp:0.65, type:'yellow', size:22 },
+      { name:'龙腾汽修', lat:40.41, lng:116.55, cp:0.49, type:'yellow', size:20 },
+      // 双减标兵 8家（绿色）
       { name:'标杆企业A', lat:40.32, lng:116.62, cp:0.88, type:'green', size:28 },
       { name:'标杆企业B', lat:40.30, lng:116.68, cp:0.82, type:'green', size:24 },
-      { name:'新达涂装', lat:40.36, lng:116.50, cp:null, type:'gray', size:20 },
+      { name:'标杆企业C', lat:40.34, lng:116.70, cp:0.85, type:'green', size:24 },
+      { name:'标杆企业D', lat:40.26, lng:116.58, cp:0.90, type:'green', size:26 },
+      { name:'标杆企业E', lat:40.38, lng:116.65, cp:0.86, type:'green', size:24 },
+      { name:'标杆企业F', lat:40.24, lng:116.52, cp:0.81, type:'green', size:22 },
+      { name:'标杆企业G', lat:40.36, lng:116.60, cp:0.84, type:'green', size:22 },
+      { name:'标杆企业H', lat:40.28, lng:116.48, cp:0.89, type:'green', size:26 },
+      // 数据不足 5家（灰色）
+      { name:'新达涂装', lat:40.36, lng:116.50, cp:null, type:'gray', size:18 },
+      { name:'东升汽修', lat:40.31, lng:116.45, cp:null, type:'gray', size:16 },
+      { name:'北环工业', lat:40.43, lng:116.62, cp:null, type:'gray', size:16 },
+      { name:'西郊制造', lat:40.23, lng:116.70, cp:null, type:'gray', size:16 },
+      { name:'南苑涂装', lat:40.39, lng:116.75, cp:null, type:'gray', size:16 },
     ];
 
-    // 添加气泡标记（可点击下钻）
-    enterprises.forEach(e => {
-      const html = `<div class="bubble-marker" style="cursor:pointer" onclick="goToEnterprise('${e.name}')"><div class="bubble-marker-inner ${e.type}" style="width:${e.size}px;height:${e.size}px">${e.cp || '--'}</div><div class="bubble-label">${e.name}</div></div>`;
-      L.marker([e.lat, e.lng], { icon: L.divIcon({ className:'', html, iconSize:[60,50], iconAnchor:[30,25] }) }).addTo(map);
+    const markerMap = {};
+
+    // ========== 添加气泡标记 ==========
+    enterprises.forEach((e, idx) => {
+      const html = `<div class="bubble-marker" id="bm-${idx}"><div class="bubble-marker-inner ${e.type}" id="bi-${idx}" style="width:${e.size}px;height:${e.size}px">${e.cp || '--'}</div><div class="bubble-label">${e.name}</div></div>`;
+      const marker = L.marker([e.lat, e.lng], { icon: L.divIcon({ className:'', html, iconSize:[60,50], iconAnchor:[30,25] }) }).addTo(map);
+      marker.on('click', () => goToEnterprise(e.name));
+      markerMap[e.name] = { marker, idx, data: e };
     });
 
     function goToEnterprise(name) {
       window.location.href = 'enterprise-detail.html?name=' + encodeURIComponent(name);
     }
 
-    // 添加飞线（污染转移）
-    const flyLine = L.polyline([[40.35,116.58],[40.42,116.65]], {
-      color:'#f87171', weight:3, opacity:0.8, dashArray:'10,8', className:'fly-line'
-    }).addTo(map);
+    // ========== 不规则飞线（受气象+地形影响） ==========
+    // 飞线路径：用多段折线模拟风向（西北风）+ 地形阻挡导致的不规则扩散
+    const flyLines = [
+      // 蓝天工业 → 红星喷涂（主污染源扩散，受北风影响向东南偏）
+      { from:'蓝天工业涂装', to:'红星喷涂厂', color:'#f87171', width:3,
+        path:[[40.35,116.58],[40.365,116.595],[40.38,116.615],[40.395,116.63],[40.42,116.65]] },
+      // 蓝天工业 → 永昌喷涂（西北风下向西南扩散，遇山地阻挡偏转）
+      { from:'蓝天工业涂装', to:'永昌喷涂', color:'#f87171', width:2,
+        path:[[40.35,116.58],[40.345,116.565],[40.335,116.555],[40.325,116.545],[40.315,116.535],[40.30,116.52]] },
+      // 红星喷涂 → 大成涂装（向东扩散）
+      { from:'红星喷涂厂', to:'大成涂装', color:'#fbbf24', width:2,
+        path:[[40.42,116.65],[40.415,116.665],[40.41,116.68],[40.40,116.70]] },
+      // 鑫达汽修 → 鸿运汽修（近距离西北风向）
+      { from:'鑫达汽修', to:'鸿运汽修', color:'#fbbf24', width:1.5,
+        path:[[40.38,116.55],[40.375,116.535],[40.36,116.515],[40.345,116.495],[40.33,116.48]] },
+      // 标杆企业A → 标杆企业C（优良企业间绿色连线，表示技术扩散）
+      { from:'标杆企业A', to:'标杆企业C', color:'#4ade80', width:1.5,
+        path:[[40.32,116.62],[40.325,116.635],[40.33,116.655],[40.335,116.675],[40.34,116.70]] },
+    ];
 
-    // 添加热力圆
-    L.circle([40.35, 116.58], { radius:800, color:'#f87171', fillColor:'#f87171', fillOpacity:0.15, weight:1 }).addTo(map);
-    L.circle([40.42, 116.65], { radius:600, color:'#f87171', fillColor:'#f87171', fillOpacity:0.15, weight:1 }).addTo(map);
-    L.circle([40.32, 116.62], { radius:500, color:'#4ade80', fillColor:'#4ade80', fillOpacity:0.12, weight:1 }).addTo(map);
+    const flyLineLayers = [];
 
-    // 怀柔区标签
+    function addFlyLine(fl, visible) {
+      const poly = L.polyline(fl.path, {
+        color: fl.color, weight: fl.width, opacity: visible ? 0.8 : 0,
+        dashArray: '12 8', className: 'fly-line-anim'
+      }).addTo(map);
+      flyLineLayers.push({ poly, data: fl });
+      return poly;
+    }
+
+    // 初始化添加所有飞线（可见）
+    flyLines.forEach(fl => addFlyLine(fl, true));
+
+    // 飞线粒子效果（沿路径的动画点）
+    flyLines.forEach((fl, i) => {
+      const mid = fl.path[Math.floor(fl.path.length / 2)];
+      const particle = L.circleMarker(mid, {
+        radius: 4, color: fl.color, fillColor: fl.color, fillOpacity: 0.8,
+        weight: 0, className: 'fly-particle'
+      }).addTo(map);
+      // 简单的粒子移动效果（通过CSS动画模拟）
+      flyLineLayers[i].particle = particle;
+    });
+
+    function showAllFlyLines() {
+      flyLineLayers.forEach(l => {
+        l.poly.setStyle({ opacity: 0.8 });
+        if (l.particle) l.particle.setStyle({ opacity: 1 });
+      });
+      showToast('已显示全部污染转移溯源飞线', 'info');
+    }
+
+    // ========== 热力扩散圆（不规则形状模拟地形影响） ==========
+    const heatCircles = [
+      { center:[40.35,116.58], radius:1200, color:'#f87171', fillOpacity:0.12, label:'蓝天工业污染扩散区' },
+      { center:[40.42,116.65], radius:900, color:'#f87171', fillOpacity:0.10, label:'红星喷涂污染扩散区' },
+      { center:[40.30,116.52], radius:700, color:'#f87171', fillOpacity:0.08, label:'永昌喷涂污染扩散区' },
+      { center:[40.32,116.62], radius:600, color:'#4ade80', fillOpacity:0.08, label:'标杆企业A生态保护区' },
+      { center:[40.30,116.68], radius:500, color:'#4ade80', fillOpacity:0.06, label:'标杆企业B生态保护区' },
+    ];
+    heatCircles.forEach(h => {
+      L.circle(h.center, { radius:h.radius, color:h.color, fillColor:h.color, fillOpacity:h.fillOpacity, weight:1 }).addTo(map);
+    });
+
+    // ========== 怀柔区标签 ==========
     L.marker([40.45, 116.63], { icon: L.divIcon({
       className:'', iconSize:[100,20], iconAnchor:[50,10],
       html: '<div style="font-size:14px;font-weight:700;color:#22d3ee;text-shadow:0 0 10px rgba(34,211,238,0.5);text-align:center;">📍 北京市怀柔区</div>'
     })}).addTo(map);
 
+    // ========== 侧边栏渲染 ==========
+    const alertList = document.getElementById('alertList');
+    const redEnts = enterprises.filter(e => e.type === 'red');
+    const yellowEnts = enterprises.filter(e => e.type === 'yellow');
+
+    // 实时告警（红+部分黄）
+    const alerts = [
+      { name:'蓝天工业涂装', text:'C-P 0.38 持续12h | RTO空烧22%', type:'red' },
+      { name:'红星喷涂厂', text:'C-P 0.35 减碳增污 | 燃烧室温度680°C', type:'red' },
+      { name:'永昌喷涂', text:'C-P 0.39 协同失衡 | 天然气激增28%', type:'red' },
+      { name:'鑫达汽修', text:'C-P 0.52 协同失衡 | 水性漆增碳', type:'yellow' },
+      { name:'鸿运汽修', text:'C-P 0.48 关注 | 涂料用量环比+35%', type:'yellow' },
+    ];
+    alerts.forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'dt-alert-item ' + a.type;
+      div.innerHTML = `<div style="width:6px;height:6px;border-radius:50%;background:${a.type==='red'?'#f87171':'#fbbf24'};box-shadow:0 0 6px ${a.type==='red'?'#f87171':'#fbbf24'};flex-shrink:0"></div><div style="flex:1"><div style="font-weight:500;color:${a.type==='red'?'#fca5a5':'#fde047'}">${a.name}</div><div style="font-size:11px;color:rgba(226,232,240,0.35);margin-top:1px">${a.text}</div></div>`;
+      div.onclick = () => flyToEntByName(a.name);
+      alertList.appendChild(div);
+    });
+
+    // 企业列表
+    const entList = document.getElementById('entList');
+    [...enterprises].sort((a,b) => (a.cp===null?999:(1-(a.cp||0))) - (b.cp===null?999:(1-(b.cp||0)))).forEach(e => {
+      const colorMap = { red:'#f87171', yellow:'#fbbf24', green:'#4ade80', gray:'#94a3b8' };
+      const c = colorMap[e.type];
+      const div = document.createElement('div');
+      div.className = 'dt-ent-item';
+      div.innerHTML = `<div class="dt-ent-dot" style="background:${c};box-shadow:0 0 6px ${c}"></div><div class="dt-ent-name">${e.name}</div><div class="dt-ent-cp" style="color:${c}">${e.cp || '--'}</div>`;
+      div.onclick = () => flyToEntByName(e.name);
+      entList.appendChild(div);
+    });
+
+    // ========== 定位与闪烁 ==========
     function flyToEnt(lng, lat) { map.flyTo([lat, lng], 14, { duration:1.5 }); }
+
+    function flyToEntByName(name) {
+      const m = markerMap[name];
+      if (!m) { showToast('未找到该企业点位', 'error'); return; }
+      map.flyTo([m.data.lat, m.data.lng], 15, { duration:1.2 });
+      // 闪烁效果
+      const inner = document.getElementById('bi-' + m.idx);
+      if (inner) {
+        inner.classList.add('flash-active');
+        setTimeout(() => inner.classList.remove('flash-active'), 3000);
+      }
+    }
+
+    function flyToType(type) {
+      const list = enterprises.filter(e => e.type === type);
+      if (list.length === 0) return;
+      // 计算该类企业的中心点
+      const avgLat = list.reduce((s,e) => s+e.lat, 0) / list.length;
+      const avgLng = list.reduce((s,e) => s+e.lng, 0) / list.length;
+      map.flyTo([avgLat, avgLng], 13, { duration:1.5 });
+      // 该类所有企业闪烁
+      list.forEach(e => {
+        const m = markerMap[e.name];
+        if (m) {
+          const inner = document.getElementById('bi-' + m.idx);
+          if (inner) {
+            setTimeout(() => inner.classList.add('flash-active'), 200);
+            setTimeout(() => inner.classList.remove('flash-active'), 3200);
+          }
+        }
+      });
+      const typeNames = { green:'双减标兵', yellow:'关注企业', red:'Paradox风险', gray:'数据不足' };
+      showToast(`已定位到 ${list.length} 家${typeNames[type]}`, 'success');
+    }
   </script>
 </body>
 </html>
