@@ -142,7 +142,7 @@
     
     <div class="stats-bar" id="statsBar">
       <div class="stats-item"><div class="stats-num" style="color:#f87171" id="statUnread">2</div><div class="stats-label">未读预警</div></div>
-      <div class="stats-item"><div class="stats-num" style="color:#f87171" id="statParadox">1</div><div class="stats-label">Paradox风险</div></div>
+      <div class="stats-item"><div class="stats-num" style="color:#f87171" id="stat减污增碳/减碳增污悖论">1</div><div class="stats-label">减污增碳/减碳增污悖论风险</div></div>
       <div class="stats-item"><div class="stats-num" style="color:#fbbf24" id="statImbalance">1</div><div class="stats-label">协同失衡</div></div>
       <div class="stats-item"><div class="stats-num" style="color:#22d3ee" id="statData">1</div><div class="stats-label">数据异常</div></div>
       <div class="stats-item"><div class="stats-num" style="color:rgba(226,232,240,0.45)" id="statTotal">4</div><div class="stats-label">本月累计</div></div>
@@ -150,7 +150,7 @@
     
     <div class="filter-bar">
       <button class="filter-btn active" onclick="filterAlerts(this,'all')">全部</button>
-      <button class="filter-btn" onclick="filterAlerts(this,'paradox')">Paradox风险</button>
+      <button class="filter-btn" onclick="filterAlerts(this,'减污增碳/减碳增污悖论')">减污增碳/减碳增污悖论风险</button>
       <button class="filter-btn" onclick="filterAlerts(this,'imbalance')">协同失衡</button>
       <button class="filter-btn" onclick="filterAlerts(this,'data')">数据异常</button>
       <button class="filter-btn" onclick="filterAlerts(this,'permit')">证件到期</button>
@@ -185,7 +185,7 @@
       
       // 更新统计
       document.getElementById('statUnread').textContent = alerts.filter(a => !a.read).length;
-      document.getElementById('statParadox').textContent = alerts.filter(a => a.type === 'paradox' && !a.read).length;
+      document.getElementById('stat减污增碳/减碳增污悖论').textContent = alerts.filter(a => a.type === '减污增碳/减碳增污悖论' && !a.read).length;
       document.getElementById('statImbalance').textContent = alerts.filter(a => a.type === 'imbalance' && !a.read).length;
       document.getElementById('statData').textContent = alerts.filter(a => a.type === 'data' && !a.read).length;
       document.getElementById('statTotal').textContent = alerts.length;
@@ -196,8 +196,8 @@
       }
       
       list.innerHTML = filtered.map(a => {
-        const icons = { paradox: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
-        const typeNames = { paradox: 'Paradox 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
+        const icons = { 减污增碳/减碳增污悖论: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
+        const typeNames = { 减污增碳/减碳增污悖论: '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
         const readClass = a.read ? 'read' : 'unread';
         const dot = !a.read ? '<span class="dot"></span>' : '';
         const flowTags = a.flow ? a.flow.map((s, i) => {
@@ -272,12 +272,12 @@
         renderAlerts();
       }
       
-      const typeNames = { paradox: 'Paradox 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
+      const typeNames = { 减污增碳/减碳增污悖论: '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
       document.getElementById('modalTitle').textContent = `🩺 ${typeNames[a.type] || a.title}`;
       
       // 根据类型生成不同的详情内容
       let body = '';
-      if (a.type === 'paradox') {
+      if (a.type === '减污增碳/减碳增污悖论') {
         body = `
           <div class="diag-section">
             <div class="diag-title">📊 异常数据快照</div>

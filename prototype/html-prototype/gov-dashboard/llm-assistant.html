@@ -102,7 +102,7 @@
           <div class="llm-welcome-icon">🤖</div>
           <div class="llm-welcome-title">我是你的 AI 环保助手</div>
           <div class="llm-welcome-desc">
-            我可以帮你查询环保政策法规、分析 paradox 异常根因、<br>
+            我可以帮你查询环保政策法规、分析 减污增碳/减碳增污悖论 异常根因、<br>
             生成统计报表、提供错峰调度建议等
           </div>
           <div class="llm-capability">
@@ -135,7 +135,7 @@
       <div class="quick-questions" id="quickQuestions">
         <span class="quick-q" onclick="sendPreset('policy')">📚 RTO燃烧室温度最低多少度？</span>
         <span class="quick-q" onclick="sendPreset('attribution')">🔍 为什么张镇工业园协同指数掉了？</span>
-        <span class="quick-q" onclick="sendPreset('report')">📊 生成上个月园区paradox风险统计</span>
+        <span class="quick-q" onclick="sendPreset('report')">📊 生成上个月园区减污增碳/减碳增污悖论风险统计</span>
         <span class="quick-q" onclick="sendPreset('schedule')">💡 建议三家企业的错峰运行方案</span>
       </div>
       
@@ -190,12 +190,12 @@
         <div class="ai-source"><span style="color:#faad14">[待核实]</span> 本分析基于实时双算数据，建议结合现场核查确认</div>`
       },
       report: {
-        q: '生成上个月园区 paradox 风险统计',
-        a: `<p>已为您生成《2026年4月 张镇工业园 paradox 风险统计报告》：</p>
+        q: '生成上个月园区 减污增碳/减碳增污悖论 风险统计',
+        a: `<p>已为您生成《2026年4月 张镇工业园 减污增碳/减碳增污悖论 风险统计报告》：</p>
         <div class="ai-card">
           <div class="ai-card-title">📊 统计概览</div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0">
-            <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#f5222d">7</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">Paradox 事件</div></div>
+            <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#f5222d">7</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">减污增碳/减碳增污悖论 事件</div></div>
             <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#fa8c16">5</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">减污增碳</div></div>
             <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#faad14">2</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">减碳增污</div></div>
           </div>
@@ -207,7 +207,7 @@
             <tr><td>金辉涂装</td><td><span class="ai-tag" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f5222d">减污增碳</span></td><td>0.40</td><td>12h</td><td>已销号</td></tr>
           </table>
         </div>
-        <p>📈 <strong>趋势分析</strong>：4月 paradox 事件较 3月增加 40%，主要原因为季节性订单增长导致 RTO 超负荷运行。建议加强错峰调度管理。</p>
+        <p>📈 <strong>趋势分析</strong>：4月 减污增碳/减碳增污悖论 事件较 3月增加 40%，主要原因为季节性订单增长导致 RTO 超负荷运行。建议加强错峰调度管理。</p>
         <p><a href="report-result.html" style="color:#1677ff">👉 查看完整可视化报表</a></p>`
       },
       schedule: {
@@ -224,7 +224,7 @@
           <p style="margin-top:10px"><strong>预期效果：</strong></p>
           <p>• 园区天然气总耗预计降低 <strong>22%</strong></p>
           <p>• 区域 C-P 协同指数预计从 0.52 回升至 <strong>0.72</strong></p>
-          <p>• 减少 paradox 预警触发概率 <strong>65%</strong></p>
+          <p>• 减少 减污增碳/减碳增污悖论 预警触发概率 <strong>65%</strong></p>
         </div>
         <p>⚠️ <strong>注意事项</strong>：需提前与企业确认产能排期可行性，建议给予 3-5 天过渡期。</p>
         <div style="margin-top:10px">

@@ -295,7 +295,7 @@
     });
     const al = document.getElementById('alertList');
     MOCK_DATA.alerts.slice(0,4).forEach((a, i) => {
-      const iconMap = { paradox: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
+      const iconMap = { 减污增碳/减碳增污悖论: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
       const cls = a.level === 'critical' ? 'red' : a.level === 'warning' ? 'yellow' : 'orange';
       const div = document.createElement('div');
       div.className = 'alert-item';

@@ -50,7 +50,7 @@ const MOCK_DATA = {
   ],
 
   alerts: [
-    { id: "ALT-20260518-001", type: "paradox", level: "critical", title: "Paradox 风险预警", desc: "C-P 协同指数 0.38，已连续 12h 低于 0.4，疑似 RTO 空烧", time: "09:00", date: "05-18", read: false, status: "待签收", flow: ["预警生成","待企业签收","整改反馈","监测科复核","已销号"], currentStep: 0 },
+    { id: "ALT-20260518-001", type: "减污增碳/减碳增污悖论", level: "critical", title: "减污增碳/减碳增污悖论 风险预警", desc: "C-P 协同指数 0.38，已连续 12h 低于 0.4，疑似 RTO 空烧", time: "09:00", date: "05-18", read: false, status: "待签收", flow: ["预警生成","待企业签收","整改反馈","监测科复核","已销号"], currentStep: 0 },
     { id: "ALT-20260517-003", type: "imbalance", level: "warning", title: "协同失衡预警", desc: "C-P 协同指数 0.42，持续低于 0.6 超过 4h", time: "18:30", date: "05-17", read: false, status: "待签收", flow: ["预警生成","待企业签收","整改反馈","监测科复核","已销号"], currentStep: 0 },
     { id: "ALT-20260515-002", type: "data", level: "warning", title: "数据异常预警", desc: "5月月度上报中天然气/RTO时长比值偏离历史均值 45%", time: "", date: "05-15", read: true, status: "整改中", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 2 },
     { id: "ALT-20260510-001", type: "permit", level: "info", title: "证件到期提醒", desc: "排污许可证将于 21 天后到期（2026-12-31）", time: "", date: "05-10", read: true, status: "已销号", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 4 },
@@ -65,11 +65,11 @@ const MOCK_DATA = {
 
   todos: [
     { title: "提交5月月度运行数据", deadline: "05-20", urgent: true },
-    { title: "回复 paradox 预警整改说明", deadline: "05-19", urgent: true },
+    { title: "回复 减污增碳/减碳增污悖论 预警整改说明", deadline: "05-19", urgent: true },
     { title: "上传排污许可执行报告", deadline: "05-25", urgent: false },
   ],
 
-  paradoxEvents: [
+  减污增碳/减碳增污悖论Events: [
     { date: "05-18", type: "减污增碳", cpBefore: 0.55, cpAfter: 0.38, cause: "RTO 空烧时长占比升至 22%" },
     { date: "05-14", type: "减污增碳", cpBefore: 0.72, cpAfter: 0.61, cause: "天然气消耗环比激增 35%" },
     { date: "04-28", type: "减碳增污", cpBefore: 0.68, cpAfter: 0.52, cause: "RTO 温度设定过低" },
@@ -77,7 +77,7 @@ const MOCK_DATA = {
 
   // 调度指令（闭环管理）
   dispatches: [
-    { id: "DSP-20260518-001", type: "paradox", title: "Paradox 风险整改通知", target: "蓝天工业涂装有限公司", deadline: "2026-05-25", status: "已下发", statusCode: "dispatched", step: 0, steps: ["已下发","企业签收","整改反馈","监测科复核","已销号"], createdAt: "2026-05-18 09:30", content: "C-P协同指数0.38持续12h低于阈值0.4，疑似RTO空烧。请立即排查并反馈整改措施。" },
+    { id: "DSP-20260518-001", type: "减污增碳/减碳增污悖论", title: "减污增碳/减碳增污悖论 风险整改通知", target: "蓝天工业涂装有限公司", deadline: "2026-05-25", status: "已下发", statusCode: "dispatched", step: 0, steps: ["已下发","企业签收","整改反馈","监测科复核","已销号"], createdAt: "2026-05-18 09:30", content: "C-P协同指数0.38持续12h低于阈值0.4，疑似RTO空烧。请立即排查并反馈整改措施。" },
     { id: "DSP-20260517-002", type: "data", title: "数据异常核查通知", target: "红星喷涂厂", deadline: "2026-05-22", status: "整改中", statusCode: "feedback", step: 2, steps: ["已下发","企业签收","整改反馈","监测科复核","已销号"], createdAt: "2026-05-17 14:00", content: "月度上报天然气/RTO时长比值偏离历史均值45%，请核实数据来源并重新上报。" },
     { id: "DSP-20260515-003", type: "permit", title: "排污许可证续期提醒", target: "鑫达汽修", deadline: "2026-06-15", status: "已销号", statusCode: "closed", step: 4, steps: ["已下发","企业签收","整改反馈","监测科复核","已销号"], createdAt: "2026-05-15 10:00", content: "排污许可证将于30天后到期，请及时办理续期手续。" },
   ],
@@ -193,7 +193,7 @@ const DataStore = {
     const dispatches = this.getDispatches();
     return {
       unreadAlerts: alerts.filter(a => !a.read).length,
-      paradoxAlerts: alerts.filter(a => a.type === 'paradox' && !a.read).length,
+      减污增碳/减碳增污悖论Alerts: alerts.filter(a => a.type === '减污增碳/减碳增污悖论' && !a.read).length,
       pendingDispatches: dispatches.filter(d => d.statusCode !== 'closed').length,
       closedDispatches: dispatches.filter(d => d.statusCode === 'closed').length,
       closureRate: Math.round((dispatches.filter(d => d.statusCode === 'closed').length / dispatches.length) * 100) || 0,

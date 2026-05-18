@@ -187,8 +187,8 @@
         <div class="kpi-trend">🟡 关注区（阈值 70）</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
-      <div class="kpi-card red" onclick="openKpiDetail('paradox')">
-        <div class="kpi-label">🚨 今日 Paradox 预警</div>
+      <div class="kpi-card red" onclick="openKpiDetail('减污增碳/减碳增污悖论')">
+        <div class="kpi-label">🚨 今日 减污增碳/减碳增污悖论 预警</div>
         <div class="kpi-value" style="color:#ef4444">3<span class="unit">条</span></div>
         <div class="kpi-trend up">↑ 较昨日 +1</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
@@ -213,12 +213,12 @@
         <div class="panel" style="flex:1.2">
           <div class="panel-title">🗺️ 辖区企业态势概览</div>
           <div class="map-area">
-            <div class="map-zone warn" onclick="showToast('张镇工业园：协同指数58，12家企业中3家paradox','warn')">⚠️ 张镇工业园 协同指数 58</div>
-            <div class="map-zone danger" onclick="showToast('李村工业区：2家paradox，已下发调度指令','error')">🔴 李村工业区 2家 paradox</div>
+            <div class="map-zone warn" onclick="showToast('张镇工业园：协同指数58，12家企业中3家减污增碳/减碳增污悖论','warn')">⚠️ 张镇工业园 协同指数 58</div>
+            <div class="map-zone danger" onclick="showToast('李村工业区：2家减污增碳/减碳增污悖论，已下发调度指令','error')">🔴 李村工业区 2家 减污增碳/减碳增污悖论</div>
             <div class="map-legend-bar">
               <span onclick="showToast('双减标兵企业：8家','success')">🟢 双减标兵 8家</span>
               <span onclick="showToast('关注企业：12家','warn')">🟡 关注企业 12家</span>
-              <span onclick="showToast('Paradox风险企业：3家','error')">🔴 paradox 3家</span>
+              <span onclick="showToast('减污增碳/减碳增污悖论风险企业：3家','error')">🔴 减污增碳/减碳增污悖论 3家</span>
               <span onclick="showToast('数据不足企业：5家','info')">⚪ 数据不足 5家</span>
             </div>
           </div>
@@ -263,7 +263,7 @@
       <div class="screen-right">
         <!-- 事件流 -->
         <div class="panel" style="flex:1">
-          <div class="panel-title red">🔥 Paradox 事件流</div>
+          <div class="panel-title red">🔥 减污增碳/减碳增污悖论 事件流</div>
           <div class="event-stream" id="eventStream"></div>
         </div>
         
@@ -322,7 +322,7 @@
         </div>
         <div class="form-group">
           <label>预警类型</label>
-          <select id="dType"><option value="paradox">Paradox 风险</option><option value="data">数据异常</option><option value="permit">证件到期</option><option value="imbalance">协同失衡</option></select>
+          <select id="dType"><option value="减污增碳/减碳增污悖论">减污增碳/减碳增污悖论 风险</option><option value="data">数据异常</option><option value="permit">证件到期</option><option value="imbalance">协同失衡</option></select>
         </div>
         <div class="form-group">
           <label>截止期限</label>
@@ -407,7 +407,7 @@
       const deadline = document.getElementById('dDeadline').value;
       const content = document.getElementById('dContent').value;
       const id = 'DSP-' + Date.now().toString().slice(-10);
-      const typeNames = { paradox: 'Paradox 风险整改通知', data: '数据异常核查通知', permit: '证件续期提醒', imbalance: '协同失衡整改通知' };
+      const typeNames = { 减污增碳/减碳增污悖论: '减污增碳/减碳增污悖论 风险整改通知', data: '数据异常核查通知', permit: '证件续期提醒', imbalance: '协同失衡整改通知' };
       
       const newDispatch = {
         id: id,
@@ -446,7 +446,7 @@
           <div class="modal-row"><span>环比变化</span><span style="color:#f87171">↓ 8.8%</span></div>
           <div class="modal-row"><span>辖区企业</span><span>28 家</span></div>
           <div class="modal-row"><span>双减标兵</span><span style="color:#4ade80">8 家</span></div>
-          <div class="modal-row"><span>Paradox企业</span><span style="color:#f87171">3 家</span></div>
+          <div class="modal-row"><span>减污增碳/减碳增污悖论企业</span><span style="color:#f87171">3 家</span></div>
           <div style="margin-top:12px;padding:10px;background:rgba(34,211,238,0.04);border-radius:6px;font-size:12px;color:rgba(226,232,240,0.5)">
             💡 主要下降原因：3家企业同时拉满RTO负荷，天然气总耗环比增加28%
           </div>
@@ -454,8 +454,8 @@
             <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="window.open('../gov-monitoring/monthly-monitor.html','_blank')">📊 查看月报</button>
             <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
           </div>`;
-      } else if (type === 'paradox') {
-        title.textContent = '🚨 Paradox 预警详情';
+      } else if (type === '减污增碳/减碳增污悖论') {
+        title.textContent = '🚨 减污增碳/减碳增污悖论 预警详情';
         body.innerHTML = `
           <div class="modal-row"><span>今日预警</span><span style="color:#ef4444;font-weight:700">3 条</span></div>
           <div class="modal-row"><span>减污增碳</span><span style="color:#f87171">2 条</span></div>
@@ -495,7 +495,7 @@
           <div class="modal-row"><span>平均处置时长</span><span>4.2 天</span></div>
           <div class="modal-row"><span>超期任务</span><span style="color:#f87171">1 条</span></div>
           <div style="margin-top:12px;font-size:12px;color:rgba(226,232,240,0.5);line-height:2">
-            ✅ 蓝天工业涂装 05-15 paradox 已销号<br>
+            ✅ 蓝天工业涂装 05-15 减污增碳/减碳增污悖论 已销号<br>
             ✅ 红星喷涂厂 05-10 协同失衡 已销号<br>
             ✅ 金辉涂装 05-08 数据异常 已销号
           </div>

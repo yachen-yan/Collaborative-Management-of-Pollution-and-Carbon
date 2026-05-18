@@ -98,7 +98,7 @@
         <div class="dt-stat-grid">
           <div class="dt-stat-item" onclick="flyToType('green')"><div class="dt-stat-num" style="color:#4ade80">8</div><div class="dt-stat-label">双减标兵</div></div>
           <div class="dt-stat-item" onclick="flyToType('yellow')"><div class="dt-stat-num" style="color:#fbbf24">12</div><div class="dt-stat-label">关注企业</div></div>
-          <div class="dt-stat-item" onclick="flyToType('red')"><div class="dt-stat-num" style="color:#f87171">3</div><div class="dt-stat-label">Paradox</div></div>
+          <div class="dt-stat-item" onclick="flyToType('red')"><div class="dt-stat-num" style="color:#f87171">3</div><div class="dt-stat-label">减污增碳/减碳增污悖论</div></div>
           <div class="dt-stat-item" onclick="flyToType('gray')"><div class="dt-stat-num" style="color:#94a3b8">5</div><div class="dt-stat-label">数据不足</div></div>
         </div>
         <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px;text-align:center">辖区企业总数：28家 | 建档率 100%</div>
@@ -108,7 +108,7 @@
         <div class="dt-legend">
           <div class="dt-legend-item" onclick="flyToType('green')"><div class="dt-legend-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80"></div>双减标兵（C-P≥0.8）</div>
           <div class="dt-legend-item" onclick="flyToType('yellow')"><div class="dt-legend-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24"></div>关注企业（0.4≤C-P<0.8）</div>
-          <div class="dt-legend-item" onclick="flyToType('red')"><div class="dt-legend-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div>Paradox（C-P<0.4）</div>
+          <div class="dt-legend-item" onclick="flyToType('red')"><div class="dt-legend-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></div>减污增碳/减碳增污悖论（C-P<0.4）</div>
           <div class="dt-legend-item" onclick="flyToType('gray')"><div class="dt-legend-dot" style="background:#94a3b8"></div>数据不足</div>
           <div class="dt-legend-item" onclick="showAllFlyLines()"><span style="color:#f87171">⇢</span> 污染转移飞线</div>
         </div>
@@ -139,7 +139,7 @@
 
     // ========== 28家企业数据（与辖区概览数量对应） ==========
     const enterprises = [
-      // Paradox 3家（红色）
+      // 减污增碳/减碳增污悖论 3家（红色）
       { name:'红星喷涂厂', lat:40.42, lng:116.65, cp:0.35, type:'red', size:32, alert:'C-P 0.35 减碳增污 | 燃烧室温度680°C' },
       { name:'蓝天工业涂装', lat:40.35, lng:116.58, cp:0.38, type:'red', size:34, alert:'C-P 0.38 持续12h | RTO空烧22%' },
       { name:'永昌喷涂', lat:40.30, lng:116.52, cp:0.39, type:'red', size:28, alert:'C-P 0.39 协同失衡 | 天然气激增' },
@@ -324,7 +324,7 @@
           }
         }
       });
-      const typeNames = { green:'双减标兵', yellow:'关注企业', red:'Paradox风险', gray:'数据不足' };
+      const typeNames = { green:'双减标兵', yellow:'关注企业', red:'减污增碳/减碳增污悖论风险', gray:'数据不足' };
       showToast(`已定位到 ${list.length} 家${typeNames[type]}`, 'success');
     }
   </script>
