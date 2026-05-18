@@ -167,11 +167,15 @@
       { name:'新达涂装', lat:40.36, lng:116.50, cp:null, type:'gray', size:20 },
     ];
 
-    // 添加气泡标记
+    // 添加气泡标记（可点击下钻）
     enterprises.forEach(e => {
-      const html = `<div class="bubble-marker"><div class="bubble-marker-inner ${e.type}" style="width:${e.size}px;height:${e.size}px">${e.cp || '--'}</div><div class="bubble-label">${e.name}</div></div>`;
+      const html = `<div class="bubble-marker" style="cursor:pointer" onclick="goToEnterprise('${e.name}')"><div class="bubble-marker-inner ${e.type}" style="width:${e.size}px;height:${e.size}px">${e.cp || '--'}</div><div class="bubble-label">${e.name}</div></div>`;
       L.marker([e.lat, e.lng], { icon: L.divIcon({ className:'', html, iconSize:[60,50], iconAnchor:[30,25] }) }).addTo(map);
     });
+
+    function goToEnterprise(name) {
+      window.location.href = 'enterprise-detail.html?name=' + encodeURIComponent(name);
+    }
 
     // 添加飞线（污染转移）
     const flyLine = L.polyline([[40.35,116.58],[40.42,116.65]], {
