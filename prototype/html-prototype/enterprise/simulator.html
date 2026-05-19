@@ -101,6 +101,22 @@
     .history-table { width: 100%; }
     .history-table th, .history-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
     .history-table th { color: rgba(226,232,240,0.4); font-weight: 500; background: rgba(34,211,238,0.04); }
+    .history-table td:first-child { width: 30px; text-align: center; }
+    .history-table input[type="checkbox"] { cursor: pointer; }
+    
+    .compare-panel {
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15); border-radius: 8px;
+      padding: 20px; margin-bottom: 20px; display: none;
+    }
+    .compare-panel.active { display: block; animation: fadeIn 0.4s ease; }
+    .compare-panel-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #22d3ee; }
+    .compare-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .compare-label { width: 80px; font-size: 12px; color: rgba(226,232,240,0.5); }
+    .compare-bars { flex: 1; display: flex; gap: 8px; align-items: flex-end; height: 40px; }
+    .compare-bar-item { flex: 1; border-radius: 4px 4px 0 0; position: relative; transition: all 0.4s ease; min-width: 40px; }
+    .compare-bar-item::after { content: attr(data-val); position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; white-space: nowrap; }
+    .compare-bar-name { text-align: center; font-size: 11px; color: rgba(226,232,240,0.4); margin-top: 4px; }
+    .compare-vs { font-size: 20px; font-weight: 700; color: #22d3ee; padding: 0 8px; }
     
     .btn-nav {
       display: flex; justify-content: space-between; margin-top: 24px; padding-top: 20px;
@@ -323,10 +339,19 @@
         </ol>
       </div>
 
+      <!-- 历史对比面板 -->
+      <div class="compare-panel" id="comparePanel">
+        <div class="compare-panel-title">📊 历史记录对比</div>
+        <div id="compareContent"></div>
+        <div style="text-align:center;margin-top:12px">
+          <button class="btn btn-default" onclick="clearCompare()">清除对比</button>
+        </div>
+      </div>
+
       <div class="card">
-        <div class="card-title">📜 模拟历史记录</div>
+        <div class="card-title">📜 模拟历史记录 <span style="font-size:12px;color:rgba(226,232,240,0.3);font-weight:400">（勾选两条记录进行对比）</span></div>
         <table class="history-table" id="historyTable">
-          <thead><tr><th>时间</th><th>当前工艺</th><th>拟改造工艺</th><th>预测 C-P</th><th>判定</th></tr></thead>
+          <thead><tr><th><input type="checkbox" disabled style="opacity:0.3"></th><th>时间</th><th>当前工艺</th><th>拟改造工艺</th><th>预测 C-P</th><th>判定</th></tr></thead>
           <tbody id="historyBody"></tbody>
         </table>
       </div>
@@ -490,20 +515,90 @@
       };
     }
 
+    let selectedCompareIds = [];
+
     function renderHistory() {
       const tbody = document.getElementById('historyBody');
       if (!tbody) return;
       const history = DataStore.getSimulatorHistory();
       if (history.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(226,232,240,0.3)">暂无历史记录</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(226,232,240,0.3)">暂无历史记录</td></tr>';
         return;
       }
       tbody.innerHTML = history.map(h => {
         const tagMap = { trap: ['减污增碳陷阱','tag-neon-red'], imbalance: ['协同失衡','tag-neon-orange'], good: ['协同改善','tag-neon-green'] };
         const tag = tagMap[h.result] || ['协同改善','tag-neon-green'];
         const cpColor = h.result === 'trap' ? '#f5222d' : h.result === 'imbalance' ? '#fa8c16' : '#52c41a';
-        return `<tr><td>${h.time}</td><td>${h.current}</td><td>${h.target}</td><td style="color:${cpColor}">${h.cpAfter}</td><td><span class="tag ${tag[1]}">${tag[0]}</span></td></tr>`;
+        const checked = selectedCompareIds.includes(h.id) ? 'checked' : '';
+        const disabled = !checked && selectedCompareIds.length >= 2 ? 'disabled' : '';
+        return `<tr><td><input type="checkbox" ${checked} ${disabled} onchange="toggleCompare('${h.id}', this.checked)"></td><td>${h.time}</td><td>${h.current}</td><td>${h.target}</td><td style="color:${cpColor}">${h.cpAfter}</td><td><span class="tag ${tag[1]}">${tag[0]}</span></td></tr>`;
       }).join('');
+      updateComparePanel();
+    }
+
+    function toggleCompare(id, checked) {
+      if (checked) {
+        if (!selectedCompareIds.includes(id)) selectedCompareIds.push(id);
+      } else {
+        selectedCompareIds = selectedCompareIds.filter(x => x !== id);
+      }
+      if (selectedCompareIds.length > 2) {
+        selectedCompareIds = selectedCompareIds.slice(-2);
+      }
+      renderHistory();
+    }
+
+    function clearCompare() {
+      selectedCompareIds = [];
+      renderHistory();
+      document.getElementById('comparePanel').classList.remove('active');
+    }
+
+    function updateComparePanel() {
+      const panel = document.getElementById('comparePanel');
+      const content = document.getElementById('compareContent');
+      if (selectedCompareIds.length !== 2) {
+        panel.classList.remove('active');
+        return;
+      }
+      const history = DataStore.getSimulatorHistory();
+      const items = selectedCompareIds.map(id => history.find(h => h.id === id)).filter(Boolean);
+      if (items.length !== 2) return;
+
+      const [a, b] = items;
+      const maxVocs = Math.max(Math.abs(a.vocsChange), Math.abs(b.vocsChange), 1);
+      const maxGas = Math.max(Math.abs(a.gasChange), Math.abs(b.gasChange), 1);
+      const maxCarbon = Math.max(Math.abs(a.carbonChange), Math.abs(b.carbonChange), 1);
+      const maxCp = Math.max(a.cpAfter, b.cpAfter, 0.1);
+
+      function barHtml(val, max, color, label) {
+        const h = Math.max(8, Math.abs(val) / max * 36);
+        const bg = val >= 0 ? `linear-gradient(180deg,${color},${color}88)` : `linear-gradient(180deg,#52c41a,#52c41a88)`;
+        const sign = val > 0 ? '+' : '';
+        return `<div style="flex:1"><div class="compare-bar-item" style="height:${h}px;background:${bg}" data-val="${sign}${val}%"></div><div class="compare-bar-name">${label}</div></div>`;
+      }
+
+      function compareRow(title, key, max, color) {
+        return `
+          <div class="compare-row">
+            <span class="compare-label">${title}</span>
+            <div class="compare-bars">${barHtml(a[key], max, color, a.time.slice(5))}</div>
+            <span class="compare-vs">VS</span>
+            <div class="compare-bars">${barHtml(b[key], max, color, b.time.slice(5))}</div>
+          </div>`;
+      }
+
+      content.innerHTML = `
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:13px">
+          <span><strong style="color:#22d3ee">${a.time}</strong> ${a.current} → ${a.target}</span>
+          <span><strong style="color:#22d3ee">${b.time}</strong> ${b.current} → ${b.target}</span>
+        </div>
+        ${compareRow('VOCs变化', 'vocsChange', maxVocs, '#1677ff')}
+        ${compareRow('天然气变化', 'gasChange', maxGas, '#fa8c16')}
+        ${compareRow('碳排变化', 'carbonChange', maxCarbon, '#f5222d')}
+        ${compareRow('C-P指数', 'cpAfter', maxCp, '#22d3ee')}
+      `;
+      panel.classList.add('active');
     }
 
     function saveResult() {

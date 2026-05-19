@@ -231,35 +231,11 @@
         <!-- 处置效果 -->
         <div class="panel" style="flex:0.8">
           <div class="panel-title green">📈 处置效果追踪（近30天）</div>
-          <div class="effect-chart">
-            <div class="effect-bar">
-              <div class="effect-bar-item" onclick="showToast('VOCs整改前：排放12.5kg/h','info')">
-                <div class="effect-bar-fill" style="height:70%;background:linear-gradient(180deg,#ef4444,#dc2626);color:#ef4444" data-val="整改前"></div>
-                <div class="effect-bar-label">VOCs</div>
-              </div>
-              <div class="effect-bar-item" onclick="showToast('碳排整改前：0.42 tCO₂/h','info')">
-                <div class="effect-bar-fill" style="height:45%;background:linear-gradient(180deg,#fbbf24,#d97706);color:#fbbf24" data-val="整改前"></div>
-                <div class="effect-bar-label">碳排</div>
-              </div>
-              <div class="effect-bar-item" onclick="showToast('C-P整改前：0.38','info')">
-                <div class="effect-bar-fill" style="height:55%;background:linear-gradient(180deg,#0ea5e9,#0284c7);color:#0ea5e9" data-val="整改前"></div>
-                <div class="effect-bar-label">C-P</div>
-              </div>
-              <div style="width:16px"></div>
-              <div class="effect-bar-item" onclick="showToast('VOCs整改后：排放8.2kg/h ↓34%','success')">
-                <div class="effect-bar-fill" style="height:50%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
-                <div class="effect-bar-label">VOCs</div>
-              </div>
-              <div class="effect-bar-item" onclick="showToast('碳排整改后：0.31 tCO₂/h ↓26%','success')">
-                <div class="effect-bar-fill" style="height:60%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
-                <div class="effect-bar-label">碳排</div>
-              </div>
-              <div class="effect-bar-item" onclick="showToast('C-P整改后：0.72 ↑89%','success')">
-                <div class="effect-bar-fill" style="height:80%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后"></div>
-                <div class="effect-bar-label">C-P</div>
-              </div>
+          <div class="effect-chart" id="effectChart">
+            <div class="effect-bar" id="effectBar">
+              <!-- 动态填充 -->
             </div>
-            <div style="text-align:center;font-size:10px;color:rgba(226,232,240,0.25);margin-top:4px">整改企业：蓝天工业涂装有限公司 | 整改周期：7天</div>
+            <div style="text-align:center;font-size:10px;color:rgba(226,232,240,0.25);margin-top:4px" id="effectCaption">加载中...</div>
           </div>
         </div>
       </div>
@@ -520,8 +496,66 @@
       document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
     }
 
+    // 处置效果追踪动态渲染
+    function renderEffectTracking() {
+      const dispatches = DataStore.getDispatches();
+      const closedDispatches = dispatches.filter(d => d.statusCode === 'closed');
+      const bar = document.getElementById('effectBar');
+      const caption = document.getElementById('effectCaption');
+      if (!bar || !caption) return;
+
+      if (closedDispatches.length === 0) {
+        bar.innerHTML = '<div style="text-align:center;color:rgba(226,232,240,0.25);font-size:12px;padding-top:40px">近30天暂无闭环整改案例</div>';
+        caption.textContent = '';
+        return;
+      }
+
+      // 取最近一条已销号的调度指令
+      const latest = closedDispatches[0];
+      // 模拟整改前后数据（根据调度类型生成）
+      let before = { vocs: 12.5, carbon: 0.42, cp: 0.38 };
+      let after = { vocs: 8.2, carbon: 0.31, cp: 0.72 };
+      if (latest.type === 'data') {
+        before = { vocs: 11.8, carbon: 0.40, cp: 0.45 };
+        after = { vocs: 10.5, carbon: 0.35, cp: 0.58 };
+      }
+      const vocsDiff = Math.round((before.vocs - after.vocs) / before.vocs * 100);
+      const carbonDiff = Math.round((before.carbon - after.carbon) / before.carbon * 100);
+      const cpDiff = Math.round((after.cp - before.cp) / before.cp * 100);
+
+      bar.innerHTML = `
+        <div class="effect-bar-item" onclick="showToast('VOCs整改前：排放${before.vocs}kg/h','info')">
+          <div class="effect-bar-fill" style="height:${Math.min(90, before.vocs / 15 * 90)}%;background:linear-gradient(180deg,#ef4444,#dc2626);color:#ef4444" data-val="整改前"></div>
+          <div class="effect-bar-label">VOCs</div>
+        </div>
+        <div class="effect-bar-item" onclick="showToast('碳排整改前：${before.carbon} tCO₂/h','info')">
+          <div class="effect-bar-fill" style="height:${Math.min(90, before.carbon / 0.6 * 90)}%;background:linear-gradient(180deg,#fbbf24,#d97706);color:#fbbf24" data-val="整改前"></div>
+          <div class="effect-bar-label">碳排</div>
+        </div>
+        <div class="effect-bar-item" onclick="showToast('C-P整改前：${before.cp}','info')">
+          <div class="effect-bar-fill" style="height:${Math.min(90, before.cp / 1.0 * 90)}%;background:linear-gradient(180deg,#0ea5e9,#0284c7);color:#0ea5e9" data-val="整改前"></div>
+          <div class="effect-bar-label">C-P</div>
+        </div>
+        <div style="width:16px"></div>
+        <div class="effect-bar-item" onclick="showToast('VOCs整改后：排放${after.vocs}kg/h ↓${vocsDiff}%','success')">
+          <div class="effect-bar-fill" style="height:${Math.min(90, after.vocs / 15 * 90)}%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后 ↓${vocsDiff}%"></div>
+          <div class="effect-bar-label">VOCs</div>
+        </div>
+        <div class="effect-bar-item" onclick="showToast('碳排整改后：${after.carbon} tCO₂/h ↓${carbonDiff}%','success')">
+          <div class="effect-bar-fill" style="height:${Math.min(90, after.carbon / 0.6 * 90)}%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后 ↓${carbonDiff}%"></div>
+          <div class="effect-bar-label">碳排</div>
+        </div>
+        <div class="effect-bar-item" onclick="showToast('C-P整改后：${after.cp} ↑${cpDiff}%','success')">
+          <div class="effect-bar-fill" style="height:${Math.min(90, after.cp / 1.0 * 90)}%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后 ↑${cpDiff}%"></div>
+          <div class="effect-bar-label">C-P</div>
+        </div>
+      `;
+      caption.innerHTML = `整改企业：${latest.target} | 整改周期：7天 | <span style="color:#4ade80">VOCs↓${vocsDiff}% 碳排↓${carbonDiff}% C-P↑${cpDiff}%</span>`;
+    }
+
     // 初始化
     renderTasks();
+    renderEffectTracking();
   </script>
 <script>
   window.addEventListener('load', function() {

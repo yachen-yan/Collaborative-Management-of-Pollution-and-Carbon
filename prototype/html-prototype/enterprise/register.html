@@ -129,6 +129,11 @@
         else{circle.textContent=i;}
         if(i>=n&&line)line.classList.remove('done');
       }
+      // 注册成功自动跳转登录页
+      if (n === 3) {
+        setTimeout(function() { showToast('⏳ 3秒后自动跳转至登录页...', 'info'); }, 800);
+        setTimeout(function() { window.location.href = 'login.html'; }, 3500);
+      }
     }
   </script>
   <script>

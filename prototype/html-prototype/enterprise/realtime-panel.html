@@ -271,6 +271,14 @@ window.addEventListener("load",function(){
     const ent = DataStore.get('enterprise', MOCK_DATA.enterprise);
     const health = DataStore.get('healthScore', MOCK_DATA.healthScore);
 
+    // 同区域同行业脱敏均值（模拟数据）
+    const regionAvg = {
+      vocsIntensity: 6.2,
+      carbonIntensity: 0.22,
+      cpIndex: 0.62,
+      rtoEfficiency: 93,
+    };
+
     // 更新时间
     const now = new Date();
     const timeStr = '2026-05-18 ' + ('0'+now.getHours()).slice(-2) + ':' + ('0'+now.getMinutes()).slice(-2);
@@ -288,11 +296,35 @@ window.addEventListener("load",function(){
       if (el) { el.textContent = m.value + m.suffix; el.style.color = m.color; }
     });
 
-    // 对比数据动态化
+    // 同区域对比数据动态化（含均值参考线）
+    const compareData = [
+      { label: 'VOCs排放强度', value: rt.vocsIntensity, avg: regionAvg.vocsIntensity, max: 12, color: '#1677ff', unit: 'kg/万m2' },
+      { label: '碳排强度', value: rt.carbonIntensity, avg: regionAvg.carbonIntensity, max: 0.5, color: '#fa8c16', unit: 'tCO2/万m2' },
+      { label: 'C-P 协同指数', value: rt.cpIndex, avg: regionAvg.cpIndex, max: 1.0, color: '#f5222d', unit: '' },
+      { label: 'RTO能效', value: 92, avg: regionAvg.rtoEfficiency, max: 100, color: '#52c41a', unit: '%' },
+    ];
     const compareBars = document.querySelectorAll('.compare-bar');
-    if (compareBars.length >= 4) {
-      compareBars[0].querySelector('.compare-value').textContent = rt.vocsIntensity;
-      compareBars[2].querySelector('.compare-value').textContent = rt.cpIndex;
+    compareBars.forEach((bar, idx) => {
+      const d = compareData[idx];
+      if (!d) return;
+      const fill = bar.querySelector('.compare-fill');
+      const marker = bar.querySelector('.compare-marker');
+      const valEl = bar.querySelector('.compare-value');
+      if (fill) {
+        fill.style.width = Math.min(100, (d.value / d.max) * 100) + '%';
+        fill.style.background = d.color;
+      }
+      if (marker) {
+        marker.style.left = Math.min(100, (d.avg / d.max) * 100) + '%';
+        marker.setAttribute('data-label', '均值 ' + d.avg + d.unit);
+      }
+      if (valEl) valEl.textContent = d.value + (d.unit || '');
+    });
+    // 更新提示文字
+    const alertBox = document.querySelector('.compare-section').parentNode.querySelector('div:last-child');
+    if (alertBox && rt.cpIndex < regionAvg.cpIndex) {
+      const diff = Math.round((regionAvg.cpIndex - rt.cpIndex) / regionAvg.cpIndex * 100);
+      alertBox.innerHTML = '📌 你的 C-P 协同指数低于区域均值 ' + diff + '%（区域均值 ' + regionAvg.cpIndex + '），建议立即排查 RTO 运行参数';
     }
 
     // 设备状态动态化

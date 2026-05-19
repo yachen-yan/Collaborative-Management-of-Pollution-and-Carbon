@@ -181,6 +181,17 @@
     let currentFilter = 'all';
     let currentAlertId = null;
 
+    // 超期判断：当前模拟日期 2026-05-18
+    function isOverdue(alertItem) {
+      if (alertItem.status === '已销号' || alertItem.currentStep >= 4) return false;
+      const today = new Date('2026-05-18');
+      const alertDate = new Date('2026-' + alertItem.date);
+      const diffDays = Math.floor((today - alertDate) / (1000*60*60*24));
+      // critical 超2天, warning 超3天, info 超7天
+      const thresholds = { critical: 2, warning: 3, info: 7 };
+      return diffDays > (thresholds[alertItem.level] || 3);
+    }
+
     function renderAlerts() {
       const alerts = DataStore.getAlerts();
       const list = document.getElementById('alertList');
@@ -203,6 +214,8 @@
         const typeNames = { "减污增碳/减碳增污悖论": '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
         const readClass = a.read ? 'read' : 'unread';
         const dot = !a.read ? '<span class="dot"></span>' : '';
+        const overdue = isOverdue(a);
+        const overdueTag = overdue ? `<span style="display:inline-block;margin-left:6px;padding:1px 8px;border-radius:3px;font-size:11px;background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3)">⚠️ 超期</span>` : '';
         const flowTags = a.flow ? a.flow.map((s, i) => {
           const cls = i < a.currentStep ? 'done' : (i === a.currentStep ? 'current' : '');
           return `<span class="flow-step ${cls}">${s}</span>`;
@@ -212,15 +225,16 @@
             <div class="alert-card-icon ${a.level}">${icons[a.type] || '🔔'}</div>
             <div class="alert-card-body">
               <div class="alert-card-header">
-                <span class="alert-card-title">${typeNames[a.type] || a.title}${dot}</span>
+                <span class="alert-card-title">${typeNames[a.type] || a.title}${dot}${overdueTag}</span>
                 <span class="alert-card-time">${a.date} ${a.time}</span>
               </div>
               <div class="alert-card-desc">${a.desc}</div>
-              <div style="margin-top:6px;font-size:12px;color:rgba(226,232,240,0.35)">状态：${a.status}</div>
+              <div style="margin-top:6px;font-size:12px;color:rgba(226,232,240,0.35)">状态：${a.status}${overdue ? ' | <span style="color:#f87171">已超期，请尽快处理</span>' : ''}</div>
               ${flowTags ? `<div class="flow-tracker" style="margin-top:8px;margin-bottom:0">${flowTags}</div>` : ''}
             </div>
             <div class="alert-actions">
               ${!a.read ? `<button class="alert-action-btn" onclick="event.stopPropagation();markRead('${a.id}')">✓ 已读</button>` : ''}
+              ${overdue ? `<button class="alert-action-btn danger" onclick="event.stopPropagation();sendUrgency('${a.id}')">⏰ 催办</button>` : ''}
               <button class="alert-action-btn danger" onclick="event.stopPropagation();deleteAlert('${a.id}')">🗑 删除</button>
             </div>
           </div>
@@ -396,6 +410,13 @@
       currentAlertId = null;
     }
 
+    function sendUrgency(id) {
+      const alerts = DataStore.getAlerts();
+      const a = alerts.find(x => x.id === id);
+      if (!a) return;
+      showToast(`📲 催办短信已发送至企业联系人 138****5678\n内容：【污碳协同AI监管平台】贵司预警 ${a.id} 已超期，请立即登录平台处理。`, 'warn', 4000);
+    }
+
     function advanceAlert(id) {
       const alerts = DataStore.getAlerts();
       const a = alerts.find(x => x.id === id);
@@ -406,6 +427,10 @@
       renderAlerts();
       closeDetail();
       showToast(`状态已更新：${nextStatus}`, 'success');
+      // 模拟短信推送
+      setTimeout(() => {
+        showToast(`📲 短信通知已发送至企业联系人 138****5678\n内容：【污碳协同AI监管平台】预警状态已更新为「${nextStatus}」，请及时处理。`, 'info', 3500);
+      }, 600);
     }
 
     document.getElementById('detailModal').addEventListener('click', e => {

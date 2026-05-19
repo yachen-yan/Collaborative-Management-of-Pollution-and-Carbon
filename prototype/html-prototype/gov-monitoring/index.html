@@ -332,6 +332,60 @@
       const typeNames = { green:'双减标兵', yellow:'关注企业', red:'减污增碳/减碳增污悖论风险', gray:'数据不足' };
       showToast(`已定位到 ${list.length} 家${typeNames[type]}`, 'success');
     }
+
+    // ========== 时间轴回放控制 ==========
+    const timeSlots = [
+      '2026-05-18 06:00', '2026-05-18 07:00', '2026-05-18 08:00',
+      '2026-05-18 09:00', '2026-05-18 10:00', '2026-05-18 11:00', '2026-05-18 12:00'
+    ];
+    let currentTimeIdx = 3; // 默认 09:00
+
+    function updateTimebar() {
+      const label = document.querySelector('.dt-timebar-label');
+      const fill = document.querySelector('.dt-timebar-fill');
+      const thumb = document.querySelector('.dt-timebar-thumb');
+      if (label) label.textContent = timeSlots[currentTimeIdx];
+      const pct = (currentTimeIdx / (timeSlots.length - 1)) * 100;
+      if (fill) fill.style.width = pct + '%';
+      if (thumb) thumb.style.left = pct + '%';
+    }
+
+    document.querySelectorAll('.dt-timebar-btn').forEach((btn, idx) => {
+      btn.onclick = function() {
+        if (idx === 0) {
+          currentTimeIdx = Math.max(0, currentTimeIdx - 1);
+        } else {
+          currentTimeIdx = Math.min(timeSlots.length - 1, currentTimeIdx + 1);
+        }
+        updateTimebar();
+        showToast('⏱️ 时间轴：' + timeSlots[currentTimeIdx], 'info');
+      };
+    });
+
+    // 滑块拖拽
+    let dragging = false;
+    const thumb = document.querySelector('.dt-timebar-thumb');
+    const track = document.querySelector('.dt-timebar-track');
+    if (thumb && track) {
+      thumb.addEventListener('mousedown', function(e) { dragging = true; e.preventDefault(); });
+      document.addEventListener('mouseup', function() { dragging = false; });
+      document.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        const rect = track.getBoundingClientRect();
+        const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        currentTimeIdx = Math.round(x * (timeSlots.length - 1));
+        updateTimebar();
+      });
+      // 点击轨道直接跳转
+      track.addEventListener('click', function(e) {
+        if (e.target === thumb) return;
+        const rect = track.getBoundingClientRect();
+        const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        currentTimeIdx = Math.round(x * (timeSlots.length - 1));
+        updateTimebar();
+        showToast('⏱️ 时间轴：' + timeSlots[currentTimeIdx], 'info');
+      });
+    }
   </script>
 <script>
   window.addEventListener('load', function() {

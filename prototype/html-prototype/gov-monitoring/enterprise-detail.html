@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>企业详情透视 — 污碳协同AI监管平台</title>
-
+  <script src="../js/data.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
     .topbar { background: linear-gradient(90deg, #0c4a6e 0%, #0369a1 100%); border-bottom:1px solid rgba(34,211,238,0.2); }
@@ -214,62 +214,17 @@
     
     <!-- AI风险扫描 -->
     <div class="ent-content" id="tab1">
-      <div class="risk-panel">
-        <div class="risk-title">🚨 当前高风险项（3项）</div>
-        <div class="risk-list">
-          <div class="risk-item">
-            <span class="risk-level" style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3)">危急</span>
-            <span>C-P 协同指数 0.38，已连续 12h 低于 0.4，触发 减污增碳/减碳增污悖论 风险预警</span>
-          </div>
-          <div class="risk-item">
-            <span class="risk-level" style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3)">危急</span>
-            <span>RTO 空烧时长占比 22%，天然气浪费严重</span>
-          </div>
-          <div class="risk-item">
-            <span class="risk-level" style="background:rgba(234,179,8,0.2);color:#fde047;border:1px solid rgba(234,179,8,0.3)">警告</span>
-            <span>热回收效率 87%，低于 90% 警戒线</span>
-          </div>
+      <div class="risk-panel" id="riskPanel">
+        <div class="risk-title" id="riskTitle">🚨 当前高风险项</div>
+        <div class="risk-list" id="riskList">
+          <!-- 动态填充 -->
         </div>
       </div>
       
       <div class="card-dark">
         <div class="card-title">📋 近30天异常事件</div>
-        <div class="event-timeline">
-          <div class="timeline-item red">
-            <div class="timeline-date">2026-05-18 09:00</div>
-            <div class="timeline-content">
-              <div class="title">减污增碳/减碳增污悖论 风险预警</div>
-              <div class="desc">C-P 0.38 持续12h，RTO空烧22%，减污增碳陷阱</div>
-            </div>
-          </div>
-          <div class="timeline-item yellow">
-            <div class="timeline-date">2026-05-17 18:30</div>
-            <div class="timeline-content">
-              <div class="title">协同失衡预警</div>
-              <div class="desc">C-P 0.42 持续4h，天然气消耗激增</div>
-            </div>
-          </div>
-          <div class="timeline-item yellow">
-            <div class="timeline-date">2026-05-15 10:00</div>
-            <div class="timeline-content">
-              <div class="title">数据异常预警</div>
-              <div class="desc">月度上报天然气/RTO比值偏离历史均值45%</div>
-            </div>
-          </div>
-          <div class="timeline-item red">
-            <div class="timeline-date">2026-05-14 14:00</div>
-            <div class="timeline-content">
-              <div class="title">减污增碳/减碳增污悖论 风险预警</div>
-              <div class="desc">C-P 0.41 持续8h，过度燃烧</div>
-            </div>
-          </div>
-          <div class="timeline-item green">
-            <div class="timeline-date">2026-05-10 09:00</div>
-            <div class="timeline-content">
-              <div class="title">整改完成销号</div>
-              <div class="desc">4月 减污增碳/减碳增污悖论 事件已整改，C-P 回升至 0.72</div>
-            </div>
-          </div>
+        <div class="event-timeline" id="eventTimeline">
+          <!-- 动态填充 -->
         </div>
       </div>
     </div>
@@ -390,6 +345,72 @@
       '南苑涂装': { name:'南苑涂装有限公司', code:'91110108MA0002469', industry:'工业涂装', addr:'北京市怀柔区李村工业区AB区28号', contact:'何环保 133****2469', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8', vocsRate:'--', carbonTotal:'--', chamberTemp:'--', gasFlow:'--' },
     };
 
+    function renderRiskPanel(data) {
+      const riskList = document.getElementById('riskList');
+      const riskTitle = document.getElementById('riskTitle');
+      const timeline = document.getElementById('eventTimeline');
+      if (!riskList || !timeline) return;
+
+      // 从 DataStore 获取该企业相关预警
+      const allAlerts = DataStore.getAlerts();
+      const allDispatches = DataStore.getDispatches();
+      const events = DataStore.get('减污增碳/减碳增污悖论Events', []);
+      const entName = data.name;
+
+      // 风险项生成
+      const risks = [];
+      if (data.cp !== '--' && parseFloat(data.cp) < 0.4) {
+        risks.push({ level: '危急', color: 'rgba(239,68,68,0.2)', textColor: '#f87171', border: 'rgba(239,68,68,0.3)', text: 'C-P 协同指数 ' + data.cp + '，已连续低于 0.4，触发减污增碳/减碳增污悖论风险预警' });
+      }
+      if (data.cp !== '--' && parseFloat(data.cp) >= 0.4 && parseFloat(data.cp) < 0.6) {
+        risks.push({ level: '警告', color: 'rgba(234,179,8,0.2)', textColor: '#fde047', border: 'rgba(234,179,8,0.3)', text: 'C-P 协同指数 ' + data.cp + '，处于协同失衡区间' });
+      }
+      // 根据企业名称匹配调度指令中的风险
+      const relatedDispatches = allDispatches.filter(d => d.target && d.target.includes(entName.replace('有限公司','').replace('（绿色工厂）','')));
+      relatedDispatches.forEach(d => {
+        if (d.statusCode !== 'closed' && d.type === '减污增碳/减碳增污悖论') {
+          risks.push({ level: '危急', color: 'rgba(239,68,68,0.2)', textColor: '#f87171', border: 'rgba(239,68,68,0.3)', text: '调度指令 ' + d.id + ' 待处理：' + d.content.substring(0, 40) + '...' });
+        }
+      });
+      if (risks.length === 0) {
+        risks.push({ level: '正常', color: 'rgba(34,197,94,0.2)', textColor: '#4ade80', border: 'rgba(34,197,94,0.3)', text: '当前无高风险项，企业运行状态良好' });
+      }
+      riskTitle.textContent = '🚨 当前高风险项（' + risks.length + '项）';
+      riskList.innerHTML = risks.map(r => `
+        <div class="risk-item">
+          <span class="risk-level" style="background:${r.color};color:${r.textColor};border:1px solid ${r.border}">${r.level}</span>
+          <span>${r.text}</span>
+        </div>
+      `).join('');
+
+      // 时间线生成（预警 + 事件 + 调度）
+      const timelineItems = [];
+      allAlerts.forEach(a => {
+        const color = a.level === 'critical' ? 'red' : a.level === 'warning' ? 'yellow' : 'green';
+        timelineItems.push({ date: '2026-' + a.date + ' ' + (a.time || '00:00'), color: color, title: a.title, desc: a.desc });
+      });
+      events.forEach(e => {
+        timelineItems.push({ date: '2026-' + e.date + ' 09:00', color: e.type.includes('减污增碳') ? 'red' : 'yellow', title: e.type + '事件', desc: 'C-P ' + e.cpBefore + ' → ' + e.cpAfter + '，' + e.cause });
+      });
+      relatedDispatches.filter(d => d.statusCode === 'closed').forEach(d => {
+        timelineItems.push({ date: d.createdAt, color: 'green', title: '调度指令闭环', desc: d.title + '已销号' });
+      });
+      // 按日期排序（倒序）
+      timelineItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+      timeline.innerHTML = timelineItems.slice(0, 8).map(t => `
+        <div class="timeline-item ${t.color}">
+          <div class="timeline-date">${t.date}</div>
+          <div class="timeline-content">
+            <div class="title">${t.title}</div>
+            <div class="desc">${t.desc}</div>
+          </div>
+        </div>
+      `).join('');
+      if (timelineItems.length === 0) {
+        timeline.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(226,232,240,0.3)">近30天内无异常事件</div>';
+      }
+    }
+
     function loadEnt() {
       const params = new URLSearchParams(location.search);
       const nameKey = params.get('name') || '蓝天工业涂装';
@@ -418,10 +439,8 @@
         }
       });
 
-      // 替换正文中的企业名称和C-P值
-      document.querySelectorAll('.ent-content').forEach(el => {
-        el.innerHTML = el.innerHTML.replace(/蓝天工业涂装有限公司/g, data.name).replace(/C-P 0\.38/g, 'C-P ' + data.cp).replace(/C-P协同指数 0\.38/g, 'C-P协同指数 ' + data.cp);
-      });
+      // 动态渲染 AI 风险扫描面板
+      renderRiskPanel(data);
     }
     loadEnt();
 

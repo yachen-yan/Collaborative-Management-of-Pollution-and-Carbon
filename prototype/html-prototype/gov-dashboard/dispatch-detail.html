@@ -218,6 +218,19 @@
       const d = dispatches.find(x => x.id === DISPATCH_ID) || dispatches[0];
       if (!d) return;
 
+      // 超期提示
+      const overdue = isDispatchOverdue(d);
+      if (overdue) {
+        const overdueBanner = document.createElement('div');
+        overdueBanner.style.cssText = 'background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;padding:10px 16px;border-radius:6px;margin-bottom:12px;font-size:13px;';
+        overdueBanner.innerHTML = '⚠️ 该调度指令已超期（截止 ' + d.deadline + '），请尽快催办或处理。';
+        const header = document.querySelector('.dispatch-header');
+        if (header && !document.getElementById('overdueBanner')) {
+          overdueBanner.id = 'overdueBanner';
+          header.parentNode.insertBefore(overdueBanner, header.nextSibling);
+        }
+      }
+
       // 更新头部状态
       const statusMap = {
         dispatched: { cls: 'dispatched', text: '📤 已下发' },
@@ -281,13 +294,20 @@
       }
     }
 
+    function isDispatchOverdue(d) {
+      if (d.statusCode === 'closed') return false;
+      const today = new Date('2026-05-18');
+      const deadline = new Date(d.deadline);
+      return today > deadline;
+    }
+
     function doAction(action) {
       const note = document.getElementById('actionNote').value;
       const logArea = document.getElementById('logArea');
       const now = new Date().toTimeString().slice(0,5);
 
       if (action === 'remind') {
-        showToast('催办通知已发送至企业', 'warn');
+        showToast('📲 催办短信已发送至企业联系人 138****5678', 'warn');
         logArea.innerHTML += `${now} 李管理 发送催办${note ? '：' + note : ''}<br>`;
       } else if (action === 'reject') {
         showToast('已退回企业补充材料', 'error');
