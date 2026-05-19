@@ -2,89 +2,36 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>悖论诊断报告 — 污碳协同AI监管平台</title>
+  <title>悖论诊断报告</title>
   <script src="../js/data.js"></script>
   <style>
-    body { background: #020617; color: #e2e8f0; font-family: "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; }
-    .topbar { height:64px; background:linear-gradient(90deg,rgba(12,74,110,0.9),rgba(3,105,161,0.9)); backdrop-filter:blur(12px); border-bottom:1px solid rgba(34,211,238,0.15); display:flex; align-items:center; justify-content:space-between; padding:0 24px; position:fixed; top:0; left:0; right:0; z-index:100; }
-    .topbar .logo { font-size:16px; font-weight:600; color:#e2e8f0; }
-    .main { margin-left: 0; margin-top: 64px; padding: 24px; max-width: 900px; margin-left: auto; margin-right: auto; }
-    .back-link { font-size: 13px; color: #22d3ee; margin-bottom: 12px; display: inline-block; cursor: pointer; }
-    .back-link:hover { text-shadow:0 0 8px rgba(34,211,238,0.5); }
-
-    .report-header {
-      background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(249,115,22,0.08) 100%);
-      border: 1px solid rgba(239,68,68,0.25); border-radius: 12px;
-      padding: 24px; margin-bottom: 20px;
-      backdrop-filter: blur(8px);
-    }
-    .report-header-badge {
-      display: inline-block; padding: 3px 12px; border-radius: 4px;
-      background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3);
-      font-size: 12px; font-weight: 500; margin-bottom: 10px;
-    }
-    .report-header-title { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
-    .report-header-meta { font-size: 13px; color: rgba(226,232,240,0.5); }
-
-    .section { margin-bottom: 20px; }
-    .section-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; display:flex; align-items:center; gap:8px; }
-    .section-title::before { content:""; display:inline-block; width:4px; height:16px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; }
-
-    .data-snapshot {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-    }
-    .snapshot-item {
-      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1);
-      border-radius: 8px; padding: 14px;
-    }
-    .snapshot-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-bottom: 4px; }
-    .snapshot-value { font-size: 20px; font-weight: 700; }
-    .snapshot-change { font-size: 11px; margin-top: 2px; }
-
-    .root-cause-box {
-      background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2);
-      border-radius: 8px; padding: 16px; line-height: 1.8; font-size: 14px;
-    }
-    .root-cause-box strong { color: #fbbf24; }
-
-    .suggest-item {
-      display: flex; gap: 12px; padding: 12px 14px;
-      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1);
-      border-radius: 8px; margin-bottom: 8px;
-    }
-    .suggest-num {
-      width: 24px; height: 24px; border-radius: 50%; display: flex;
-      align-items: center; justify-content: center; font-size: 12px;
-      font-weight: 600; color: #fff; background: #f87171; flex-shrink: 0;
-    }
-    .suggest-text { flex: 1; font-size: 13px; line-height: 1.6; }
-
-    .trend-mini {
-      height: 120px; position: relative; background: rgba(34,211,238,0.03);
-      border-radius: 8px; border: 1px solid rgba(34,211,238,0.1); padding: 12px;
-    }
-    .trend-mini svg { width: 100%; height: 100%; }
-
-    .action-bar {
-      display: flex; gap: 12px; justify-content: center;
-      margin-top: 24px; padding-top: 20px;
-      border-top: 1px solid rgba(34,211,238,0.1);
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 24px; border-radius: 8px; font-size: 14px; cursor: pointer;
-      border: 1px solid transparent; transition: all 0.2s;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, rgba(14,165,233,0.2), rgba(34,211,238,0.1));
-      color: #22d3ee; border-color: rgba(34,211,238,0.3);
-    }
-    .btn-primary:hover { box-shadow: 0 0 20px rgba(34,211,238,0.15); transform: translateY(-2px); }
-    .btn-default {
-      background: rgba(255,255,255,0.03); color: rgba(226,232,240,0.7);
-      border-color: rgba(255,255,255,0.08);
-    }
-    .btn-default:hover { border-color: rgba(34,211,238,0.3); color: #22d3ee; }
+    body{background:#020617;color:#e2e8f0;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+    .topbar{height:64px;background:linear-gradient(90deg,rgba(12,74,110,0.9),rgba(3,105,161,0.9));backdrop-filter:blur(12px);border-bottom:1px solid rgba(34,211,238,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:fixed;top:0;left:0;right:0;z-index:100}
+    .main{margin:64px auto 0;padding:24px;max-width:900px}
+    .back-link{font-size:13px;color:#22d3ee;margin-bottom:12px;display:inline-block;cursor:pointer}
+    .report-header{background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(249,115,22,0.08));border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:24px;margin-bottom:20px}
+    .report-header-badge{display:inline-block;padding:3px 12px;border-radius:4px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);font-size:12px;font-weight:500;margin-bottom:10px}
+    .report-header-title{font-size:20px;font-weight:600;margin-bottom:6px}
+    .report-header-meta{font-size:13px;color:rgba(226,232,240,0.5)}
+    .section{margin-bottom:20px}
+    .section-title{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .section-title::before{content:"";display:inline-block;width:4px;height:16px;background:linear-gradient(180deg,#22d3ee,#0ea5e9);border-radius:2px}
+    .data-snapshot{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .snapshot-item{background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.1);border-radius:8px;padding:14px}
+    .snapshot-label{font-size:12px;color:rgba(226,232,240,0.4);margin-bottom:4px}
+    .snapshot-value{font-size:20px;font-weight:700}
+    .snapshot-change{font-size:11px;margin-top:2px}
+    .root-cause-box{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:16px;line-height:1.8;font-size:14px}
+    .root-cause-box strong{color:#fbbf24}
+    .suggest-item{display:flex;gap:12px;padding:12px 14px;background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.1);border-radius:8px;margin-bottom:8px}
+    .suggest-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;background:#f87171;flex-shrink:0}
+    .suggest-text{flex:1;font-size:13px;line-height:1.6}
+    .trend-mini{height:120px;position:relative;background:rgba(34,211,238,0.03);border-radius:8px;border:1px solid rgba(34,211,238,0.1);padding:12px}
+    .trend-mini svg{width:100%;height:100%}
+    .action-bar{display:flex;gap:12px;justify-content:center;margin-top:24px;padding-top:20px;border-top:1px solid rgba(34,211,238,0.1)}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;border:1px solid transparent;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,rgba(14,165,233,0.2),rgba(34,211,238,0.1));color:#22d3ee;border-color:rgba(34,211,238,0.3)}
+    .btn-default{background:rgba(255,255,255,0.03);color:rgba(226,232,240,0.7);border-color:rgba(255,255,255,0.08)}
   </style>
   <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -92,117 +39,83 @@
   <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
-    <div class="user"><span>蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
+    <div class="user"><span id="entName">蓝天工业涂装有限公司</span><div class="avatar">张</div><span>张环保</span></div>
   </div>
-
   <div class="main">
     <div class="back-link" onclick="history.back()">← 返回预警中心</div>
-
-    <div class="report-header">
-      <div class="report-header-badge">🔴 减污增碳/减碳增污悖论 风险</div>
-      <div class="report-header-title">AI 悖论诊断报告</div>
-      <div class="report-header-meta">
-        企业：蓝天工业涂装有限公司 | 预警编号：ALT-20260518-001 | 生成时间：2026-05-18 09:00 | AI 模型：v2.1
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">📊 异常数据快照</div>
-      <div class="data-snapshot">
-        <div class="snapshot-item">
-          <div class="snapshot-label">C-P 协同指数</div>
-          <div class="snapshot-value" style="color:#f87171">0.38</div>
-          <div class="snapshot-change" style="color:#f87171">↓ 较昨日 -0.04</div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-label">VOCs 排放速率</div>
-          <div class="snapshot-value" style="color:#4ade80">12.5</div>
-          <div class="snapshot-change" style="color:#4ade80">↓ 较昨日 -8.2%</div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-label">天然气流量</div>
-          <div class="snapshot-value" style="color:#f87171">1200</div>
-          <div class="snapshot-change" style="color:#f87171">↑ 较昨日 +35%</div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-label">燃烧室温度</div>
-          <div class="snapshot-value" style="color:#fbbf24">785°C</div>
-          <div class="snapshot-change">正常范围</div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-label">空烧时长占比</div>
-          <div class="snapshot-value" style="color:#f87171">22%</div>
-          <div class="snapshot-change" style="color:#f87171">↑ 阈值 15%</div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-label">持续时间</div>
-          <div class="snapshot-value" style="color:#f87171">12h</div>
-          <div class="snapshot-change">已触发橙色预警</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">🔍 AI 根因分析</div>
-      <div class="root-cause-box">
-        <strong>根因判定：RTO 空烧时长占比过高（22%）</strong><br><br>
-        入口 VOCs 浓度 485 mg/m³ 处于较低水平，但天然气流量维持 1200 Nm³/h 的高位运行。结合生产排班数据，发现近 3 日喷涂作业分散在 4 个时段，RTO 启停频繁导致空烧累积。<br><br>
-        <strong>关联判定：</strong>符合「减污增碳陷阱」典型特征 — VOCs 下降伴随天然气激增，产量变化 &lt; 10%。<br><br>
-        <strong>相似案例匹配：</strong>知识库案例 PARA-2024-001「水性漆切换后天然气激增案」（匹配度 87%）
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">📈 C-P 协同指数趋势（近7天）</div>
-      <div class="trend-mini">
-        <svg viewBox="0 0 600 100" preserveAspectRatio="none">
-          <line x1="30" y1="10" x2="30" y2="85" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
-          <line x1="30" y1="85" x2="580" y2="85" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
-          <line x1="30" y1="45" x2="580" y2="45" stroke="#f87171" stroke-width="1" stroke-dasharray="4,3"/>
-          <text x="585" y="49" font-size="9" fill="#f87171">阈值 0.5</text>
-          <polyline points="30,55 100,48 170,42 240,38 310,32 380,28 450,25 520,22" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="520" cy="22" r="4" fill="#ef4444" stroke="#fff" stroke-width="1.5">
-            <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
-          </circle>
-          <text x="30" y="98" font-size="9" fill="rgba(226,232,240,0.3)">05-12</text>
-          <text x="170" y="98" font-size="9" fill="rgba(226,232,240,0.3)">05-14</text>
-          <text x="310" y="98" font-size="9" fill="rgba(226,232,240,0.3)">05-16</text>
-          <text x="520" y="98" font-size="9" fill="#ef4444" font-weight="bold">05-18</text>
-        </svg>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">💡 AI 改进优先级建议</div>
-      <div class="suggest-item">
-        <div class="suggest-num">1</div>
-        <div class="suggest-text"><strong style="color:#f87171">调整喷涂排班</strong> — 将分散的 4 个时段合并为 2 个集中时段（8-12时、13-17时），预计可减少空烧时长 <strong>60%</strong>，C-P 指数回升至 0.55 以上</div>
-      </div>
-      <div class="suggest-item">
-        <div class="suggest-num">2</div>
-        <div class="suggest-text"><strong style="color:#fbbf24">检查蓄热体</strong> — 热回收效率已降至 87%，建议清洗或更换蓄热陶瓷，恢复至 95% 以上，预计减少天然气消耗 <strong>15%</strong></div>
-      </div>
-      <div class="suggest-item">
-        <div class="suggest-num">3</div>
-        <div class="suggest-text"><strong style="color:#4ade80">优化燃烧室温度</strong> — 当前 785°C，可适当下调至 760°C，在保证分解效率 ≥ 99% 的前提下降低天然气消耗 <strong>8%</strong></div>
-      </div>
-    </div>
-
-    <div class="action-bar">
-      <button class="btn btn-default" onclick="showToast('诊断报告已发送至站内消息','info')">📤 转发报告</button>
-      <button class="btn btn-primary" onclick="window.location.href='alerts.html'">✅ 确认收到，前往整改</button>
-    </div>
-
+    <div id="reportContainer"></div>
     <div style="height:40px"></div>
   </div>
-
 <script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
+const DIAG_DB={
+"减污增碳/减碳增污悖论":{badge:"🔴 减污增碳/减碳增污悖论 风险",badgeColor:"rgba(239,68,68,0.15)",badgeText:"#f87171",badgeBorder:"rgba(239,68,68,0.25)",rootCause:"RTO 空烧时长占比过高（22%）",analysis:"入口 VOCs 浓度 485 mg/m³ 处于较低水平，但天然气流量维持 1200 Nm³/h 的高位运行。结合生产排班数据，发现近 3 日喷涂作业分散在 4 个时段，RTO 启停频繁导致空烧累积。<br><br><strong>关联判定：</strong>符合「减污增碳陷阱」典型特征 — VOCs 下降伴随天然气激增，产量变化 &lt; 10%。<br><br><strong>相似案例匹配：</strong>知识库案例 PARA-2024-001「水性漆切换后天然气激增案」（匹配度 87%）",suggests:[{num:"1",color:"#f87171",title:"调整喷涂排班",text:"将分散的 4 个时段合并为 2 个集中时段（8-12时、13-17时），预计可减少空烧时长 <strong>60%</strong>，C-P 指数回升至 0.55 以上"},{num:"2",color:"#fbbf24",title:"检查蓄热体",text:"热回收效率已降至 87%，建议清洗或更换蓄热陶瓷，恢复至 95% 以上，预计减少天然气消耗 <strong>15%</strong>"},{num:"3",color:"#4ade80",title:"优化燃烧室温度",text:"当前 785°C，可适当下调至 760°C，在保证分解效率 ≥ 99% 的前提下降低天然气消耗 <strong>8%</strong>"}]},
+imbalance:{badge:"🟡 协同失衡预警",badgeColor:"rgba(251,191,36,0.15)",badgeText:"#fbbf24",badgeBorder:"rgba(251,191,36,0.25)",rootCause:"C-P 协同指数持续低于 0.6（当前 0.42）",analysis:"C-P 协同指数已连续 4 小时低于 0.6 阈值，但未触发悖论判定。主要原因为 RTO 运行效率下降，热回收效率从 95% 降至 87%，导致单位 VOCs 去除能耗增加。<br><br><strong>关联判定：</strong>属于「协同失衡」阶段，尚未形成典型悖论，但需关注以防恶化。<br><br><strong>趋势预测：</strong>如不及时调整，预计 24 小时内可能发展为「减污增碳陷阱」。",suggests:[{num:"1",color:"#fbbf24",title:"检查热回收效率",text:"RTO 热回收效率降至 87%，建议检查蓄热体堵塞情况，预计恢复后 C-P 指数可回升至 0.55"},{num:"2",color:"#4ade80",title:"优化运行参数",text:"适当降低燃烧室温度设定值，减少天然气消耗，同时保证 VOCs 去除效率 ≥ 95%"}]},
+data:{badge:"🟠 数据异常预警",badgeColor:"rgba(249,115,22,0.15)",badgeText:"#fb923c",badgeBorder:"rgba(249,115,22,0.25)",rootCause:"月度上报数据偏离历史均值",analysis:"5月月度上报中天然气/RTO时长比值偏离历史均值 45%，超过异常阈值（±40%）。经初步核查，涂料用量与喷涂面积比值正常，但天然气消耗异常偏高。<br><br><strong>可能原因：</strong>① RTO 空烧增加 ② 天然气计量误差 ③ 未计入的加班生产。<br><br><strong>建议：</strong>退回企业核实天然气消耗数据并说明异常原因。",suggests:[{num:"1",color:"#fb923c",title:"核实天然气数据",text:"要求企业提供天然气发票或气表读数照片，核实 18500 Nm³ 数据准确性"},{num:"2",color:"#fbbf24",title:"排查计量设备",text:"建议检查 RTO 天然气流量计是否正常运行，排除计量偏差"}]},
+permit:{badge:"🔵 证件到期提醒",badgeColor:"rgba(14,165,233,0.15)",badgeText:"#22d3ee",badgeBorder:"rgba(14,165,233,0.25)",rootCause:"排污许可证即将到期",analysis:"排污许可证将于 21 天后到期（2026-12-31）。根据《排污许可管理条例》，企业应在许可证到期前 30 日内申请延续。<br><br><strong>当前状态：</strong>尚未收到企业的续期申请材料。<br><br><strong>风险：</strong>许可证到期后未延续的，视为无证排污，可能面临行政处罚。",suggests:[{num:"1",color:"#22d3ee",title:"提醒企业续期",text:"立即发送续期提醒至企业联系人，告知需在 12 月 1 日前提交续期申请"},{num:"2",color:"#4ade80",title:"准备续期材料",text:"协助企业准备排污许可证续期所需的监测报告、台账记录等材料"}]}
+};
+
+function renderReport(){
+const params=new URLSearchParams(location.search);
+const alertId=params.get("id")||"";
+const alerts=DataStore.getAlerts();
+const alert=alerts.find(a=>a.id===alertId)||alerts[0]||{};
+const ent=DataStore.get("enterprise",MOCK_DATA.enterprise);
+const realtime=DataStore.getRealtime();
+const db=DIAG_DB[alert.type]||DIAG_DB["减污增碳/减碳增污悖论"];
+document.getElementById("entName").textContent=ent.name;
+const cpVal=realtime.cpIndex!==undefined?realtime.cpIndex:0.38;
+const cpColor=cpVal<0.4?"#f87171":(cpVal<0.6?"#fbbf24":"#4ade80");
+const cpLabel=cpVal<0.4?"极差":(cpVal<0.6?"差":(cpVal<0.8?"良":"优"));
+const trendValues=[0.72,0.68,0.61,0.55,0.48,0.42,cpVal];
+const points=trendValues.map((v,i)=>{const x=30+i*80;const y=85-(v/0.8)*70;return x+","+y;}).join(" ");
+const lastX=30+(trendValues.length-1)*80;
+const lastY=85-(trendValues[trendValues.length-1]/0.8)*70;
+const suggestsHtml=db.suggests.map(s=>'<div class="suggest-item"><div class="suggest-num" style="background:'+s.color+'">'+s.num+'</div><div class="suggest-text"><strong style="color:'+s.color+'">'+s.title+'</strong> — '+s.text+'</div></div>').join("");
+
+let h='';
+h+='<div class="report-header" style="background:linear-gradient(135deg,'+db.badgeColor+' 0%,rgba(34,211,238,0.05) 100%);border-color:'+db.badgeBorder+';">';
+h+='<div class="report-header-badge" style="background:'+db.badgeColor+';color:'+db.badgeText+';border-color:'+db.badgeBorder+';">'+db.badge+'</div>';
+h+='<div class="report-header-title">AI 悖论诊断报告</div>';
+h+='<div class="report-header-meta">企业：'+ent.name+' | 预警编号：'+(alert.id||'ALT-20260518-001')+' | 生成时间：'+(alert.time||'09:00')+' '+(alert.date||'05-18')+' | AI 模型：v2.1</div></div>';
+
+h+='<div class="section"><div class="section-title">📊 异常数据快照</div><div class="data-snapshot">';
+h+='<div class="snapshot-item"><div class="snapshot-label">C-P 协同指数</div><div class="snapshot-value" style="color:'+cpColor+'">'+cpVal.toFixed(2)+'</div><div class="snapshot-change" style="color:'+cpColor+'">'+cpLabel+'</div></div>';
+h+='<div class="snapshot-item"><div class="snapshot-label">VOCs 排放速率</div><div class="snapshot-value" style="color:#4ade80">'+(realtime.vocsRate||12.5)+'</div><div class="snapshot-change" style="color:#4ade80">kg/h</div></div>';
+h+='<div class="snapshot-item"><div class="snapshot-label">天然气流量</div><div class="snapshot-value" style="color:#f87171">'+(realtime.gasFlow||1200)+'</div><div class="snapshot-change" style="color:#f87171">Nm³/h</div></div>';
+h+='<div class="snapshot-item"><div class="snapshot-label">燃烧室温度</div><div class="snapshot-value" style="color:#fbbf24">'+(realtime.chamberTemp||785)+'°C</div><div class="snapshot-change">正常范围</div></div>';
+h+='<div class="snapshot-item"><div class="snapshot-label">空烧时长占比</div><div class="snapshot-value" style="color:#f87171">22%</div><div class="snapshot-change" style="color:#f87171">↑ 阈值 15%</div></div>';
+h+='<div class="snapshot-item"><div class="snapshot-label">持续时间</div><div class="snapshot-value" style="color:#f87171">12h</div><div class="snapshot-change">已触发橙色预警</div></div>';
+h+='</div></div>';
+
+h+='<div class="section"><div class="section-title">🔍 AI 根因分析</div><div class="root-cause-box"><strong>根因判定：'+db.rootCause+'</strong><br><br>'+db.analysis+'</div></div>';
+
+h+='<div class="section"><div class="section-title">📈 C-P 协同指数趋势（近7天）</div><div class="trend-mini"><svg viewBox="0 0 600 100" preserveAspectRatio="none">';
+h+='<line x1="30" y1="10" x2="30" y2="85" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>';
+h+='<line x1="30" y1="85" x2="580" y2="85" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>';
+h+='<line x1="30" y1="45" x2="580" y2="45" stroke="#f87171" stroke-width="1" stroke-dasharray="4,3"/>';
+h+='<text x="585" y="49" font-size="9" fill="#f87171">阈值 0.5</text>';
+h+='<polyline points="'+points+'" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>';
+h+='<circle cx="'+lastX+'" cy="'+lastY+'" r="4" fill="#ef4444" stroke="#fff" stroke-width="1.5"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
+h+='<text x="30" y="98" font-size="9" fill="rgba(226,232,240,0.3)">05-12</text>';
+h+='<text x="170" y="98" font-size="9" fill="rgba(226,232,240,0.3)">05-14</text>';
+h+='<text x="310" y="98" font-size="9" fill="rgba(226,232,240,0.3)">05-16</text>';
+h+='<text x="'+lastX+'" y="98" font-size="9" fill="#ef4444" font-weight="bold">05-18</text>';
+h+='</svg></div></div>';
+
+h+='<div class="section"><div class="section-title">💡 AI 改进优先级建议</div>'+suggestsHtml+'</div>';
+h+='<div class="action-bar"><button class="btn btn-default" onclick="showToast('诊断报告已发送至站内消息','info')">📤 转发报告</button>';
+h+='<button class="btn btn-primary" onclick="window.location.href='alerts.html'">✅ 确认收到，前往整改</button></div>';
+document.getElementById("reportContainer").innerHTML=h;
+}
+
+renderReport();
+
+window.addEventListener("load",function(){
+setTimeout(function(){
+var el=document.getElementById("pageLoader");
+if(el)el.classList.add("done");
+},500);
+});
 </script>
 </body>
 </html>
