@@ -50,14 +50,14 @@ const MOCK_DATA = {
   ],
 
   alerts: [
-    { id: "ALT-20260518-001", type: "减污增碳/减碳增污悖论", level: "critical", title: "减污增碳/减碳增污悖论 风险预警", desc: "C-P 协同指数 0.38，已连续 12h 低于 0.4，疑似 RTO 空烧", time: "09:00", date: "05-18", read: false, status: "待签收", flow: ["预警生成","待企业签收","整改反馈","监测科复核","已销号"], currentStep: 0 },
-    { id: "ALT-20260517-003", type: "imbalance", level: "warning", title: "协同失衡预警", desc: "C-P 协同指数 0.42，持续低于 0.6 超过 4h", time: "18:30", date: "05-17", read: false, status: "待签收", flow: ["预警生成","待企业签收","整改反馈","监测科复核","已销号"], currentStep: 0 },
+    { id: "ALT-20260518-001", type: "减污增碳/减碳增污悖论", level: "critical", title: "减污增碳/减碳增污悖论 风险预警", desc: "C-P 协同指数 0.38，已连续 12h 低于 0.4，疑似 RTO 空烧", time: "09:00", date: "05-18", read: false, status: "待签收", flow: ["预警生成","待企业签收","整改反馈","监测科复核","已销号"], currentStep: 0, cpValue: 0.38, durationHours: 12, vocsRate: 12.5, gasFlow: 1200, temp: 785, emptyBurnPct: 22, outputChange: 3, rootCause: "RTO 空烧时长占比过高（22%）。入口 VOCs 浓度 485 mg/m³ 处于较低水平，但天然气流量维持 1200 Nm³/h 的高位运行。近3日喷涂作业分散在4个时段，RTO启停频繁导致空烧累积。" },
+    { id: "ALT-20260517-003", type: "imbalance", level: "warning", title: "协同失衡预警", desc: "C-P 协同指数 0.42，持续低于 0.6 超过 4h", time: "18:30", date: "05-17", read: false, status: "待签收", flow: ["预警生成","待企业签收","整改反馈","监测科复核","已销号"], currentStep: 0, cpValue: 0.42, durationHours: 4, vocsRate: 15.2, gasFlow: 980, temp: 810, emptyBurnPct: 8, outputChange: 2, rootCause: "天然气消耗环比增加28%，但VOCs去除率无明显提升，存在能源浪费。" },
     { id: "ALT-20260516-004", type: "threshold", level: "warning", title: "超阈值预警", desc: "RTO燃烧室温度793°C，超过建议上限800°C持续2h", time: "14:00", date: "05-16", read: true, status: "已签收", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 1 },
     { id: "ALT-20260515-002", type: "data", level: "warning", title: "数据异常预警", desc: "5月月度上报中天然气/RTO时长比值偏离历史均值 45%", time: "", date: "05-15", read: true, status: "整改中", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 2 },
-    { id: "ALT-20260514-005", type: "减污增碳/减碳增污悖论", level: "critical", title: "减污增碳/减碳增污悖论 风险预警", desc: "C-P 协同指数 0.35，持续8h，燃烧室温度偏低", time: "08:00", date: "05-14", read: true, status: "已销号", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 4 },
+    { id: "ALT-20260514-005", type: "减污增碳/减碳增污悖论", level: "critical", title: "减污增碳/减碳增污悖论 风险预警", desc: "C-P 协同指数 0.35，持续8h，燃烧室温度偏低", time: "08:00", date: "05-14", read: true, status: "已销号", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 4, cpValue: 0.35, durationHours: 8, vocsRate: 10.8, gasFlow: 1350, temp: 720, emptyBurnPct: 18, outputChange: -2, rootCause: "燃烧室温度偏低（720°C），导致VOCs分解效率下降，为维持去除率天然气流量被迫提升至1350 Nm³/h。" },
     { id: "ALT-20260512-006", type: "ledger", level: "info", title: "台账缺漏提醒", desc: "4月涂料消耗明细台账缺失粉末涂料用量记录", time: "", date: "05-12", read: true, status: "已销号", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 4 },
     { id: "ALT-20260510-001", type: "permit", level: "info", title: "证件到期提醒", desc: "排污许可证将于 21 天后到期（2026-12-31）", time: "", date: "05-10", read: true, status: "已销号", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 4 },
-    { id: "ALT-20260508-007", type: "imbalance", level: "warning", title: "协同失衡预警", desc: "天然气消耗环比增加28%，VOCs去除率无显著提升", time: "16:00", date: "05-08", read: true, status: "已销号", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 4 },
+    { id: "ALT-20260508-007", type: "imbalance", level: "warning", title: "协同失衡预警", desc: "天然气消耗环比增加28%，VOCs去除率无显著提升", time: "16:00", date: "05-08", read: true, status: "已销号", flow: ["预警生成","企业已签收","整改反馈","监测科复核","已销号"], currentStep: 4, cpValue: 0.51, durationHours: 6, vocsRate: 14.5, gasFlow: 1050, temp: 790, emptyBurnPct: 10, outputChange: 5, rootCause: "天然气流量计可能存在读数偏差，建议现场核查校准。" },
   ],
 
   quickLinks: [

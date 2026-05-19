@@ -277,6 +277,15 @@
       showToast('预警已删除', 'info');
     }
 
+    // 时长判定逻辑：根据C-P值和持续小时数判定预警级别
+    function getDurationLevel(cp, hours) {
+      if (cp == null || hours == null) return { level: 'info', color: '#22d3ee', text: 'ℹ️ 时长数据待补充', icon: 'ℹ️' };
+      if (cp < 0.4 && hours >= 24) return { level: 'critical', color: '#f87171', text: '🔴 持续'+hours+'h — 红色预警（减污增碳陷阱）', icon: '⚠️' };
+      if (cp < 0.4 && hours >= 1) return { level: 'orange', color: '#fb923c', text: '🟠 持续'+hours+'h — 橙色预警（严重协同失衡）', icon: '🔶' };
+      if (cp < 0.6 && hours >= 4) return { level: 'yellow', color: '#fbbf24', text: '🟡 持续'+hours+'h — 黄色预警（协同失衡）', icon: '🔸' };
+      return { level: 'info', color: '#22d3ee', text: 'ℹ️ 持续'+hours+'h — 观察中', icon: 'ℹ️' };
+    }
+
     function openDetail(id) {
       currentAlertId = id;
       const alerts = DataStore.getAlerts();
@@ -299,20 +308,21 @@
           <div class="diag-section">
             <div class="diag-title">📊 异常数据快照</div>
             <div class="card" style="padding:12px 16px;background:rgba(34,211,238,0.03)">
-              <div class="diag-data-row"><span>C-P 协同指数</span><span style="color:#f87171;font-weight:700">0.38（极差）</span></div>
-              <div class="diag-data-row"><span>VOCs 排放速率</span><span>12.5 kg/h（↓ 8.2%）</span></div>
-              <div class="diag-data-row"><span>天然气流量</span><span>1200 Nm³/h（↑ 35%）</span></div>
-              <div class="diag-data-row"><span>燃烧室温度</span><span>785°C</span></div>
-              <div class="diag-data-row"><span>空烧时长占比</span><span style="color:#f87171">22%</span></div>
-              <div class="diag-data-row"><span>持续时间</span><span>12 小时</span></div>
+              <div class="diag-data-row"><span>C-P 协同指数</span><span style="color:${a.cpValue < 0.4 ? '#f87171' : (a.cpValue < 0.6 ? '#fbbf24' : '#4ade80')};font-weight:700">${a.cpValue != null ? a.cpValue + (a.cpValue < 0.4 ? '（极差）' : (a.cpValue < 0.6 ? '（差）' : '（一般）')) : '—'}</span></div>
+              <div class="diag-data-row"><span>VOCs 排放速率</span><span>${a.vocsRate != null ? a.vocsRate + ' kg/h' : '—'}</span></div>
+              <div class="diag-data-row"><span>天然气流量</span><span>${a.gasFlow != null ? a.gasFlow + ' Nm³/h' : '—'}</span></div>
+              <div class="diag-data-row"><span>燃烧室温度</span><span>${a.temp != null ? a.temp + '°C' : '—'}</span></div>
+              <div class="diag-data-row"><span>空烧时长占比</span><span style="color:${(a.emptyBurnPct || 0) > 15 ? '#f87171' : '#4ade80'}">${a.emptyBurnPct != null ? a.emptyBurnPct + '%' : '—'}</span></div>
+              <div class="diag-data-row"><span>产量环比变化</span><span style="color:${(a.outputChange || 0) >= 10 || (a.outputChange || 0) <= -10 ? '#fbbf24' : '#4ade80'}">${a.outputChange != null ? a.outputChange + '%' : '—'} ${Math.abs(a.outputChange || 0) < 10 ? '✓ 排除产能因素' : '⚠ 产能变化显著'}</span></div>
+              <div class="diag-data-row"><span>持续时间</span><span style="font-weight:600;color:${getDurationLevel(a.cpValue, a.durationHours).color}">${getDurationLevel(a.cpValue, a.durationHours).text}</span></div>
             </div>
           </div>
           <div class="diag-section">
             <div class="diag-title">🔍 根因分析</div>
             <div class="diag-box warn">
-              <strong style="color:#fbbf24">根因：RTO 空烧时长占比过高（22%）</strong><br>
-              入口 VOCs 浓度 485 mg/m³ 处于较低水平，但天然气流量维持 1200 Nm³/h 的高位运行。结合生产排班数据，发现近 3 日喷涂作业分散在 4 个时段，RTO 启停频繁导致空烧累积。<br><br>
-              <strong style="color:#fbbf24">关联判定：</strong>符合「减污增碳陷阱」典型特征 — VOCs 下降伴随天然气激增，产量变化 < 10%。
+              <strong style="color:#fbbf24">根因：${a.rootCause ? a.rootCause.split('。')[0] : '待分析'}</strong><br>
+              ${a.rootCause || 'AI正在分析根因...'}<br><br>
+              <strong style="color:#fbbf24">关联判定：</strong>${a.cpValue < 0.4 ? '符合「减污增碳陷阱」典型特征' : (a.cpValue < 0.6 ? '处于「协同失衡」区间，需关注' : 'C-P协同指数正常范围')} — 产量变化 ${Math.abs(a.outputChange || 0)}% ${Math.abs(a.outputChange || 0) < 10 ? '< 10%，排除产能扩张因素' : '≥ 10%，建议结合产量基准校正'}。
             </div>
           </div>
           <div class="diag-section">
@@ -331,16 +341,16 @@
           <div class="diag-section">
             <div class="diag-title">📊 协同失衡数据</div>
             <div class="card" style="padding:12px 16px;background:rgba(34,211,238,0.03)">
-              <div class="diag-data-row"><span>C-P 协同指数</span><span style="color:#fbbf24;font-weight:700">0.42（差）</span></div>
-              <div class="diag-data-row"><span>持续时间</span><span>4 小时</span></div>
-              <div class="diag-data-row"><span>天然气环比</span><span>+28%</span></div>
-              <div class="diag-data-row"><span>VOCs去除率</span><span>94.2%</span></div>
+              <div class="diag-data-row"><span>C-P 协同指数</span><span style="color:${a.cpValue < 0.4 ? '#f87171' : (a.cpValue < 0.6 ? '#fbbf24' : '#4ade80')};font-weight:700">${a.cpValue != null ? a.cpValue + (a.cpValue < 0.4 ? '（极差）' : (a.cpValue < 0.6 ? '（差）' : '（一般）')) : '—'}</span></div>
+              <div class="diag-data-row"><span>持续时间</span><span style="font-weight:600;color:${getDurationLevel(a.cpValue, a.durationHours).color}">${getDurationLevel(a.cpValue, a.durationHours).text}</span></div>
+              <div class="diag-data-row"><span>天然气流量</span><span>${a.gasFlow != null ? a.gasFlow + ' Nm³/h' : '—'}</span></div>
+              <div class="diag-data-row"><span>VOCs排放速率</span><span>${a.vocsRate != null ? a.vocsRate + ' kg/h' : '—'}</span></div>
             </div>
           </div>
           <div class="diag-section">
             <div class="diag-title">💡 建议措施</div>
             <div class="diag-box warn">
-              天然气消耗环比激增，但 VOCs 去除率无明显提升，存在能源浪费。建议排查天然气流量计准确性，并优化 RTO 运行参数。
+              ${a.rootCause || '天然气消耗异常，但VOCs去除率无明显提升，存在能源浪费。建议排查天然气流量计准确性，并优化RTO运行参数。'}
             </div>
           </div>`;
       } else if (a.type === 'data') {
