@@ -1,7 +1,7 @@
 # 工作交接备忘录
 
 > 最后更新：2026-05-19
-> 最新Git提交：`417460d` [全局]Paradox→减污增碳/减碳增污悖论
+> 最新Git提交：`待填写` [全局]科技风设计系统v2.1全站接入
 
 ---
 
@@ -34,6 +34,8 @@
 | 14 | **三评合一报告接入DataStore** | `enterprise/triple-report.html` 动态渲染评分/AI摘要/详情/优先级 |
 | 15 | **企业透视页扩展至28家** | `gov-monitoring/enterprise-detail.html` ENT_DATA完整映射28家企业+动态实时数据 |
 | 16 | **政府端视觉升级** | 管理科/监测科全部页面添加page-loader、修复浅色边框/背景、hover动效 |
+| 17 | **科技风设计系统v2.1** | `css/style.css`全面重写：玻璃态卡片、HUD角标、霓虹发光、粒子背景、六边形蜂窝、扫描线、故障艺术、按钮能量扫光、输入框能量环、LED双层能量环等12项动效 |
+| 18 | **全站19页统一接入新设计系统** | style.css移到最后加载确保覆盖、标准页面添加`bg-honeycomb`背景、index.html补page-loader、`.main`添加z-index确保层叠正确 |
 
 ---
 
@@ -96,9 +98,8 @@ prototype/html-prototype/
 
 1. **GitHub远程推送**：环境缺gh CLI，需手动创建仓库`pollution-carbon-ai-platform`后`git remote add origin`推送
 2. **PRD中未完成的功能点**：如需补全原型，可对照PRD检查覆盖率
-3. **企业端剩余页面loader+动效细化**：`report-preview.html` 等hover动效可再细化
-4. **3D GIS进一步升级**：可增加更多飞线路径和风向粒子动画
-5. **LLM助手交互增强**：可增加历史会话、推荐问题动态生成、可信度标注交互
+3. **3D GIS进一步升级**：可增加更多飞线路径和风向粒子动画
+4. **LLM助手交互增强**：可增加历史会话、推荐问题动态生成、可信度标注交互
 
 ---
 

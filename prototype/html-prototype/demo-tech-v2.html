@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 科技风设计系统 v2.1 — 减污降碳AI监管平台</title>
+  <style>
+    /* ================================================================
+       污碳协同AI监管平台 — 科技风设计系统 v2.1（科技公司质感版）
+       ================================================================ */
+
+    /* ---------- 变量系统 ---------- */
+    :root {
+      --neon-cyan: #22d3ee;
+      --neon-blue: #0ea5e9;
+      --neon-green: #4ade80;
+      --neon-red: #f87171;
+      --neon-yellow: #fbbf24;
+      --neon-purple: #a78bfa;
+      --bg-dark: #020617;
+      --bg-panel: #0b1221;
+      --card-bg: rgba(14, 165, 233, 0.03);
+      --glass-border: rgba(34, 211, 238, 0.08);
+      --glass-border-hover: rgba(34, 211, 238, 0.25);
+      --text-primary: #f1f5f9;
+      --text-secondary: rgba(241, 245, 249, 0.6);
+      --text-muted: rgba(241, 245, 249, 0.35);
+      --radius: 12px;
+      --transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+      font-size: 14px; color: var(--text-primary);
+      background: var(--bg-dark); min-height: 100vh;
+      line-height: 1.6; overflow-x: hidden;
+    }
+
+    /* ================================================================
+       一、背景系统（减污降碳 + 科技质感）
+       ================================================================ */
+
+    /* 底层：六边形蜂窝网格 — 象征碳分子结构 */
+    .bg-honeycomb {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14, 165, 233, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 100%, rgba(34, 211, 238, 0.04) 0%, transparent 50%),
+        var(--bg-dark);
+    }
+    .bg-honeycomb::before {
+      content: ""; position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 0L56 16.5v33L28 66 0 49.5v-33z' fill='none' stroke='rgba(34,211,238,0.04)' stroke-width='0.8'/%3E%3Cpath d='M28 33L56 49.5v33L28 99 0 82.5v-33z' fill='none' stroke='rgba(34,211,238,0.04)' stroke-width='0.8'/%3E%3C/svg%3E");
+      background-size: 56px 100px;
+      mask-image: radial-gradient(ellipse at 50% 50%, black 30%, transparent 80%);
+      animation: honeyShift 20s linear infinite;
+    }
+    @keyframes honeyShift {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100px); }
+    }
+
+    /* 中层：数据流线条 — 缓慢横向流动 */
+    .bg-datastream {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .data-line {
+      position: absolute; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.15), transparent);
+      animation: dataFlow linear infinite;
+    }
+    @keyframes dataFlow {
+      0% { transform: translateX(-100%); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateX(100vw); opacity: 0; }
+    }
+
+    /* 上层：极细噪点纹理 — 增加质感 */
+    .bg-noise {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.25;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 128px 128px;
+      mix-blend-mode: overlay;
+    }
+
+    /* 粒子层 */
+    .particles-bg {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+    }
+    .particle {
+      position: absolute; border-radius: 50%; background: var(--neon-cyan); opacity: 0;
+      animation: particleFloat linear infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes particleFloat {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      8% { opacity: 0.7; }
+      92% { opacity: 0.7; }
+      100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+    }
+
+    /* ================================================================
+       二、顶部栏（全新设计 — 科技公司质感）
+       ================================================================ */
+    .tech-topbar {
+      height: 64px;
+      background: rgba(2, 6, 23, 0.75);
+      backdrop-filter: blur(20px) saturate(1.2);
+      border-bottom: 1px solid rgba(34, 211, 238, 0.12);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), 0 0 60px rgba(34, 211, 238, 0.03);
+    }
+    /* Topbar 底部霓虹发光线 */
+    .tech-topbar::after {
+      content: ""; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--neon-cyan) 20%, var(--neon-blue) 50%, var(--neon-cyan) 80%, transparent 100%);
+      opacity: 0.8;
+      animation: topbarGlow 3s ease-in-out infinite;
+    }
+    @keyframes topbarGlow {
+      0%, 100% { opacity: 0.4; filter: blur(0px); }
+      50% { opacity: 1; filter: blur(1px); }
+    }
+    /* Topbar 内部微妙扫描线纹理 */
+    .tech-topbar::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.15;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(34, 211, 238, 0.03) 2px, rgba(34, 211, 238, 0.03) 4px);
+    }
+
+    .tech-topbar .logo-wrap {
+      display: flex; align-items: center; gap: 12px;
+    }
+    /* Logo 呼吸点 */
+    .logo-pulse {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 8px var(--neon-cyan), 0 0 20px rgba(34, 211, 238, 0.4);
+      animation: logoPulse 2s ease-in-out infinite;
+      position: relative;
+    }
+    .logo-pulse::after {
+      content: ""; position: absolute; inset: -6px; border-radius: 50%;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      animation: logoRing 2s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.8); opacity: 0.7; }
+    }
+    @keyframes logoRing {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.8); opacity: 0; }
+    }
+    .tech-topbar .logo-text {
+      font-size: 16px; font-weight: 600; color: var(--text-primary);
+      letter-spacing: 1px;
+      text-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+    }
+    .tech-topbar .logo-sub {
+      font-size: 11px; color: var(--text-muted); margin-left: 12px;
+      padding-left: 12px; border-left: 1px solid rgba(34, 211, 238, 0.15);
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .tech-topbar .user {
+      display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-secondary);
+    }
+    .tech-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(34, 211, 238, 0.1));
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.1), inset 0 0 8px rgba(34, 211, 238, 0.05);
+      position: relative; overflow: hidden;
+    }
+    .tech-avatar::before {
+      content: ""; position: absolute; top: -50%; left: -50%; right: -50%; bottom: -50%;
+      background: conic-gradient(from 0deg, transparent, rgba(34, 211, 238, 0.15), transparent);
+      animation: avatarSpin 4s linear infinite;
+    }
+    @keyframes avatarSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ================================================================
+       三、侧边栏（全新设计 — 玻璃态 + 光柱效果）
+       ================================================================ */
+    .tech-sidebar {
+      width: 220px;
+      background: rgba(2, 6, 23, 0.6);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid rgba(34, 211, 238, 0.08);
+      padding-top: 64px; position: fixed; top: 0; bottom: 0; left: 0; z-index: 90;
+      box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3), inset -1px 0 0 rgba(34, 211, 238, 0.05);
+    }
+    /* 侧边栏右侧霓虹竖线 */
+    .tech-sidebar::after {
+      content: ""; position: absolute; top: 80px; bottom: 40px; right: 0; width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.3), transparent);
+    }
+    .tech-sidebar-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; margin: 2px 8px; cursor: pointer;
+      transition: var(--transition); position: relative;
+      color: var(--text-secondary); font-size: 13px;
+      border-radius: 8px; border: 1px solid transparent;
+      overflow: hidden;
+    }
+    /* hover 光柱从左侧滑入 */
+    .tech-sidebar-item::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, transparent, var(--neon-cyan), transparent);
+      transform: scaleY(0); transform-origin: center;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+    }
+    .tech-sidebar-item:hover {
+      background: rgba(34, 211, 238, 0.06);
+      color: var(--neon-cyan);
+      border-color: rgba(34, 211, 238, 0.12);
+      text-shadow: 0 0 12px rgba(34, 211, 238, 0.3);
+      transform: translateX(4px);
+    }
+    .tech-sidebar-item:hover::before {
+      transform: scaleY(1);
+    }
+    .tech-sidebar-item.active {
+      background: rgba(34, 211, 238, 0.08);
+      color: var(--neon-cyan);
+      border-color: rgba(34, 211, 238, 0.15);
+      text-shadow: 0 0 12px rgba(34, 211, 238, 0.3);
+    }
+    .tech-sidebar-item.active::before {
+      transform: scaleY(1);
+    }
+    .sidebar-icon { width: 18px; text-align: center; font-size: 15px; }
+    /* 侧边栏底部系统状态 */
+    .sidebar-footer {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 12px 20px; border-top: 1px solid rgba(34, 211, 238, 0.06);
+      font-size: 11px; color: var(--text-muted);
+    }
+    .sidebar-footer .sys-status {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+    }
+    .sys-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--neon-green);
+      box-shadow: 0 0 6px var(--neon-green);
+      animation: sysDotBreathe 2s ease-in-out infinite;
+    }
+    @keyframes sysDotBreathe {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ================================================================
+       四、卡片系统（3D 立体感升级）
+       ================================================================ */
+    .tech-card {
+      background: linear-gradient(145deg, rgba(14, 165, 233, 0.04), rgba(34, 211, 238, 0.02));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius); padding: 20px;
+      backdrop-filter: blur(12px);
+      transition: var(--transition); position: relative; overflow: hidden;
+      /* 多层阴影创造立体感 */
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+    /* HUD 角标 — 更强发光 */
+    .tech-card::before, .tech-card::after,
+    .tech-card > .corner-bl, .tech-card > .corner-br {
+      content: ""; position: absolute; width: 16px; height: 16px;
+      border-color: rgba(34, 211, 238, 0.4); border-style: solid;
+      opacity: 0.6; transition: var(--transition);
+    }
+    .tech-card::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+    .tech-card::after  { top: 0; right: 0; border-width: 2px 2px 0 0; }
+    .tech-card > .corner-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; position: absolute; }
+    .tech-card > .corner-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; position: absolute; }
+
+    /* 卡片 hover — 3D抬升 + 边框流光 */
+    .tech-card:hover {
+      border-color: var(--glass-border-hover);
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.4),
+        0 12px 32px rgba(0, 0, 0, 0.3),
+        0 24px 48px rgba(0, 0, 0, 0.2),
+        0 0 30px rgba(34, 211, 238, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      transform: translateY(-4px) perspective(1000px) rotateX(1deg);
+    }
+    .tech-card:hover::before, .tech-card:hover::after,
+    .tech-card:hover > .corner-bl, .tech-card:hover > .corner-br {
+      opacity: 1;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+    }
+
+    /* 边缘流光卡片（最强视觉） */
+    .tech-card-stream {
+      background: linear-gradient(145deg, rgba(14, 165, 233, 0.04), rgba(34, 211, 238, 0.02));
+      border-radius: var(--radius); padding: 20px;
+      backdrop-filter: blur(12px);
+      position: relative; overflow: hidden;
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 8px 24px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+    /* 流光边框效果 */
+    .tech-card-stream::before {
+      content: ""; position: absolute; inset: 0; border-radius: var(--radius); padding: 1px;
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.15), transparent, rgba(14, 165, 233, 0.15), transparent);
+      background-size: 300% 100%;
+      animation: streamGlow 4s linear infinite;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    @keyframes streamGlow {
+      0% { background-position: 0% 0; }
+      100% { background-position: 300% 0; }
+    }
+    /* 内发光 */
+    .tech-card-stream::after {
+      content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+      background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.06), transparent 60%);
+      pointer-events: none;
+    }
+    .tech-card-stream:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(34, 211, 238, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .tech-card-title {
+      font-size: 15px; font-weight: 600; margin-bottom: 14px;
+      color: var(--neon-cyan); display: flex; align-items: center; gap: 8px;
+      position: relative; z-index: 1;
+    }
+    .tech-card-title::before {
+      content: ""; display: inline-block; width: 4px; height: 16px;
+      background: linear-gradient(180deg, var(--neon-cyan), var(--neon-blue));
+      border-radius: 2px; box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    }
+
+    /* ================================================================
+       五、按钮系统（能量感升级）
+       ================================================================ */
+    .tech-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 9px 22px; border-radius: 8px; font-size: 14px; cursor: pointer;
+      border: 1px solid transparent; transition: var(--transition); gap: 6px;
+      font-family: inherit; position: relative; overflow: hidden;
+      font-weight: 500;
+    }
+    .tech-btn::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: translateX(-100%); transition: none;
+    }
+    .tech-btn:hover::before {
+      animation: btnShine 0.6s ease-out;
+    }
+    @keyframes btnShine {
+      to { transform: translateX(100%); }
+    }
+    .tech-btn-primary {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(34, 211, 238, 0.1));
+      color: var(--neon-cyan);
+      border-color: rgba(34, 211, 238, 0.3);
+      box-shadow: 0 0 0 rgba(34, 211, 238, 0), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .tech-btn-primary:hover {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(34, 211, 238, 0.18));
+      border-color: rgba(34, 211, 238, 0.6);
+      box-shadow: 0 0 24px rgba(34, 211, 238, 0.15), 0 0 48px rgba(34, 211, 238, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+    .tech-btn-default {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-secondary);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .tech-btn-default:hover {
+      border-color: rgba(34, 211, 238, 0.35);
+      color: var(--neon-cyan);
+      background: rgba(34, 211, 238, 0.05);
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.08);
+      transform: translateY(-2px);
+    }
+    .tech-btn-danger {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(248, 113, 113, 0.06));
+      color: var(--neon-red);
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .tech-btn-danger:hover {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(248, 113, 113, 0.12));
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 0 24px rgba(239, 68, 68, 0.15), 0 0 48px rgba(239, 68, 68, 0.08);
+      transform: translateY(-2px);
+    }
+
+    /* ================================================================
+       六、表单系统
+       ================================================================ */
+    .tech-input, .tech-select, .tech-textarea {
+      width: 100%; padding: 11px 16px;
+      background: rgba(2, 6, 23, 0.5);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      font-size: 14px; outline: none; transition: var(--transition);
+      font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    .tech-input::placeholder, .tech-textarea::placeholder { color: var(--text-muted); }
+    .tech-input:focus, .tech-select:focus, .tech-textarea:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08), 0 0 20px rgba(34, 211, 238, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.3);
+      background: rgba(34, 211, 238, 0.04);
+    }
+
+    /* ================================================================
+       七、表格系统
+       ================================================================ */
+    .tech-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+    .tech-table th {
+      padding: 12px 16px; text-align: left; font-weight: 600;
+      background: rgba(34, 211, 238, 0.06);
+      color: var(--neon-cyan);
+      border-bottom: 1px solid rgba(34, 211, 238, 0.12);
+      font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .tech-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary); transition: var(--transition);
+    }
+    .tech-table tr { background: transparent; transition: var(--transition); position: relative; }
+    .tech-table tbody tr:hover td {
+      background: rgba(34, 211, 238, 0.03);
+      color: var(--text-primary);
+    }
+    .tech-table tbody tr:hover td:first-child {
+      border-left: 3px solid var(--neon-cyan);
+      padding-left: 13px;
+      box-shadow: inset 3px 0 0 var(--neon-cyan);
+    }
+
+    /* ================================================================
+       八、标签系统
+       ================================================================ */
+    .tech-tag {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 500;
+      border: 1px solid transparent; gap: 4px;
+      backdrop-filter: blur(4px);
+    }
+    .tech-tag-cyan { background: rgba(34, 211, 238, 0.08); color: var(--neon-cyan); border-color: rgba(34, 211, 238, 0.2); }
+    .tech-tag-green { background: rgba(34, 197, 94, 0.08); color: var(--neon-green); border-color: rgba(34, 197, 94, 0.2); }
+    .tech-tag-yellow { background: rgba(234, 179, 8, 0.08); color: var(--neon-yellow); border-color: rgba(234, 179, 8, 0.2); }
+    .tech-tag-red { background: rgba(239, 68, 68, 0.08); color: var(--neon-red); border-color: rgba(239, 68, 68, 0.2); }
+    .tech-tag-purple { background: rgba(167, 139, 250, 0.08); color: var(--neon-purple); border-color: rgba(167, 139, 250, 0.2); }
+
+    /* ================================================================
+       九、LED 指示灯（升级版 — 能量环）
+       ================================================================ */
+    .led {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+      position: relative;
+    }
+    .led::before {
+      content: ""; position: absolute; inset: -4px; border-radius: 50%;
+      border: 1.5px solid transparent;
+      animation: ledRing 2s ease-in-out infinite;
+    }
+    .led::after {
+      content: ""; position: absolute; inset: -8px; border-radius: 50%;
+      border: 1px solid transparent;
+      animation: ledRing 2s ease-in-out infinite 0.5s;
+    }
+    .led-green { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green), 0 0 16px rgba(74, 222, 128, 0.3); }
+    .led-green::before, .led-green::after { border-color: rgba(74, 222, 128, 0.3); }
+    .led-yellow { background: var(--neon-yellow); box-shadow: 0 0 8px var(--neon-yellow), 0 0 16px rgba(251, 191, 36, 0.3); }
+    .led-yellow::before, .led-yellow::after { border-color: rgba(251, 191, 36, 0.3); }
+    .led-red { background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red), 0 0 16px rgba(248, 113, 113, 0.3); }
+    .led-red::before, .led-red::after { border-color: rgba(248, 113, 113, 0.3); }
+    @keyframes ledRing {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.8); opacity: 0; }
+    }
+
+    /* ================================================================
+       十、扫描线 + 文字效果
+       ================================================================ */
+    .data-scan {
+      position: relative; overflow: hidden;
+    }
+    .data-scan::after {
+      content: ""; position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      animation: scanMove 3.5s ease-in-out infinite;
+      opacity: 0.5; filter: blur(1px);
+    }
+    @keyframes scanMove {
+      0% { top: 0; opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { top: 100%; opacity: 0; }
+    }
+    .text-glitch {
+      position: relative; display: inline-block;
+      animation: glitchShake 0.25s ease-in-out infinite alternate;
+    }
+    @keyframes glitchShake {
+      0% { transform: translateX(-1.5px); }
+      100% { transform: translateX(1.5px); }
+    }
+    .text-neon {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px rgba(34, 211, 238, 0.5), 0 0 30px rgba(34, 211, 238, 0.3), 0 0 60px rgba(34, 211, 238, 0.1);
+    }
+    .text-neon-red {
+      color: var(--neon-red);
+      text-shadow: 0 0 10px rgba(248, 113, 113, 0.5), 0 0 30px rgba(248, 113, 113, 0.3);
+    }
+    .text-neon-green {
+      color: var(--neon-green);
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.5), 0 0 30px rgba(74, 222, 128, 0.3);
+    }
+
+    /* ================================================================
+       十一、进度条 + 分割线
+       ================================================================ */
+    .tech-progress-track {
+      height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden;
+    }
+    .tech-progress-fill {
+      height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+      position: relative; overflow: hidden;
+    }
+    .tech-progress-fill::after {
+      content: ""; position: absolute; top: 0; left: -100%; right: 0; bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    .tech-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.15), transparent);
+      margin: 32px 0;
+    }
+
+    /* ================================================================
+       十二、滚动条
+       ================================================================ */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(2, 6, 23, 0.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.15); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.35); }
+
+    /* ================================================================
+       Demo 页面布局
+       ================================================================ */
+    .demo-wrap { position: relative; z-index: 2; margin-left: 220px; margin-top: 64px; padding: 32px; max-width: 1200px; }
+    .demo-section { margin-bottom: 48px; }
+    .demo-section-title {
+      font-size: 18px; font-weight: 600; color: var(--neon-cyan); margin-bottom: 24px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .demo-section-title .num {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: rgba(34, 211, 238, 0.08); border: 1px solid rgba(34, 211, 238, 0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.08);
+    }
+    .demo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .demo-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .demo-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .demo-row { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+
+    .color-swatch {
+      padding: 20px; border-radius: var(--radius); text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(14, 165, 233, 0.02);
+    }
+    .color-swatch .name { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+    .color-swatch .hex { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+
+    .demo-hero {
+      text-align: center; padding: 48px 20px 40px; margin-bottom: 40px;
+      position: relative;
+    }
+    .demo-hero h1 {
+      font-size: 32px; font-weight: 700; margin-bottom: 12px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue), var(--neon-cyan));
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: textGradient 3s linear infinite;
+      letter-spacing: 1px;
+    }
+    @keyframes textGradient {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+    .demo-hero p { font-size: 14px; color: var(--text-secondary); }
+    .demo-hero .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 20px; padding: 8px 20px;
+      background: rgba(34, 211, 238, 0.05); border: 1px solid rgba(34, 211, 238, 0.12);
+      border-radius: 20px; font-size: 12px; color: var(--text-muted);
+    }
+
+    .status-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); }
+
+    .demo-note {
+      padding: 14px 18px; background: rgba(34, 211, 238, 0.03);
+      border: 1px dashed rgba(34, 211, 238, 0.15); border-radius: 8px;
+      font-size: 12px; color: var(--text-muted); margin-top: 20px; line-height: 1.8;
+    }
+
+    /* 脉冲环装饰 */
+    .pulse-ring-decor {
+      position: absolute; width: 120px; height: 120px; border-radius: 50%;
+      border: 1px solid rgba(34, 211, 238, 0.08);
+      animation: pulseDecor 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes pulseDecor {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 多层背景系统 -->
+  <div class="bg-honeycomb"></div>
+  <div class="bg-datastream" id="dataStream"></div>
+  <div class="bg-noise"></div>
+  <div class="particles-bg" id="particles"></div>
+
+  <!-- Topbar -->
+  <div class="tech-topbar">
+    <div class="logo-wrap">
+      <div class="logo-pulse"></div>
+      <div class="logo-text">🌿 污碳协同AI监管平台</div>
+      <div class="logo-sub">科技公司级设计系统 v2.1</div>
+    </div>
+    <div class="user">
+      <span>演示模式</span>
+      <div class="tech-avatar">D</div>
+      <span style="color:var(--text-muted);">Designer</span>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="tech-sidebar">
+    <div class="tech-sidebar-item active">
+      <span class="sidebar-icon">🎨</span> 设计系统
+    </div>
+    <div class="tech-sidebar-item">
+      <span class="sidebar-icon">📊</span> 色彩系统
+    </div>
+    <div class="tech-sidebar-item">
+      <span class="sidebar-icon">🧩</span> 组件库
+    </div>
+    <div class="tech-sidebar-item">
+      <span class="sidebar-icon">✨</span> 动效系统
+    </div>
+    <div class="tech-sidebar-item">
+      <span class="sidebar-icon">🔙</span> 返回首页
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sys-status">
+        <div class="sys-dot"></div>
+        <span>系统运行正常</span>
+      </div>
+      <div style="font-size:10px; color:rgba(226,232,240,0.2);">v2.1.0-build-20260519</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="demo-wrap">
+
+    <!-- Hero -->
+    <div class="demo-hero">
+      <div class="pulse-ring-decor" style="top:20px; left:50%; margin-left:-60px;"></div>
+      <h1>🧪 减污降碳 · 科技风设计系统</h1>
+      <p>立体感 · 炫酷感 · 科技公司质感 · 纯 CSS 零依赖</p>
+      <div class="hero-badge">
+        <span class="led led-green" style="width:6px;height:6px;"></span>
+        全部效果逐项可验证
+      </div>
+    </div>
+
+    <!-- ========== 1. 背景系统说明 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">1</div>背景系统（三层叠加 — 减污降碳 + 科技感）</div>
+      <div class="tech-card">
+        <div class="corner-bl"></div><div class="corner-br"></div>
+        <div style="font-size:13px;color:var(--text-secondary);line-height:2.2;">
+          <strong style="color:var(--text-primary);">底层：</strong>六边形蜂窝网格（象征碳分子结构）缓慢上移<br>
+          <strong style="color:var(--text-primary);">中层：</strong>水平数据流光线随机流动（科技感数据通道）<br>
+          <strong style="color:var(--text-primary);">上层：</strong>极细噪点纹理叠加（增加质感，类似高端显示器）<br>
+          <strong style="color:var(--text-primary);">粒子层：</strong>青色微光粒子上浮闪烁<br>
+          <br>
+          <span style="color:var(--neon-cyan);">👉 不用操作，这些效果正在你看到的页面背景中实时运行</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 2. 色彩系统 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">2</div>色彩系统</div>
+      <div class="demo-grid demo-grid-4">
+        <div class="color-swatch">
+          <div style="width:48px;height:48px;border-radius:10px;background:var(--neon-cyan);margin:0 auto;box-shadow:0 0 20px rgba(34,211,238,0.5),0 0 40px rgba(34,211,238,0.2);"></div>
+          <div class="name">霓虹青 · 主色</div>
+          <div class="hex">#22d3ee</div>
+        </div>
+        <div class="color-swatch">
+          <div style="width:48px;height:48px;border-radius:10px;background:var(--neon-blue);margin:0 auto;box-shadow:0 0 20px rgba(14,165,233,0.5),0 0 40px rgba(14,165,233,0.2);"></div>
+          <div class="name">科技蓝 · 辅色</div>
+          <div class="hex">#0ea5e9</div>
+        </div>
+        <div class="color-swatch">
+          <div style="width:48px;height:48px;border-radius:10px;background:var(--neon-green);margin:0 auto;box-shadow:0 0 20px rgba(74,222,128,0.5),0 0 40px rgba(74,222,128,0.2);"></div>
+          <div class="name">荧光绿 · 成功</div>
+          <div class="hex">#4ade80</div>
+        </div>
+        <div class="color-swatch">
+          <div style="width:48px;height:48px;border-radius:10px;background:var(--neon-red);margin:0 auto;box-shadow:0 0 20px rgba(248,113,113,0.5),0 0 40px rgba(248,113,113,0.2);"></div>
+          <div class="name">霓虹红 · 危险</div>
+          <div class="hex">#f87171</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 3. 卡片系统（立体感重点） ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">3</div>卡片系统 — 立体感升级（重点体验 hover 3D 抬升）</div>
+      <div class="demo-grid">
+        <!-- 标准玻璃态卡片 -->
+        <div class="tech-card">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div class="tech-card-title">📋 标准玻璃态卡片</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.9;">
+            多层阴影创造立体感：<br>
+            · 第1层：贴身阴影<br>
+            · 第2层：悬浮阴影<br>
+            · 第3层：扩散阴影<br>
+            · 内阴影：顶部微光<br><br>
+            <strong style="color:var(--neon-cyan);">👉 鼠标放上来体验 3D 抬升</strong>
+          </div>
+        </div>
+        <!-- 流光边框卡片（最强视觉） -->
+        <div class="tech-card-stream">
+          <div style="position:relative;z-index:1;">
+            <div class="tech-card-title">⚡ 流光边框卡片</div>
+            <div class="tech-stat">
+              <div class="tech-stat-value text-neon">0.38</div>
+              <div class="tech-stat-label">C-P 协同指数</div>
+            </div>
+            <div style="margin-top:14px;">
+              <div class="tech-progress-track">
+                <div class="tech-progress-fill" style="width:38%;"></div>
+              </div>
+            </div>
+            <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
+              边框有持续的青色流光在循环流动
+            </div>
+          </div>
+        </div>
+        <!-- 数据指标卡片 -->
+        <div class="tech-card">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div class="tech-card-title">📊 数据指标卡片</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="tech-stat">
+              <div class="tech-stat-value text-neon-green">94.2%</div>
+              <div class="tech-stat-label">VOCs去除</div>
+            </div>
+            <div class="tech-stat">
+              <div class="tech-stat-value text-neon-red">12.5</div>
+              <div class="tech-stat-label">排放 kg/h</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 4. 按钮系统 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">4</div>按钮系统 — 能量感（hover 看光扫过效果）</div>
+      <div class="demo-row">
+        <button class="tech-btn tech-btn-primary">✨ 主要按钮</button>
+        <button class="tech-btn tech-btn-default">📋 默认按钮</button>
+        <button class="tech-btn tech-btn-danger">🚨 危险按钮</button>
+      </div>
+      <div class="demo-note">
+        💡 <strong>hover 时有三个效果叠加：</strong><br>
+        1. 白色光带从左至右快速扫过（能量脉冲）<br>
+        2. 按钮外发光扩散（像能量溢出）<br>
+        3. 整体轻微抬升 + 背景加深
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 5. 表单系统 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">5</div>表单系统（点击输入框看 focus 能量环）</div>
+      <div class="demo-grid demo-grid-2">
+        <div>
+          <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px;">企业名称</label>
+          <input class="tech-input" placeholder="请输入企业名称..." value="蓝天工业涂装有限公司">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px;">VOCs 排放速率 (kg/h)</label>
+          <input class="tech-input" placeholder="例如：12.5" value="12.5">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px;">行业类型</label>
+          <select class="tech-select">
+            <option>汽车零部件涂装</option>
+            <option>金属表面处理</option>
+            <option>家具涂装</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px;">备注说明</label>
+          <textarea class="tech-textarea" rows="2" placeholder="请输入备注..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 6. 表格 + 标签 + LED ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">6</div>表格 + 标签 + LED（鼠标滑过表格行）</div>
+      <div class="tech-card" style="padding:0;overflow:hidden;">
+        <div class="corner-bl" style="z-index:2;"></div><div class="corner-br" style="z-index:2;"></div>
+        <table class="tech-table">
+          <tr>
+            <th>企业</th><th>C-P指数</th><th>状态</th><th>标签</th><th>LED</th>
+          </tr>
+          <tr>
+            <td>蓝天工业涂装</td>
+            <td class="text-neon-red">0.38</td>
+            <td>整改中</td>
+            <td><span class="tech-tag tech-tag-red">减污增碳陷阱</span></td>
+            <td><span class="led led-red"></span></td>
+          </tr>
+          <tr>
+            <td>红星喷涂厂</td>
+            <td class="text-neon-red">0.35</td>
+            <td>已销号</td>
+            <td><span class="tech-tag tech-tag-yellow">协同失衡</span></td>
+            <td><span class="led led-yellow"></span></td>
+          </tr>
+          <tr>
+            <td>标杆企业A</td>
+            <td class="text-neon-green">0.88</td>
+            <td>正常</td>
+            <td><span class="tech-tag tech-tag-green">双减标兵</span></td>
+            <td><span class="led led-green"></span></td>
+          </tr>
+          <tr>
+            <td>鑫达汽修</td>
+            <td style="color:var(--neon-yellow);">0.52</td>
+            <td>关注</td>
+            <td><span class="tech-tag tech-tag-cyan">数据审核中</span></td>
+            <td><span class="led led-yellow"></span></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 7. LED 升级版 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">7</div>LED 状态指示灯 — 双层能量环</div>
+      <div class="demo-grid demo-grid-4">
+        <div class="tech-card" style="text-align:center;">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div style="margin-bottom:14px;padding:8px;"><span class="led led-green" style="width:14px;height:14px;"></span></div>
+          <div style="font-size:14px;color:var(--neon-green);font-weight:500;">🟢 正常运行</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">RTO 燃烧室 785°C</div>
+        </div>
+        <div class="tech-card" style="text-align:center;">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div style="margin-bottom:14px;padding:8px;"><span class="led led-yellow" style="width:14px;height:14px;"></span></div>
+          <div style="font-size:14px;color:var(--neon-yellow);font-weight:500;">🟡 关注状态</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">C-P 指数 0.52</div>
+        </div>
+        <div class="tech-card" style="text-align:center;">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div style="margin-bottom:14px;padding:8px;"><span class="led led-red" style="width:14px;height:14px;"></span></div>
+          <div style="font-size:14px;color:var(--neon-red);font-weight:500;">🔴 异常告警</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">空烧占比 22%</div>
+        </div>
+        <div class="tech-card" style="text-align:center;">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div style="margin-bottom:14px;padding:8px;"><span class="led led-green" style="width:14px;height:14px;"></span></div>
+          <div style="font-size:14px;color:var(--neon-green);font-weight:500;">🟢 在线监测</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">数据实时上传中</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 8. 文字效果 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">8</div>文字效果系统</div>
+      <div class="demo-grid demo-grid-2">
+        <div class="tech-card">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div class="tech-card-title">💥 故障微抖动</div>
+          <div style="font-size:28px;font-weight:700;margin:16px 0;">
+            <span class="text-glitch text-neon-red">⚠️ 减污增碳陷阱检测</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);">
+            用于预警标题、异常数值，模拟数据流不稳定感
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div class="tech-card-title">✨ 霓虹发光文字</div>
+          <div style="font-size:28px;font-weight:700;margin:10px 0;">
+            <span class="text-neon">0.88</span>
+          </div>
+          <div style="font-size:28px;font-weight:700;margin:10px 0;">
+            <span class="text-neon-green">85%</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);">
+            关键数据自带多层发光阴影，不用操作直接看
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 9. 完整场景 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">9</div>完整场景：实时双算看板片段</div>
+      <div class="tech-card-stream data-scan">
+        <div style="position:relative;z-index:1;">
+          <div class="tech-card-title" style="display:flex;justify-content:space-between;">
+            <span>📊 实时双算指标</span>
+            <span style="font-size:12px;color:var(--text-muted);font-weight:400;display:flex;align-items:center;gap:6px;">
+              <span class="led led-green" style="width:6px;height:6px;"></span>
+              数据实时更新中
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+            <div class="tech-stat">
+              <div class="tech-stat-value text-neon">12.5</div>
+              <div class="tech-stat-label">VOCs 排放 kg/h</div>
+              <div style="margin-top:10px;"><div class="tech-progress-track"><div class="tech-progress-fill" style="width:65%;"></div></div></div>
+            </div>
+            <div class="tech-stat">
+              <div class="tech-stat-value text-neon-green">94.2%</div>
+              <div class="tech-stat-label">VOCs 去除效率</div>
+              <div style="margin-top:10px;"><div class="tech-progress-track"><div class="tech-progress-fill" style="width:94%;"></div></div></div>
+            </div>
+            <div class="tech-stat">
+              <div class="tech-stat-value text-neon-red">0.42</div>
+              <div class="tech-stat-label">总碳排放 tCO₂/h</div>
+              <div style="margin-top:10px;"><div class="tech-progress-track"><div class="tech-progress-fill" style="width:42%;"></div></div></div>
+            </div>
+            <div class="tech-stat">
+              <div class="tech-stat-value text-glitch text-neon-red">0.38</div>
+              <div class="tech-stat-label">C-P 协同指数（异常）</div>
+              <div style="margin-top:10px;"><div class="tech-progress-track"><div class="tech-progress-fill" style="width:38%;"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 10. Topbar + Sidebar 说明 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">10</div>Topbar / Sidebar 全新设计说明</div>
+      <div class="demo-grid demo-grid-2">
+        <div class="tech-card">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div class="tech-card-title">🔝 顶部栏升级</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:2;">
+            ❌ 旧版：老气的深蓝渐变（脏脏的感觉）<br>
+            ✅ 新版：<strong>纯深色玻璃态</strong> + 底部霓虹发光线<br>
+            ✅ Logo 左侧加入<strong>呼吸脉冲点</strong> + 扩散光环<br>
+            ✅ 头像加入<strong>微光旋转</strong>效果<br>
+            ✅ 顶部加入<strong>扫描线纹理</strong>增加层次感<br>
+            ✅ 底部发光线带 <strong>blur 光晕</strong>扫动
+          </div>
+        </div>
+        <div class="tech-card">
+          <div class="corner-bl"></div><div class="corner-br"></div>
+          <div class="tech-card-title">📂 侧边栏升级</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:2;">
+            ❌ 旧版：死黑纯色背景<br>
+            ✅ 新版：<strong>玻璃态半透明</strong> + 右侧霓虹竖线<br>
+            ✅ hover 时左侧<strong>光柱从中心向上下展开</strong><br>
+            ✅ 菜单项整体<strong>向右微移</strong> + 文字发光<br>
+            ✅ 底部加入<strong>系统状态栏</strong>（绿点 + 版本号）<br>
+            ✅ 右侧边缘有<strong>微妙的青色发光</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-divider"></div>
+
+    <!-- ========== 11. 验收清单 ========== -->
+    <div class="demo-section">
+      <div class="demo-section-title"><div class="num">11</div>验收清单（逐项核对）</div>
+      <div class="tech-card">
+        <div class="corner-bl"></div><div class="corner-br"></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;font-size:13px;line-height:2.2;">
+          <div class="status-row"><span class="led led-green"></span> ✅ 六边形蜂窝背景（碳分子感）</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 数据流光线横向流动</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 噪点纹理增加质感</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 粒子背景上浮闪烁</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ Topbar 纯黑玻璃态 + 霓虹底线</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ Logo 呼吸脉冲点 + 扩散环</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ Sidebar 玻璃态 + 光柱 hover</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ Sidebar 右侧霓虹竖线</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 卡片 3D hover 抬升 + 透视</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 卡片 HUD 四角发光角标</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 流光边框持续循环流动</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 按钮 hover 光带扫过</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 输入框 focus 能量环</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 表格行 hover 高亮 + 左指示条</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ LED 双层能量环呼吸</div>
+          <div class="status-row"><span class="led led-green"></span> ✅ 故障抖动 + 霓虹发光文字</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align:center;padding:48px 20px 32px;color:var(--text-muted);font-size:13px;">
+      <div style="margin-bottom:16px;font-size:15px;color:var(--text-secondary);">
+        🎨 科技公司级质感设计系统 — 确认后批量升级全站 18 页
+      </div>
+      <div style="line-height:2;">
+        💬 如果某项效果需要调整（太炫/太素/颜色不对），直接告诉我<br>
+        🔧 确认风格后，我将先重写 <code style="color:var(--neon-cyan);">style.css</code>，再逐页接入
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 生成粒子
+    const pb = document.getElementById('particles');
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (7 + Math.random() * 10) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      const size = 1 + Math.random() * 2.5;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      pb.appendChild(p);
+    }
+
+    // 生成数据流线条
+    const ds = document.getElementById('dataStream');
+    for (let i = 0; i < 8; i++) {
+      const line = document.createElement('div');
+      line.className = 'data-line';
+      line.style.top = (10 + Math.random() * 80) + '%';
+      line.style.width = (15 + Math.random() * 25) + '%';
+      line.style.animationDuration = (6 + Math.random() * 8) + 's';
+      line.style.animationDelay = (Math.random() * 6) + 's';
+      ds.appendChild(line);
+    }
+  </script>
+</body>
+</html>
