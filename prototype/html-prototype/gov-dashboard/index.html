@@ -522,14 +522,14 @@
 
     // 初始化
     renderTasks();
-
-    // 页面加载完成后隐藏 loader
-    window.addEventListener("load", function() {
-      setTimeout(function() {
-        var el = document.getElementById("pageLoader");
-        if (el) el.classList.add("done");
-      }, 600);
-    });
   </script>
+<script>
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      var el = document.getElementById('pageLoader');
+      if (el) el.classList.add('done');
+    }, 500);
+  });
+</script>
 </body>
 </html>

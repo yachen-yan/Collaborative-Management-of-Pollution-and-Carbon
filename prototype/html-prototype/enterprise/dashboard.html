@@ -324,5 +324,13 @@
   <style>@keyframes bubblePulse { 0%,100%{box-shadow:0 0 12px #ef4444} 50%{box-shadow:0 0 24px #ef4444,0 0 40px rgba(239,68,68,0.4)} }</style>
   <link rel="stylesheet" href="../css/style.css">
 
+<script>
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      var el = document.getElementById('pageLoader');
+      if (el) el.classList.add('done');
+    }, 500);
+  });
+</script>
 </body>
 </html>
