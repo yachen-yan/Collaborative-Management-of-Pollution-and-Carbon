@@ -344,11 +344,17 @@
       currentReviewId = null;
     }
 
-    function doAudit(action) {
+    function doAudit(action, customComment) {
       if (!currentReviewId) return;
+      if (action === 'reject' && !customComment) {
+        const reason = prompt('请输入退回原因（将通知企业）：', '天然气数据与上月偏差过大，请核实');
+        if (!reason) return;
+        doAudit('reject', reason);
+        return;
+      }
       const updates = action === 'pass'
         ? { status: '已通过', statusCode: 'passed', checker: '王监测', result: '通过', comments: '数据完整，逻辑一致' }
-        : { status: '已退回', statusCode: 'rejected', checker: '王监测', result: '退回', comments: '天然气数据与上月偏差过大，请核实' };
+        : { status: '已退回', statusCode: 'rejected', checker: '王监测', result: '退回', comments: customComment || '天然气数据与上月偏差过大，请核实' };
       DataStore.updateReview(currentReviewId, updates);
       showToast(action === 'pass' ? '✅ 审核已通过' : '↩️ 已退回修改', action === 'pass' ? 'success' : 'warn');
       renderStats();

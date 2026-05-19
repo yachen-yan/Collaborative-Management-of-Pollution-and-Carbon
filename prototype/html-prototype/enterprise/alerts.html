@@ -308,7 +308,10 @@
               <div class="suggest-item"><div class="suggest-num">2</div><div class="suggest-text"><strong>检查蓄热体</strong>：热回收效率已降至 87%，建议清洗或更换蓄热陶瓷，恢复至 95% 以上</div></div>
               <div class="suggest-item"><div class="suggest-num">3</div><div class="suggest-text"><strong>优化燃烧室温度</strong>：当前 785°C，可适当下调至 760°C，在保证分解效率的前提下降低天然气消耗</div></div>
             </div>
-          </div>`;
+          </div>
+          <div style="text-align:center;margin-top:12px">
+            <button class="btn btn-primary" onclick="window.location.href='paradox-report.html'">📄 查看完整诊断报告</button>
+          </div>
       } else if (a.type === 'imbalance') {
         body = `
           <div class="diag-section">

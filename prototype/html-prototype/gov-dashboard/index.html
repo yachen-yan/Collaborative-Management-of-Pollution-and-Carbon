@@ -357,7 +357,7 @@
     events.forEach(e => {
       const div = document.createElement('div');
       div.className = 'event-item';
-      div.onclick = () => showToast(`${e.name}：C-P ${e.cp} ${e.desc} — 已生成AI诊断报告`, e.type === 'red' ? 'error' : 'warn');
+      div.onclick = () => window.location.href = '../enterprise/paradox-report.html';
       div.innerHTML = `<div class="event-dot ${e.type}"></div><div class="event-time">${e.time}</div><div class="event-text"><span class="name">${e.name}</span> C-P <span class="event-cp ${e.cpClass}">${e.cp}</span> ${e.desc}</div>`;
       es.appendChild(div);
     });
