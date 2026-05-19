@@ -129,7 +129,7 @@
 
     <div class="report-actions">
       <button class="btn btn-default btn-lg" onclick="showToast('历史报告功能开发中...','info')">📊 查看历史报告</button>
-      <button class="btn btn-primary btn-lg" onclick="showToast('PDF导出功能开发中...','info')">📥 导出 PDF 报告</button>
+      <button class="btn btn-primary btn-lg" onclick="window.print()">📥 导出 PDF 报告</button>
     </div>
 
     <div style="height:40px"></div>
@@ -162,7 +162,7 @@
         const val = scores[s.key];
         const dash = Math.round((val >= 1 ? val : val * 100) / 100 * circumference);
         return `
-          <div class="card score-box">
+          <div class="card score-box" onclick="document.getElementById('${{p:'pollutionSection',e:'energySection',c:'carbonSection',cp:'prioritySection'}[s.key]}').scrollIntoView({behavior:'smooth',block:'center'})" style="cursor:pointer">
             <div class="score-box-ring">
               <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="${s.color}" stroke-width="8" stroke-dasharray="${dash} ${circumference}" stroke-linecap="round"/></svg>
               <div class="score-box-value" style="color:${s.color}">${val}</div>
@@ -204,7 +204,7 @@
         <div class="detail-section-title">🎯 改进优先级建议</div>
         <div class="priority-list">
           ${priorities.map(p => `
-            <div class="priority-item">
+            <div class="priority-item" onclick="this.style.opacity='0.5';this.style.textDecoration='line-through';showToast('已标记为处理中','success')" style="cursor:pointer">
               <div class="priority-rank ${p.color}">${p.rank}</div>
               <div class="priority-text">${p.text}</div>
               <div class="priority-score">预期提升 ${p.score}</div>

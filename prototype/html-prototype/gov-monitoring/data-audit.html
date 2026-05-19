@@ -205,6 +205,19 @@
 
     function syncReviews() {
       const reviews = DataStore.getReviews();
+      // 如果 DataStore 中没有 DEMO_ROWS 的记录，添加进去
+      DEMO_ROWS.forEach(row => {
+        const r = reviews.find(x => x.id === row.id);
+        if (!r) {
+          reviews.push({
+            id: row.id, reportId: row.id, enterprise: row.enterprise,
+            submitAt: '2026-' + row.submitAt, status: row.resultText,
+            statusCode: row.result === 'pass' ? 'passed' : (row.result === 'fail' ? 'rejected' : 'pending'),
+            checker: '', result: row.resultText, comments: ''
+          });
+        }
+      });
+      DataStore.setReviews(reviews);
       // 用 DataStore 中的真实状态覆盖演示数据
       DEMO_ROWS.forEach(row => {
         const r = reviews.find(x => x.id === row.id);

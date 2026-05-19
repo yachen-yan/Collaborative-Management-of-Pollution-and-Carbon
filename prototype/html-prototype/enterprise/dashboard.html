@@ -220,14 +220,14 @@
         <div class="card-dark" style="animation-delay:0.47s">
           <div class="card-title">📊 实时双算指标速览（09:00）</div>
           <div class="rt-grid">
-            <div class="rt-item" style="animation-delay:0.50s"><div class="rt-value" style="color:#22d3ee" data-target="12.5" data-suffix="">0</div><div class="rt-unit">kg/h</div><div class="rt-label">VOCs排放速率</div></div>
-            <div class="rt-item" style="animation-delay:0.55s"><div class="rt-value" style="color:#4ade80" data-target="94.2" data-suffix="%">0%</div><div class="rt-label">VOCs去除效率</div></div>
-            <div class="rt-item" style="animation-delay:0.60s"><div class="rt-value" style="color:#f97316" data-target="0.42" data-suffix="">0</div><div class="rt-unit">tCO₂/h</div><div class="rt-label">总碳排放</div></div>
-            <div class="rt-item" style="animation-delay:0.65s"><div class="rt-value" style="color:#ef4444" data-target="0.38" data-suffix="">0</div><div class="rt-label">C-P 协同指数</div></div>
-            <div class="rt-item" style="animation-delay:0.70s"><div class="rt-value" style="color:#22d3ee" data-target="785" data-suffix="">0</div><div class="rt-unit">°C</div><div class="rt-label">燃烧室温度</div></div>
-            <div class="rt-item" style="animation-delay:0.75s"><div class="rt-value" style="color:#fbbf24" data-target="1200" data-suffix="">0</div><div class="rt-unit">Nm³/h</div><div class="rt-label">天然气流量</div></div>
-            <div class="rt-item" style="animation-delay:0.80s"><div class="rt-value" style="color:#22d3ee" data-target="8.3" data-suffix="">0</div><div class="rt-unit">kg/万m²</div><div class="rt-label">VOCs排放强度</div></div>
-            <div class="rt-item" style="animation-delay:0.85s"><div class="rt-value" style="color:#f97316" data-target="0.28" data-suffix="">0</div><div class="rt-unit">tCO₂/万m²</div><div class="rt-label">碳排强度</div></div>
+            <div class="rt-item" style="animation-delay:0.50s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#22d3ee" data-target="12.5" data-suffix="">0</div><div class="rt-unit">kg/h</div><div class="rt-label">VOCs排放速率</div></div>
+            <div class="rt-item" style="animation-delay:0.55s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#4ade80" data-target="94.2" data-suffix="%">0%</div><div class="rt-label">VOCs去除效率</div></div>
+            <div class="rt-item" style="animation-delay:0.60s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#f97316" data-target="0.42" data-suffix="">0</div><div class="rt-unit">tCO₂/h</div><div class="rt-label">总碳排放</div></div>
+            <div class="rt-item" style="animation-delay:0.65s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#ef4444" data-target="0.38" data-suffix="">0</div><div class="rt-label">C-P 协同指数</div></div>
+            <div class="rt-item" style="animation-delay:0.70s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#22d3ee" data-target="785" data-suffix="">0</div><div class="rt-unit">°C</div><div class="rt-label">燃烧室温度</div></div>
+            <div class="rt-item" style="animation-delay:0.75s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#fbbf24" data-target="1200" data-suffix="">0</div><div class="rt-unit">Nm³/h</div><div class="rt-label">天然气流量</div></div>
+            <div class="rt-item" style="animation-delay:0.80s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#22d3ee" data-target="8.3" data-suffix="">0</div><div class="rt-unit">kg/万m²</div><div class="rt-label">VOCs排放强度</div></div>
+            <div class="rt-item" style="animation-delay:0.85s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#f97316" data-target="0.28" data-suffix="">0</div><div class="rt-unit">tCO₂/万m²</div><div class="rt-label">碳排强度</div></div>
           </div>
         </div>
       </div>
@@ -279,7 +279,7 @@
     });
 
     const qw = document.getElementById('quadrantWrap');
-    MOCK_DATA.quadrantBubbles.forEach(b => {
+    DataStore.get('quadrantBubbles', MOCK_DATA.quadrantBubbles).forEach(b => {
       const el = document.createElement('div');
       el.className = 'bubble';
       el.style.width = b.size + 'px'; el.style.height = b.size + 'px';
@@ -295,29 +295,43 @@
       qw.appendChild(el);
     });
     const al = document.getElementById('alertList');
-    MOCK_DATA.alerts.slice(0,4).forEach((a, i) => {
-      const iconMap = { 减污增碳/减碳增污悖论: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
+    DataStore.getAlerts().slice(0,4).forEach((a, i) => {
+      const iconMap = { "减污增碳/减碳增污悖论": '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
       const cls = a.level === 'critical' ? 'red' : a.level === 'warning' ? 'yellow' : 'orange';
       const div = document.createElement('div');
       div.className = 'alert-item';
       div.style.animationDelay = (0.3 + i * 0.06) + 's';
       div.innerHTML = `<div class="alert-icon ${cls}">${iconMap[a.type] || '🔔'}</div><div class="alert-content"><div class="alert-title">${a.title}${!a.read ? '<span style="color:#ef4444;font-size:9px;margin-left:6px">●</span>' : ''}</div><div class="alert-desc">${a.desc}</div></div><div class="alert-time">${a.time}</div>`;
+      div.onclick = function() { window.location.href = 'alerts.html'; };
       al.appendChild(div);
     });
+    const quickLinkMap = {
+      '月度数据填报': 'monthly-report.html',
+      '实时双算看板': 'realtime-panel.html',
+      '悖论模拟器': 'simulator.html',
+      '三评合一报告': 'triple-report.html'
+    };
     const qg = document.getElementById('quickGrid');
-    MOCK_DATA.quickLinks.forEach((q, i) => {
+    DataStore.get('quickLinks', MOCK_DATA.quickLinks).forEach((q, i) => {
       const div = document.createElement('div');
       div.className = 'quick-item';
       div.style.animationDelay = (0.35 + i * 0.06) + 's';
       div.innerHTML = `<div class="quick-icon" style="background:${q.bg};color:${q.color}">${q.icon}</div><div><div class="quick-title">${q.title}</div><div class="quick-desc">${q.desc}</div></div>`;
+      const link = quickLinkMap[q.title];
+      if (link) { div.onclick = function() { window.location.href = link; }; }
       qg.appendChild(div);
     });
     const tl = document.getElementById('todoList');
-    MOCK_DATA.todos.forEach((t, i) => {
+    DataStore.get('todos', MOCK_DATA.todos).forEach((t, i) => {
       const div = document.createElement('div');
       div.className = 'todo-item' + (t.urgent ? ' urgent' : '');
       div.style.animationDelay = (0.4 + i * 0.06) + 's';
       div.innerHTML = `<div class="todo-check"></div><div class="todo-text">${t.title}</div><div class="todo-deadline${t.urgent ? ' urgent' : ''}">${t.urgent ? '⚠️ ' : ''}截止 ${t.deadline}</div>`;
+      div.onclick = function() {
+        div.style.opacity = '0.5';
+        div.style.textDecoration = 'line-through';
+        showToast('任务已标记完成', 'success');
+      };
       tl.appendChild(div);
     });
   </script>

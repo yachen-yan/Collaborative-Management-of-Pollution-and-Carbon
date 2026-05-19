@@ -273,6 +273,11 @@
           <button class="btn btn-danger" onclick="doAction('reject')">↩️ 退回补充</button>
           <button class="btn btn-primary" onclick="doAction('advance')">✅ 复核通过，销号</button>
         `;
+      } else if (d.statusCode === 'reviewed') {
+        title.textContent = '✅ 已复核，等待最终销号';
+        btns.innerHTML = `
+          <button class="btn btn-primary" onclick="doAction('advance')">📋 确认销号</button>
+        `;
       }
     }
 

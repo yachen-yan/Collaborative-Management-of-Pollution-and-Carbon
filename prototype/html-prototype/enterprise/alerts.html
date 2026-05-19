@@ -200,7 +200,7 @@
       
       list.innerHTML = filtered.map(a => {
         const icons = { 减污增碳/减碳增污悖论: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
-        const typeNames = { 减污增碳/减碳增污悖论: '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
+        const typeNames = { "减污增碳/减碳增污悖论": '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
         const readClass = a.read ? 'read' : 'unread';
         const dot = !a.read ? '<span class="dot"></span>' : '';
         const flowTags = a.flow ? a.flow.map((s, i) => {
@@ -275,7 +275,7 @@
         renderAlerts();
       }
       
-      const typeNames = { 减污增碳/减碳增污悖论: '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
+      const typeNames = { "减污增碳/减碳增污悖论": '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
       document.getElementById('modalTitle').textContent = `🩺 ${typeNames[a.type] || a.title}`;
       
       // 根据类型生成不同的详情内容

@@ -69,7 +69,7 @@ const MOCK_DATA = {
     { title: "上传排污许可执行报告", deadline: "05-25", urgent: false },
   ],
 
-  减污增碳/减碳增污悖论Events: [
+  "减污增碳/减碳增污悖论Events": [
     { date: "05-18", type: "减污增碳", cpBefore: 0.55, cpAfter: 0.38, cause: "RTO 空烧时长占比升至 22%" },
     { date: "05-14", type: "减污增碳", cpBefore: 0.72, cpAfter: 0.61, cause: "天然气消耗环比激增 35%" },
     { date: "04-28", type: "减碳增污", cpBefore: 0.68, cpAfter: 0.52, cause: "RTO 温度设定过低" },
@@ -253,7 +253,7 @@ const DataStore = {
     const dispatches = this.getDispatches();
     return {
       unreadAlerts: alerts.filter(a => !a.read).length,
-      减污增碳/减碳增污悖论Alerts: alerts.filter(a => a.type === '减污增碳/减碳增污悖论' && !a.read).length,
+      "减污增碳/减碳增污悖论Alerts": alerts.filter(a => a.type === '减污增碳/减碳增污悖论' && !a.read).length,
       pendingDispatches: dispatches.filter(d => d.statusCode !== 'closed').length,
       closedDispatches: dispatches.filter(d => d.statusCode === 'closed').length,
       closureRate: Math.round((dispatches.filter(d => d.statusCode === 'closed').length / dispatches.length) * 100) || 0,

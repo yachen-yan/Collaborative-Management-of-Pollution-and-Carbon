@@ -160,10 +160,10 @@
     </div>
     
     <div class="action-bar">
-      <button class="btn btn-default">🔄 重新生成</button>
-      <button class="btn btn-default">✏️ 编辑内容</button>
+      <button class="btn btn-default" onclick="showToast('正在重新生成报告...','info');setTimeout(()=>showToast('报告重新生成完成','success'),1500)">🔄 重新生成</button>
+      <button class="btn btn-default" onclick="showToast('编辑模式开发中...','info')">✏️ 编辑内容</button>
       <button class="btn btn-primary" id="btnPublish" onclick="publishReport()">✅ 审核通过并发布</button>
-      <button class="btn btn-primary">📥 导出 PDF</button>
+      <button class="btn btn-primary" onclick="window.print()">📥 导出 PDF</button>
     </div>
     
     <div style="height:40px"></div>

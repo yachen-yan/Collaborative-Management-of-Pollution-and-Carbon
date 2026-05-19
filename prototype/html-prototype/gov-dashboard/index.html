@@ -393,7 +393,7 @@
         const tagMap = { dispatched: ['待调度','pending'], received: ['已签收','normal'], feedback: ['处置中','normal'], reviewed: ['待复核','pending'], closed: ['已销号','closed'] };
         const tag = tagMap[d.statusCode] || ['待调度','normal'];
         return `
-          <div class="task-item" onclick="location.href='dispatch-detail.html'">
+          <div class="task-item" onclick="location.href='dispatch-detail.html?id=${d.id}'">
             <div class="task-item-header"><span class="task-item-title">${d.target} — ${d.title}</span><span class="task-item-tag ${tag[1]}">${tag[0]}</span></div>
             <div class="task-item-desc">${d.content.substring(0,40)}${d.content.length>40?'...':''}</div>
             <div class="task-item-meta">⏰ 截止 ${d.deadline} | 📤 ${d.status}</div>
@@ -411,7 +411,7 @@
       const deadline = document.getElementById('dDeadline').value;
       const content = document.getElementById('dContent').value;
       const id = 'DSP-' + Date.now().toString().slice(-10);
-      const typeNames = { 减污增碳/减碳增污悖论: '减污增碳/减碳增污悖论 风险整改通知', data: '数据异常核查通知', permit: '证件续期提醒', imbalance: '协同失衡整改通知' };
+      const typeNames = { "减污增碳/减碳增污悖论": '减污增碳/减碳增污悖论 风险整改通知', data: '数据异常核查通知', permit: '证件续期提醒', imbalance: '协同失衡整改通知' };
       
       const newDispatch = {
         id: id,
