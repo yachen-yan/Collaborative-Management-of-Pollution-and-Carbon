@@ -94,6 +94,43 @@ const MOCK_DATA = {
     { id: "REV-20260428-001", reportId: "MR-202604-001", enterprise: "红星喷涂厂", submitAt: "2026-04-28 14:00", status: "已通过", statusCode: "passed", checker: "李监测", result: "通过", comments: "数据完整，逻辑一致" },
     { id: "REV-20260425-001", reportId: "MR-202604-002", enterprise: "鑫达汽修", submitAt: "2026-04-25 09:30", status: "已退回", statusCode: "rejected", checker: "李监测", result: "退回", comments: "天然气数据与上月偏差过大，请核实" },
   ],
+
+  // 悖论模拟器历史记录
+  simulatorHistory: [
+    { id: "SIM-202605180915", time: "2026-05-18 09:15", current: "溶剂型涂料（聚氨酯漆）", target: "水性涂料（单组分）", cpBefore: 0.75, cpAfter: 0.48, vocsChange: -60, gasChange: 35, carbonChange: 28, result: "trap" },
+    { id: "SIM-202605101422", time: "2026-05-10 14:22", current: "溶剂型涂料（聚氨酯漆）", target: "粉末涂料", cpBefore: 0.72, cpAfter: 0.52, vocsChange: -85, gasChange: 55, carbonChange: 42, result: "trap" },
+    { id: "SIM-202604281005", time: "2026-04-28 10:05", current: "溶剂型涂料（聚氨酯漆）", target: "高固体分涂料", cpBefore: 0.70, cpAfter: 0.68, vocsChange: -25, gasChange: 8, carbonChange: 5, result: "good" },
+  ],
+
+  // 三评合一报告数据
+  tripleReports: [
+    { id: "TR-202605", month: "2026-05", enterprise: "蓝天工业涂装有限公司", status: "已生成", statusCode: "generated", generatedAt: "2026-06-05 08:30", type: "自动生成",
+      scores: { p: 82, e: 65, c: 58, cp: 0.52 },
+      details: {
+        pollution: [
+          { name: "VOCs 达标率", value: "100%", score: 40, max: 40, color: "#52c41a" },
+          { name: "去除效率", value: "94.2%", score: 28, max: 30, color: "#52c41a" },
+          { name: "涂料结构优化", value: "14分", score: 14, max: 30, color: "#faad14", desc: "水性漆占比偏低" },
+        ],
+        energy: [
+          { name: "热回收效率", value: "87%", score: 24, max: 40, color: "#faad14", desc: "<95%" },
+          { name: "空烧控制", value: "18%", score: 15, max: 30, color: "#f5222d", desc: "空烧占比过高" },
+          { name: "能源结构", value: "26分", score: 26, max: 30, color: "#faad14" },
+        ],
+        carbon: [
+          { name: "碳排强度对标", value: "0.28", score: 20, max: 40, color: "#fa8c16", desc: "tCO₂/万m²，>P75" },
+          { name: "配额余量", value: "68%", score: 22, max: 30, color: "#faad14" },
+          { name: "减碳潜力", value: "16分", score: 16, max: 30, color: "#faad14" },
+        ],
+      },
+      aiSummary: "本月整体评级为<strong>「一般」</strong>，存在明显短板。<strong>最优先改进项：减少 RTO 空烧</strong>。近30天内 RTO 空烧时长占比达 18%，导致天然气消耗环比增加 35%，碳排评价得分仅 58 分。污染评价 82 分表现良好，VOCs 达标率 100%，但协同分仅 52 分，C-P 协同指数 0.52 处于「差」等级。建议立即调整喷涂排班至集中时段，并检查蓄热体是否堵塞。",
+      priorities: [
+        { rank: 1, text: "<strong>减少 RTO 空烧</strong> — 调整喷涂排班至集中时段，目标空烧占比 < 5%", score: "+12分", color: "p1" },
+        { rank: 2, text: "<strong>提升热回收效率</strong> — 检查蓄热体堵塞情况，清洗或更换蓄热体", score: "+8分", color: "p2" },
+        { rank: 3, text: "<strong>提高水性涂料占比</strong> — 逐步替换溶剂型涂料，降低涂料隐含碳", score: "+6分", color: "p3" },
+      ],
+    },
+  ],
 };
 
 // ========== DataStore 持久化层 ==========
@@ -186,6 +223,29 @@ const DataStore = {
     if (idx >= 0) { list[idx] = { ...list[idx], ...patch }; this.setReviews(list); }
     return idx >= 0;
   },
+
+  // === Simulator History ===
+  getSimulatorHistory() { return this.get('simulatorHistory', []); },
+  setSimulatorHistory(list) { this.set('simulatorHistory', list); },
+  addSimulatorRecord(item) {
+    const list = this.getSimulatorHistory();
+    item.id = item.id || ('SIM-' + Date.now());
+    list.unshift(item);
+    this.setSimulatorHistory(list);
+    return item;
+  },
+
+  // === Triple Reports ===
+  getTripleReports() { return this.get('tripleReports', []); },
+  setTripleReports(list) { this.set('tripleReports', list); },
+  getLatestTripleReport() {
+    const list = this.getTripleReports();
+    return list.length > 0 ? list[0] : null;
+  },
+
+  // === Realtime Data ===
+  getRealtime() { return this.get('realtime', MOCK_DATA.realtime); },
+  setRealtime(data) { this.set('realtime', { ...this.getRealtime(), ...data }); },
 
   // === Stats ===
   getStats() {

@@ -27,7 +27,7 @@
       max-width: 70%; padding: 14px 18px; border-radius: 12px; font-size: 14px; line-height: 1.8;
       position: relative;
     }
-    .msg.ai .msg-bubble { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border: 1px solid #e8e8e8; border-top-left-radius: 2px; }
+    .msg.ai .msg-bubble { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15); border-top-left-radius: 2px; }
     .msg.user .msg-bubble { background: #1677ff; color: #fff; border-top-right-radius: 2px; }
     .msg-bubble strong { font-weight: 600; }
     .msg.ai .msg-bubble strong { color: #1677ff; }
@@ -65,11 +65,11 @@
       display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; justify-content: center;
     }
     .quick-q {
-      padding: 6px 14px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border: 1px solid #e8e8e8;
+      padding: 6px 14px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15);
       border-radius: 16px; font-size: 12px; cursor: pointer; color: rgba(226,232,240,0.6);
       transition: all 0.2s;
     }
-    .quick-q:hover { border-color: #1677ff; color: #1677ff; background: #e6f4ff; }
+    .quick-q:hover { border-color: #22d3ee; color: #22d3ee; background: rgba(34,211,238,0.08); }
     
     .llm-welcome {
       text-align: center; padding: 40px 20px;
@@ -78,13 +78,15 @@
     .llm-welcome-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
     .llm-welcome-desc { font-size: 13px; color: rgba(226,232,240,0.4); line-height: 1.8; }
     .llm-capability { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
-    .llm-cap-item { padding: 16px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; border: 1px solid #e8e8e8; }
+    .llm-cap-item { padding: 16px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15); border-radius: 8px; transition: all 0.3s; }
+    .llm-cap-item:hover { border-color: rgba(34,211,238,0.3); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 12px rgba(34,211,238,0.06); }
     .llm-cap-icon { font-size: 24px; margin-bottom: 8px; }
     .llm-cap-title { font-size: 13px; font-weight: 600; }
     .llm-cap-desc { font-size: 11px; color: rgba(226,232,240,0.4); margin-top: 4px; }
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局</span><div class="avatar">李</div><span>李管理</span></div>
@@ -268,5 +270,6 @@
       div.scrollIntoView({ behavior: 'smooth' });
     }
   </script>
+  <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
 </body>
 </html>

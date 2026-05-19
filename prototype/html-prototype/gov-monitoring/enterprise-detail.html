@@ -95,6 +95,7 @@
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局 · 监测数据科</span><div class="avatar" style="background:rgba(34,211,238,0.2);color:#22d3ee">王</div><span>王监测</span></div>
@@ -352,14 +353,38 @@
   
   <script>
     const ENT_DATA = {
-      '蓝天工业涂装': { name:'蓝天工业涂装有限公司', code:'91110108MA0012345', industry:'汽车零部件涂装', addr:'北京市怀柔区张镇工业园A区3号', contact:'张环保 138****5678', score:68, level:'一般', scoreColor:'#fbbf24', cp:'0.38', cpColor:'#f87171' },
-      '红星喷涂厂': { name:'红星喷涂厂', code:'91110108MA0056789', industry:'金属表面处理', addr:'北京市怀柔区李村工业区B区5号', contact:'王厂长 139****1234', score:62, level:'较差', scoreColor:'#f97316', cp:'0.35', cpColor:'#f87171' },
-      '鑫达汽修': { name:'鑫达汽修服务有限公司', code:'91110108MA0098765', industry:'汽车维修', addr:'北京市怀柔区张镇工业园C区1号', contact:'李经理 137****5678', score:75, level:'良好', scoreColor:'#4ade80', cp:'0.52', cpColor:'#fbbf24' },
-      '伟达制造': { name:'伟达制造有限公司', code:'91110108MA0034567', industry:'通用设备制造', addr:'北京市怀柔区李村工业区D区8号', contact:'赵环保 136****9012', score:72, level:'良好', scoreColor:'#4ade80', cp:'0.55', cpColor:'#fbbf24' },
-      '标杆企业A': { name:'标杆企业A（绿色工厂）', code:'91110108MA0076543', industry:'汽车零部件涂装', addr:'北京市怀柔区张镇工业园E区2号', contact:'钱环保 135****7890', score:92, level:'优秀', scoreColor:'#4ade80', cp:'0.88', cpColor:'#4ade80' },
-      '标杆企业B': { name:'标杆企业B（绿色工厂）', code:'91110108MA0024681', industry:'工业涂装', addr:'北京市怀柔区张镇工业园F区6号', contact:'孙环保 133****2468', score:88, level:'优秀', scoreColor:'#4ade80', cp:'0.82', cpColor:'#4ade80' },
-      '金辉涂装': { name:'金辉涂装有限公司', code:'91110108MA0013579', industry:'家具涂装', addr:'北京市怀柔区张镇工业园G区4号', contact:'周环保 132****1357', score:78, level:'良好', scoreColor:'#4ade80', cp:'0.68', cpColor:'#fbbf24' },
-      '新达涂装': { name:'新达涂装有限公司', code:'91110108MA0046913', industry:'工业涂装', addr:'北京市怀柔区李村工业区H区7号', contact:'吴环保 131****4691', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8' },
+      // 减污增碳/减碳增污悖论 3家（红色）
+      '蓝天工业涂装': { name:'蓝天工业涂装有限公司', code:'91110108MA0012345', industry:'汽车零部件涂装', addr:'北京市怀柔区张镇工业园A区3号', contact:'张环保 138****5678', score:68, level:'一般', scoreColor:'#fbbf24', cp:'0.38', cpColor:'#f87171', vocsRate:12.5, carbonTotal:0.42, chamberTemp:785, gasFlow:1200 },
+      '红星喷涂厂': { name:'红星喷涂厂', code:'91110108MA0056789', industry:'金属表面处理', addr:'北京市怀柔区李村工业区B区5号', contact:'王厂长 139****1234', score:62, level:'较差', scoreColor:'#f97316', cp:'0.35', cpColor:'#f87171', vocsRate:14.2, carbonTotal:0.38, chamberTemp:680, gasFlow:980 },
+      '永昌喷涂': { name:'永昌喷涂有限公司', code:'91110108MA0067890', industry:'工业涂装', addr:'北京市怀柔区李村工业区I区9号', contact:'陈环保 136****7890', score:64, level:'较差', scoreColor:'#f97316', cp:'0.39', cpColor:'#f87171', vocsRate:11.8, carbonTotal:0.45, chamberTemp:720, gasFlow:1150 },
+      // 关注企业 12家（黄色）
+      '鑫达汽修': { name:'鑫达汽修服务有限公司', code:'91110108MA0098765', industry:'汽车维修', addr:'北京市怀柔区张镇工业园C区1号', contact:'李经理 137****5678', score:75, level:'良好', scoreColor:'#4ade80', cp:'0.52', cpColor:'#fbbf24', vocsRate:8.5, carbonTotal:0.35, chamberTemp:760, gasFlow:900 },
+      '伟达制造': { name:'伟达制造有限公司', code:'91110108MA0034567', industry:'通用设备制造', addr:'北京市怀柔区李村工业区D区8号', contact:'赵环保 136****9012', score:72, level:'良好', scoreColor:'#4ade80', cp:'0.55', cpColor:'#fbbf24', vocsRate:9.2, carbonTotal:0.32, chamberTemp:770, gasFlow:850 },
+      '金辉涂装': { name:'金辉涂装有限公司', code:'91110108MA0013579', industry:'家具涂装', addr:'北京市怀柔区张镇工业园G区4号', contact:'周环保 132****1357', score:78, level:'良好', scoreColor:'#4ade80', cp:'0.68', cpColor:'#fbbf24', vocsRate:7.5, carbonTotal:0.28, chamberTemp:790, gasFlow:780 },
+      '鸿运汽修': { name:'鸿运汽修服务有限公司', code:'91110108MA0024680', industry:'汽车维修', addr:'北京市怀柔区张镇工业园J区10号', contact:'郑环保 135****2468', score:70, level:'良好', scoreColor:'#4ade80', cp:'0.48', cpColor:'#fbbf24', vocsRate:10.5, carbonTotal:0.38, chamberTemp:750, gasFlow:920 },
+      '大成涂装': { name:'大成涂装有限公司', code:'91110108MA0035791', industry:'工业涂装', addr:'北京市怀柔区李村工业区K区11号', contact:'黄环保 134****3579', score:74, level:'良好', scoreColor:'#4ade80', cp:'0.58', cpColor:'#fbbf24', vocsRate:8.8, carbonTotal:0.30, chamberTemp:775, gasFlow:820 },
+      '华兴制造': { name:'华兴制造有限公司', code:'91110108MA0046802', industry:'通用设备制造', addr:'北京市怀柔区李村工业区L区12号', contact:'林环保 133****4680', score:76, level:'良好', scoreColor:'#4ade80', cp:'0.62', cpColor:'#fbbf24', vocsRate:7.2, carbonTotal:0.26, chamberTemp:785, gasFlow:760 },
+      '恒通喷涂': { name:'恒通喷涂有限公司', code:'91110108MA0057913', industry:'金属表面处理', addr:'北京市怀柔区张镇工业园M区13号', contact:'何环保 132****5791', score:69, level:'一般', scoreColor:'#fbbf24', cp:'0.45', cpColor:'#fbbf24', vocsRate:11.5, carbonTotal:0.40, chamberTemp:740, gasFlow:1050 },
+      '顺风汽修': { name:'顺风汽修服务有限公司', code:'91110108MA0068024', industry:'汽车维修', addr:'北京市怀柔区张镇工业园N区14号', contact:'高环保 131****6802', score:73, level:'良好', scoreColor:'#4ade80', cp:'0.50', cpColor:'#fbbf24', vocsRate:9.0, carbonTotal:0.33, chamberTemp:765, gasFlow:880 },
+      '荣达工业': { name:'荣达工业有限公司', code:'91110108MA0079135', industry:'工业涂装', addr:'北京市怀柔区李村工业区O区15号', contact:'马环保 130****7913', score:71, level:'良好', scoreColor:'#4ade80', cp:'0.56', cpColor:'#fbbf24', vocsRate:8.2, carbonTotal:0.29, chamberTemp:780, gasFlow:790 },
+      '宏宇涂装': { name:'宏宇涂装有限公司', code:'91110108MA0080246', industry:'家具涂装', addr:'北京市怀柔区张镇工业园P区16号', contact:'罗环保 139****8024', score:75, level:'良好', scoreColor:'#4ade80', cp:'0.60', cpColor:'#fbbf24', vocsRate:7.8, carbonTotal:0.27, chamberTemp:788, gasFlow:740 },
+      '信达制造': { name:'信达制造有限公司', code:'91110108MA0091357', industry:'通用设备制造', addr:'北京市怀柔区李村工业区Q区17号', contact:'梁环保 138****9135', score:77, level:'良好', scoreColor:'#4ade80', cp:'0.65', cpColor:'#fbbf24', vocsRate:6.8, carbonTotal:0.24, chamberTemp:792, gasFlow:710 },
+      '龙腾汽修': { name:'龙腾汽修服务有限公司', code:'91110108MA0002468', industry:'汽车维修', addr:'北京市怀柔区张镇工业园R区18号', contact:'宋环保 137****0246', score:72, level:'良好', scoreColor:'#4ade80', cp:'0.49', cpColor:'#fbbf24', vocsRate:10.0, carbonTotal:0.36, chamberTemp:755, gasFlow:940 },
+      // 双减标兵 8家（绿色）
+      '标杆企业A': { name:'标杆企业A（绿色工厂）', code:'91110108MA0076543', industry:'汽车零部件涂装', addr:'北京市怀柔区张镇工业园E区2号', contact:'钱环保 135****7890', score:92, level:'优秀', scoreColor:'#4ade80', cp:'0.88', cpColor:'#4ade80', vocsRate:4.5, carbonTotal:0.15, chamberTemp:800, gasFlow:500 },
+      '标杆企业B': { name:'标杆企业B（绿色工厂）', code:'91110108MA0024681', industry:'工业涂装', addr:'北京市怀柔区张镇工业园F区6号', contact:'孙环保 133****2468', score:88, level:'优秀', scoreColor:'#4ade80', cp:'0.82', cpColor:'#4ade80', vocsRate:5.2, carbonTotal:0.18, chamberTemp:795, gasFlow:550 },
+      '标杆企业C': { name:'标杆企业C（绿色工厂）', code:'91110108MA0013570', industry:'家具涂装', addr:'北京市怀柔区李村工业区S区19号', contact:'刘环保 132****3570', score:90, level:'优秀', scoreColor:'#4ade80', cp:'0.85', cpColor:'#4ade80', vocsRate:4.8, carbonTotal:0.16, chamberTemp:798, gasFlow:520 },
+      '标杆企业D': { name:'标杆企业D（绿色工厂）', code:'91110108MA0024682', industry:'金属表面处理', addr:'北京市怀柔区张镇工业园T区20号', contact:'陈环保 131****4682', score:93, level:'优秀', scoreColor:'#4ade80', cp:'0.90', cpColor:'#4ade80', vocsRate:4.2, carbonTotal:0.14, chamberTemp:802, gasFlow:480 },
+      '标杆企业E': { name:'标杆企业E（绿色工厂）', code:'91110108MA0035793', industry:'汽车零部件涂装', addr:'北京市怀柔区李村工业区U区21号', contact:'杨环保 130****5793', score:91, level:'优秀', scoreColor:'#4ade80', cp:'0.86', cpColor:'#4ade80', vocsRate:4.6, carbonTotal:0.15, chamberTemp:799, gasFlow:510 },
+      '标杆企业F': { name:'标杆企业F（绿色工厂）', code:'91110108MA0046804', industry:'通用设备制造', addr:'北京市怀柔区张镇工业园V区22号', contact:'朱环保 139****6804', score:87, level:'优秀', scoreColor:'#4ade80', cp:'0.81', cpColor:'#4ade80', vocsRate:5.5, carbonTotal:0.19, chamberTemp:793, gasFlow:560 },
+      '标杆企业G': { name:'标杆企业G（绿色工厂）', code:'91110108MA0057915', industry:'工业涂装', addr:'北京市怀柔区李村工业区W区23号', contact:'徐环保 138****7915', score:89, level:'优秀', scoreColor:'#4ade80', cp:'0.84', cpColor:'#4ade80', vocsRate:5.0, carbonTotal:0.17, chamberTemp:796, gasFlow:530 },
+      '标杆企业H': { name:'标杆企业H（绿色工厂）', code:'91110108MA0068026', industry:'家具涂装', addr:'北京市怀柔区张镇工业园X区24号', contact:'胡环保 137****8026', score:94, level:'优秀', scoreColor:'#4ade80', cp:'0.89', cpColor:'#4ade80', vocsRate:4.3, carbonTotal:0.14, chamberTemp:801, gasFlow:490 },
+      // 数据不足 5家（灰色）
+      '新达涂装': { name:'新达涂装有限公司', code:'91110108MA0046913', industry:'工业涂装', addr:'北京市怀柔区李村工业区H区7号', contact:'吴环保 131****4691', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8', vocsRate:'--', carbonTotal:'--', chamberTemp:'--', gasFlow:'--' },
+      '东升汽修': { name:'东升汽修服务有限公司', code:'91110108MA0079136', industry:'汽车维修', addr:'北京市怀柔区张镇工业园Y区25号', contact:'郭环保 136****9136', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8', vocsRate:'--', carbonTotal:'--', chamberTemp:'--', gasFlow:'--' },
+      '北环工业': { name:'北环工业有限公司', code:'91110108MA0080247', industry:'通用设备制造', addr:'北京市怀柔区李村工业区Z区26号', contact:'马环保 135****0247', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8', vocsRate:'--', carbonTotal:'--', chamberTemp:'--', gasFlow:'--' },
+      '西郊制造': { name:'西郊制造有限公司', code:'91110108MA0091358', industry:'金属表面处理', addr:'北京市怀柔区张镇工业园AA区27号', contact:'林环保 134****1358', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8', vocsRate:'--', carbonTotal:'--', chamberTemp:'--', gasFlow:'--' },
+      '南苑涂装': { name:'南苑涂装有限公司', code:'91110108MA0002469', industry:'工业涂装', addr:'北京市怀柔区李村工业区AB区28号', contact:'何环保 133****2469', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8', vocsRate:'--', carbonTotal:'--', chamberTemp:'--', gasFlow:'--' },
     };
 
     function loadEnt() {
@@ -372,6 +397,24 @@
       document.getElementById('entScore').style.color = data.scoreColor;
       document.getElementById('entScoreLabel').innerHTML = '健康评分<br>' + data.level;
       document.title = data.name + ' — 企业详情透视';
+
+      // 动态替换实时双算数据
+      const rtItems = document.querySelectorAll('#tab0 .rt-item');
+      const rtMap = [
+        { label: 'VOCs排放速率', key: 'vocsRate', unit: 'kg/h' },
+        { label: '总碳排放', key: 'carbonTotal', unit: 'tCO₂/h' },
+        { label: '燃烧室温度', key: 'chamberTemp', unit: '°C' },
+        { label: '天然气流量', key: 'gasFlow', unit: 'Nm³/h' },
+      ];
+      rtItems.forEach(item => {
+        const label = item.querySelector('.rt-label').textContent.trim();
+        const map = rtMap.find(m => m.label === label);
+        if (map && data[map.key] !== undefined) {
+          item.querySelector('.rt-value').textContent = data[map.key];
+          if (map.unit) item.querySelector('.rt-unit').textContent = map.unit;
+        }
+      });
+
       // 替换正文中的企业名称和C-P值
       document.querySelectorAll('.ent-content').forEach(el => {
         el.innerHTML = el.innerHTML.replace(/蓝天工业涂装有限公司/g, data.name).replace(/C-P 0\.38/g, 'C-P ' + data.cp).replace(/C-P协同指数 0\.38/g, 'C-P协同指数 ' + data.cp);
@@ -386,5 +429,6 @@
       document.getElementById('tab' + idx).classList.add('active');
     }
   </script>
+  <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
 </body>
 </html>

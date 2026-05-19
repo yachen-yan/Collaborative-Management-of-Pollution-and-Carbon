@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>三评合一报告 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/data.js"></script>
   <style>
     .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
@@ -94,156 +95,123 @@
   
   <div class="main">
     <div class="page-header">📑 三评合一智能报告</div>
-    <div class="page-sub">报告周期：2026年5月 | 生成时间：2026-06-05 08:30 | 类型：自动生成</div>
-    
-    <div class="report-header">
-      <div class="report-header-title">🏭 蓝天工业涂装有限公司 — 污-能-碳三评合一报告</div>
-      <div class="report-header-info">
+    <div class="page-sub" id="reportSub">报告周期：2026年5月 | 生成时间：2026-06-05 08:30 | 类型：自动生成</div>
+
+    <div class="report-header" id="reportHeader">
+      <div class="report-header-title" id="reportTitle">🏭 蓝天工业涂装有限公司 — 污-能-碳三评合一报告</div>
+      <div class="report-header-info" id="reportInfo">
         统一社会信用代码：91110108MA0012345 | 行业：汽车零部件涂装<br>
         报告周期：2026年5月1日 — 2026年5月31日
       </div>
       <div class="report-header-badge">📋 三评合一 | 🏷️ 工业涂装 MVP 专版</div>
     </div>
-    
+
     <!-- 四大评分 -->
-    <div class="score-overview">
-      <div class="card score-box">
-        <div class="score-box-ring">
-          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#52c41a" stroke-width="8" stroke-dasharray="191 239" stroke-linecap="round"/></svg>
-          <div class="score-box-value" style="color:#52c41a">82</div>
-        </div>
-        <div class="score-box-label">污染评价（P）</div>
-        <div class="score-box-grade" style="color:#52c41a">🟢 良</div>
-      </div>
-      <div class="card score-box">
-        <div class="score-box-ring">
-          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#faad14" stroke-width="8" stroke-dasharray="151 239" stroke-linecap="round"/></svg>
-          <div class="score-box-value" style="color:#faad14">65</div>
-        </div>
-        <div class="score-box-label">能效评价（E）</div>
-        <div class="score-box-grade" style="color:#faad14">🟡 一般</div>
-      </div>
-      <div class="card score-box">
-        <div class="score-box-ring">
-          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#fa8c16" stroke-width="8" stroke-dasharray="136 239" stroke-linecap="round"/></svg>
-          <div class="score-box-value" style="color:#fa8c16">58</div>
-        </div>
-        <div class="score-box-label">碳排评价（C）</div>
-        <div class="score-box-grade" style="color:#fa8c16">🟠 较差</div>
-      </div>
-      <div class="card score-box">
-        <div class="score-box-ring">
-          <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="#f5222d" stroke-width="8" stroke-dasharray="91 239" stroke-linecap="round"/></svg>
-          <div class="score-box-value" style="color:#f5222d">0.52</div>
-        </div>
-        <div class="score-box-label">C-P 协同指数</div>
-        <div class="score-box-grade" style="color:#f5222d">🔴 差</div>
-      </div>
-    </div>
-    
+    <div class="score-overview" id="scoreOverview"></div>
+
     <!-- AI 摘要 -->
-    <div class="ai-summary">
-      <div class="ai-summary-title">🤖 AI 核心结论</div>
-      <div class="ai-summary-text">
-        本月整体评级为<strong>「一般」</strong>，存在明显短板。<strong>最优先改进项：减少 RTO 空烧</strong>。近30天内 RTO 空烧时长占比达 18%，导致天然气消耗环比增加 35%，碳排评价得分仅 58 分。污染评价 82 分表现良好，VOCs 达标率 100%，但协同分仅 52 分，C-P 协同指数 0.52 处于「差」等级。建议立即调整喷涂排班至集中时段，并检查蓄热体是否堵塞。
-      </div>
-    </div>
-    
+    <div class="ai-summary" id="aiSummary"></div>
+
     <!-- 污染评价详情 -->
-    <div class="card detail-section">
-      <div class="detail-section-title">🌫️ 污染评价详情（P = 82分）</div>
-      <div class="detail-grid">
-        <div class="detail-item">
-          <div class="detail-item-name">VOCs 达标率</div>
-          <div class="detail-item-value" style="color:#52c41a">100%</div>
-          <div class="detail-item-desc">满分40分 → 40分</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-item-name">去除效率</div>
-          <div class="detail-item-value" style="color:#52c41a">94.2%</div>
-          <div class="detail-item-desc">满分30分 → 28分</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-item-name">涂料结构优化</div>
-          <div class="detail-item-value" style="color:#faad14">14分</div>
-          <div class="detail-item-desc">满分30分 → 14分（水性漆占比偏低）</div>
-        </div>
-      </div>
-    </div>
-    
+    <div class="card detail-section" id="pollutionSection"></div>
+
     <!-- 能效评价详情 -->
-    <div class="card detail-section">
-      <div class="detail-section-title">⚡ 能效评价详情（E = 65分）</div>
-      <div class="detail-grid">
-        <div class="detail-item">
-          <div class="detail-item-name">热回收效率</div>
-          <div class="detail-item-value" style="color:#faad14">87%</div>
-          <div class="detail-item-desc">满分40分 → 24分（<95%）</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-item-name">空烧控制</div>
-          <div class="detail-item-value" style="color:#f5222d">18%</div>
-          <div class="detail-item-desc">满分30分 → 15分（空烧占比过高）</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-item-name">能源结构</div>
-          <div class="detail-item-value" style="color:#faad14">26分</div>
-          <div class="detail-item-desc">满分30分 → 26分</div>
-        </div>
-      </div>
-    </div>
-    
+    <div class="card detail-section" id="energySection"></div>
+
     <!-- 碳排评价详情 -->
-    <div class="card detail-section">
-      <div class="detail-section-title">🌱 碳排评价详情（C = 58分）</div>
-      <div class="detail-grid">
-        <div class="detail-item">
-          <div class="detail-item-name">碳排强度对标</div>
-          <div class="detail-item-value" style="color:#fa8c16">0.28</div>
-          <div class="detail-item-desc">tCO₂/万m²，满分40分 → 20分（>P75）</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-item-name">配额余量</div>
-          <div class="detail-item-value" style="color:#faad14">68%</div>
-          <div class="detail-item-desc">满分30分 → 22分</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-item-name">减碳潜力</div>
-          <div class="detail-item-value" style="color:#faad14">16分</div>
-          <div class="detail-item-desc">满分30分 → 16分</div>
-        </div>
-      </div>
-    </div>
-    
+    <div class="card detail-section" id="carbonSection"></div>
+
     <!-- 改进优先级 -->
-    <div class="card detail-section">
-      <div class="detail-section-title">🎯 改进优先级建议</div>
-      <div class="priority-list">
-        <div class="priority-item">
-          <div class="priority-rank p1">1</div>
-          <div class="priority-text"><strong>减少 RTO 空烧</strong> — 调整喷涂排班至集中时段，目标空烧占比 < 5%</div>
-          <div class="priority-score">预期提升 +12分</div>
-        </div>
-        <div class="priority-item">
-          <div class="priority-rank p2">2</div>
-          <div class="priority-text"><strong>提升热回收效率</strong> — 检查蓄热体堵塞情况，清洗或更换蓄热体</div>
-          <div class="priority-score">预期提升 +8分</div>
-        </div>
-        <div class="priority-item">
-          <div class="priority-rank p3">3</div>
-          <div class="priority-text"><strong>提高水性涂料占比</strong> — 逐步替换溶剂型涂料，降低涂料隐含碳</div>
-          <div class="priority-score">预期提升 +6分</div>
-        </div>
-      </div>
-    </div>
-    
+    <div class="card detail-section" id="prioritySection"></div>
+
     <div class="report-actions">
-      <button class="btn btn-default btn-lg">📊 查看历史报告</button>
-      <button class="btn btn-primary btn-lg">📥 导出 PDF 报告</button>
+      <button class="btn btn-default btn-lg" onclick="showToast('历史报告功能开发中...','info')">📊 查看历史报告</button>
+      <button class="btn btn-primary btn-lg" onclick="showToast('PDF导出功能开发中...','info')">📥 导出 PDF 报告</button>
     </div>
-    
+
     <div style="height:40px"></div>
   </div>
+  <script>
+    function renderTripleReport() {
+      const report = DataStore.getLatestTripleReport();
+      if (!report) {
+        document.querySelector('.main').innerHTML = '<div style="text-align:center;padding:60px;color:rgba(226,232,240,0.4)">暂无报告数据</div>';
+        return;
+      }
+      const ent = DataStore.get('enterprise', MOCK_DATA.enterprise);
+      const health = DataStore.get('healthScore', MOCK_DATA.healthScore);
+
+      // 头部信息
+      document.getElementById('reportTitle').textContent = '🏭 ' + ent.name + ' — 污-能-碳三评合一报告';
+      document.getElementById('reportInfo').innerHTML = '统一社会信用代码：' + ent.licenseNo + ' | 行业：' + ent.industry + '<br>报告周期：2026年5月1日 — 2026年5月31日';
+      document.getElementById('reportSub').textContent = '报告周期：' + report.month.replace('-','年') + '月 | 生成时间：' + report.generatedAt + ' | 类型：' + report.type;
+
+      // 四大评分
+      const scores = report.scores || { p: 82, e: 65, c: 58, cp: 0.52 };
+      const scoreItems = [
+        { key: 'p', label: '污染评价（P）', color: '#52c41a', grade: '良', emoji: '🟢' },
+        { key: 'e', label: '能效评价（E）', color: '#faad14', grade: '一般', emoji: '🟡' },
+        { key: 'c', label: '碳排评价（C）', color: '#fa8c16', grade: '较差', emoji: '🟠' },
+        { key: 'cp', label: 'C-P 协同指数', color: '#f5222d', grade: '差', emoji: '🔴' },
+      ];
+      const circumference = 239;
+      document.getElementById('scoreOverview').innerHTML = scoreItems.map(s => {
+        const val = scores[s.key];
+        const dash = Math.round((val >= 1 ? val : val * 100) / 100 * circumference);
+        return `
+          <div class="card score-box">
+            <div class="score-box-ring">
+              <svg width="90" height="90"><circle cx="45" cy="45" r="38" fill="none" stroke="#f0f0f0" stroke-width="8"/><circle cx="45" cy="45" r="38" fill="none" stroke="${s.color}" stroke-width="8" stroke-dasharray="${dash} ${circumference}" stroke-linecap="round"/></svg>
+              <div class="score-box-value" style="color:${s.color}">${val}</div>
+            </div>
+            <div class="score-box-label">${s.label}</div>
+            <div class="score-box-grade" style="color:${s.color}">${s.emoji} ${s.grade}</div>
+          </div>`;
+      }).join('');
+
+      // AI 摘要
+      document.getElementById('aiSummary').innerHTML = `
+        <div class="ai-summary-title">🤖 AI 核心结论</div>
+        <div class="ai-summary-text">${report.aiSummary}</div>`;
+
+      // 详情区块渲染
+      function renderDetailSection(id, title, icon, items) {
+        const container = document.getElementById(id);
+        container.innerHTML = `
+          <div class="detail-section-title">${icon} ${title}</div>
+          <div class="detail-grid">
+            ${items.map(item => `
+              <div class="detail-item">
+                <div class="detail-item-name">${item.name}</div>
+                <div class="detail-item-value" style="color:${item.color}">${item.value}</div>
+                <div class="detail-item-desc">满分${item.max}分 → ${item.score}分${item.desc ? '（' + item.desc + '）' : ''}</div>
+              </div>
+            `).join('')}
+          </div>`;
+      }
+
+      const details = report.details || MOCK_DATA.tripleReports[0].details;
+      renderDetailSection('pollutionSection', '污染评价详情（P = ' + scores.p + '分）', '🌫️', details.pollution);
+      renderDetailSection('energySection', '能效评价详情（E = ' + scores.e + '分）', '⚡', details.energy);
+      renderDetailSection('carbonSection', '碳排评价详情（C = ' + scores.c + '分）', '🌱', details.carbon);
+
+      // 改进优先级
+      const priorities = report.priorities || MOCK_DATA.tripleReports[0].priorities;
+      document.getElementById('prioritySection').innerHTML = `
+        <div class="detail-section-title">🎯 改进优先级建议</div>
+        <div class="priority-list">
+          ${priorities.map(p => `
+            <div class="priority-item">
+              <div class="priority-rank ${p.color}">${p.rank}</div>
+              <div class="priority-text">${p.text}</div>
+              <div class="priority-score">预期提升 ${p.score}</div>
+            </div>
+          `).join('')}
+        </div>`;
+    }
+
+    renderTripleReport();
+  </script>
   <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
 </body>
 </html>

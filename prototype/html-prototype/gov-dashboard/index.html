@@ -162,6 +162,7 @@
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader" style="z-index:9999"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="screen-wrap">
     <div class="screen-header">
       <div class="screen-header-left">
@@ -518,6 +519,14 @@
 
     // 初始化
     renderTasks();
+
+    // 页面加载完成后隐藏 loader
+    window.addEventListener("load", function() {
+      setTimeout(function() {
+        var el = document.getElementById("pageLoader");
+        if (el) el.classList.add("done");
+      }, 600);
+    });
   </script>
 </body>
 </html>

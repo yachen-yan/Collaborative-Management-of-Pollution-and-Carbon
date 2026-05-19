@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>悖论模拟器 — 污碳协同AI监管平台</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/data.js"></script>
   <style>
     .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
@@ -273,78 +274,87 @@
     <!-- 步骤3：查看结果 -->
     <div class="step-content" id="step3">
       <div class="result-banner trap" id="resultBanner">
-        <div class="result-icon">⚠️</div>
-        <div class="result-title" style="color:#f5222d">减污增碳陷阱</div>
-        <div class="result-desc">水性涂料切换后 VOCs 预计降低 60%，但天然气消耗预计增加 35%，C-P 协同指数将从 0.75 降至 0.48</div>
+        <div class="result-icon" id="resultIcon">⚠️</div>
+        <div class="result-title" id="resultTitle" style="color:#f5222d">减污增碳陷阱</div>
+        <div class="result-desc" id="resultDesc">水性涂料切换后 VOCs 预计降低 60%，但天然气消耗预计增加 35%，C-P 协同指数将从 0.75 降至 0.48</div>
       </div>
-      
-      <div class="row">
+
+      <div class="row" id="resultGrid">
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" style="color:#52c41a">-60%</div>
+            <div class="result-value" id="vocsChange" style="color:#52c41a">-60%</div>
             <div class="result-label">VOCs 排放变化</div>
-            <div class="result-change up">↓ 大幅下降</div>
+            <div class="result-change up" id="vocsChangeLabel">↓ 大幅下降</div>
           </div>
         </div>
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" style="color:#f5222d">+35%</div>
+            <div class="result-value" id="gasChange" style="color:#f5222d">+35%</div>
             <div class="result-label">天然气消耗变化</div>
-            <div class="result-change down">↑ 显著增加</div>
+            <div class="result-change down" id="gasChangeLabel">↑ 显著增加</div>
           </div>
         </div>
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" style="color:#f5222d">+28%</div>
+            <div class="result-value" id="carbonChange" style="color:#f5222d">+28%</div>
             <div class="result-label">碳排放变化</div>
-            <div class="result-change down">↑ 碳排增加</div>
+            <div class="result-change down" id="carbonChangeLabel">↑ 碳排增加</div>
           </div>
         </div>
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" style="color:#f5222d">0.48</div>
+            <div class="result-value" id="cpResult" style="color:#f5222d">0.48</div>
             <div class="result-label">预测 C-P 协同指数</div>
-            <div class="result-change down">↓ 从 0.75 降至 0.48</div>
+            <div class="result-change down" id="cpChangeLabel">↓ 从 0.75 降至 0.48</div>
           </div>
         </div>
       </div>
-      
-      <div class="suggestion-box">
+
+      <div class="suggestion-box" id="suggestionBox">
         <div class="suggestion-title">💡 AI 优化建议</div>
-        <ol class="suggestion-list">
+        <ol class="suggestion-list" id="suggestionList">
           <li>同步引入<strong>热泵辅助烘干</strong>，可将天然气消耗增量控制在 10% 以内</li>
           <li>建议采用<strong>沸石转轮浓缩 + RTO</strong> 组合工艺，降低 RTO 运行负荷</li>
           <li>优化喷涂排班，<strong>集中生产时段</strong>，减少 RTO 空烧时长</li>
           <li>引入<strong>余热回收系统</strong>，预计可提升热回收效率至 95% 以上</li>
         </ol>
       </div>
-      
+
       <div class="card">
         <div class="card-title">📜 模拟历史记录</div>
-        <table class="history-table">
-          <tr><th>时间</th><th>当前工艺</th><th>拟改造工艺</th><th>预测 C-P</th><th>判定</th></tr>
-          <tr><td>2026-05-18 09:15</td><td>溶剂型涂料</td><td>水性涂料（单组分）</td><td style="color:#f5222d">0.48</td><td><span class="tag tag-neon-red">减污增碳陷阱</span></td></tr>
-          <tr><td>2026-05-10 14:22</td><td>溶剂型涂料</td><td>粉末涂料</td><td style="color:#fa8c16">0.52</td><td><span class="tag tag-neon-orange">协同失衡</span></td></tr>
-          <tr><td>2026-04-28 10:05</td><td>溶剂型涂料</td><td>高固体分涂料</td><td style="color:#faad14">0.68</td><td><span class="tag tag-neon-yellow">良</span></td></tr>
+        <table class="history-table" id="historyTable">
+          <thead><tr><th>时间</th><th>当前工艺</th><th>拟改造工艺</th><th>预测 C-P</th><th>判定</th></tr></thead>
+          <tbody id="historyBody"></tbody>
         </table>
       </div>
-      
+
       <div class="btn-nav">
         <button class="btn btn-default" onclick="goStep(2)">← 重新输入参数</button>
         <div>
           <button class="btn btn-default" onclick="goStep(1)">🔄 重新选择工艺</button>
-          <button class="btn btn-primary" style="margin-left:8px">💾 保存评估结果</button>
+          <button class="btn btn-primary" style="margin-left:8px" onclick="saveResult()">💾 保存评估结果</button>
         </div>
       </div>
     </div>
   </div>
-  
+
   <script>
     let currentStep = 1;
+    let lastResult = null;
+
+    // 工艺参数数据库
+    const PROCESS_DB = {
+      '溶剂型涂料（聚氨酯漆）': { vocsFactor: 0.55, carbonFactor: 2.5, dryTemp: 30, dryEnergy: 1.0 },
+      '水性涂料（双组分）': { vocsFactor: 0.08, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.2 },
+      '水性涂料（单组分）': { vocsFactor: 0.12, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.0 },
+      '粉末涂料': { vocsFactor: 0.0, carbonFactor: 1.2, dryTemp: 180, dryEnergy: 3.5 },
+      '高固体分涂料': { vocsFactor: 0.38, carbonFactor: 2.0, dryTemp: 50, dryEnergy: 1.4 },
+    };
+
     function goStep(n) {
       document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
       document.getElementById('step' + n).classList.add('active');
-      
+
       // 更新步骤条
       for (let i = 1; i <= 3; i++) {
         const item = document.getElementById('step' + i + 'Item');
@@ -365,8 +375,12 @@
       }
       currentStep = n;
       window.scrollTo(0, 0);
+
+      if (n === 3) {
+        calculateResult();
+      }
     }
-    
+
     function selectProcess(el, type) {
       const container = type === 'current' ? document.getElementById('currentProcess') : document.getElementById('targetProcess');
       container.querySelectorAll('.process-card').forEach(c => {
@@ -376,6 +390,139 @@
       el.classList.add('selected');
       el.querySelector('.check').textContent = '✓';
     }
+
+    function getSelectedProcess(type) {
+      const container = type === 'current' ? document.getElementById('currentProcess') : document.getElementById('targetProcess');
+      const selected = container.querySelector('.process-card.selected');
+      if (!selected) return null;
+      return selected.querySelector('.process-name').textContent.trim();
+    }
+
+    function calculateResult() {
+      const current = getSelectedProcess('current');
+      const target = getSelectedProcess('target');
+      const currentParams = PROCESS_DB[current] || PROCESS_DB['溶剂型涂料（聚氨酯漆）'];
+      const targetParams = PROCESS_DB[target] || PROCESS_DB['水性涂料（单组分）'];
+
+      const sprayArea = parseFloat(document.getElementById('sprayAreaYear').value) || 18;
+      const runDays = parseFloat(document.getElementById('runDays').value) || 300;
+      const dailyHours = parseFloat(document.getElementById('dailyHours').value) || 10;
+      const paintUsage = parseFloat(document.getElementById('paintUsage').value) || 15000;
+
+      // 简化计算模型
+      const vocsChange = Math.round(((targetParams.vocsFactor - currentParams.vocsFactor) / currentParams.vocsFactor) * 100);
+      const gasChange = Math.round(((targetParams.dryEnergy - currentParams.dryEnergy) / currentParams.dryEnergy) * 100);
+      const carbonChange = Math.round(((targetParams.carbonFactor * targetParams.dryEnergy - currentParams.carbonFactor * currentParams.dryEnergy) / (currentParams.carbonFactor * currentParams.dryEnergy)) * 100);
+
+      // C-P 协同指数估算
+      const cpBefore = 0.72;
+      let cpAfter = cpBefore + (vocsChange / 100) * 0.3 - (gasChange / 100) * 0.4;
+      cpAfter = Math.max(0.2, Math.min(0.95, cpAfter));
+      cpAfter = Math.round(cpAfter * 100) / 100;
+
+      let resultType = 'good';
+      let resultTitle = '协同改善';
+      let resultColor = '#52c41a';
+      let resultIcon = '✅';
+      let resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 升至 ' + cpAfter;
+
+      if (cpAfter < 0.4) {
+        resultType = 'trap';
+        resultTitle = '减污增碳陷阱';
+        resultColor = '#f5222d';
+        resultIcon = '⚠️';
+        resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，但天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 降至 ' + cpAfter;
+      } else if (cpAfter < 0.6) {
+        resultType = 'imbalance';
+        resultTitle = '协同失衡';
+        resultColor = '#fa8c16';
+        resultIcon = '🔶';
+      }
+
+      // 更新 UI
+      const banner = document.getElementById('resultBanner');
+      banner.className = 'result-banner ' + resultType;
+      document.getElementById('resultIcon').textContent = resultIcon;
+      document.getElementById('resultTitle').textContent = resultTitle;
+      document.getElementById('resultTitle').style.color = resultColor;
+      document.getElementById('resultDesc').textContent = resultDesc;
+
+      document.getElementById('vocsChange').textContent = (vocsChange > 0 ? '+' : '') + vocsChange + '%';
+      document.getElementById('vocsChange').style.color = vocsChange < 0 ? '#52c41a' : '#f5222d';
+      document.getElementById('vocsChangeLabel').textContent = vocsChange < 0 ? '↓ 大幅下降' : '↑ 增加';
+      document.getElementById('vocsChangeLabel').className = 'result-change ' + (vocsChange < 0 ? 'up' : 'down');
+
+      document.getElementById('gasChange').textContent = (gasChange > 0 ? '+' : '') + gasChange + '%';
+      document.getElementById('gasChange').style.color = gasChange > 0 ? '#f5222d' : '#52c41a';
+      document.getElementById('gasChangeLabel').textContent = gasChange > 0 ? '↑ 显著增加' : '↓ 下降';
+
+      document.getElementById('carbonChange').textContent = (carbonChange > 0 ? '+' : '') + carbonChange + '%';
+      document.getElementById('carbonChange').style.color = carbonChange > 0 ? '#f5222d' : '#52c41a';
+      document.getElementById('carbonChangeLabel').textContent = carbonChange > 0 ? '↑ 碳排增加' : '↓ 碳排减少';
+
+      document.getElementById('cpResult').textContent = cpAfter;
+      document.getElementById('cpResult').style.color = resultColor;
+      document.getElementById('cpChangeLabel').textContent = '↓ 从 ' + cpBefore + ' 降至 ' + cpAfter;
+
+      // 动态建议
+      const suggestions = document.getElementById('suggestionList');
+      suggestions.innerHTML = '';
+      if (resultType === 'trap') {
+        suggestions.innerHTML = '<li>同步引入<strong>热泵辅助烘干</strong>，可将天然气消耗增量控制在 10% 以内</li><li>建议采用<strong>沸石转轮浓缩 + RTO</strong> 组合工艺，降低 RTO 运行负荷</li><li>优化喷涂排班，<strong>集中生产时段</strong>，减少 RTO 空烧时长</li><li>引入<strong>余热回收系统</strong>，预计可提升热回收效率至 95% 以上</li>';
+      } else if (resultType === 'imbalance') {
+        suggestions.innerHTML = '<li>考虑<strong>分段烘干</strong>策略，降低整体能耗</li><li>引入<strong>蓄热体优化</strong>，提升热回收效率 5-8%</li><li>评估<strong>太阳能预热</strong>可行性，降低天然气依赖</li>';
+      } else {
+        suggestions.innerHTML = '<li>该工艺切换方案<strong>协同效应良好</strong>，建议推进实施</li><li>制定<strong>分阶段切换计划</strong>，降低产线改造风险</li><li>建立<strong>技改前后对比监测</strong>机制，验证预期效果</li>';
+      }
+
+      lastResult = {
+        current: current,
+        target: target,
+        cpBefore: cpBefore,
+        cpAfter: cpAfter,
+        vocsChange: vocsChange,
+        gasChange: gasChange,
+        carbonChange: carbonChange,
+        result: resultType,
+      };
+    }
+
+    function renderHistory() {
+      const tbody = document.getElementById('historyBody');
+      if (!tbody) return;
+      const history = DataStore.getSimulatorHistory();
+      if (history.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(226,232,240,0.3)">暂无历史记录</td></tr>';
+        return;
+      }
+      tbody.innerHTML = history.map(h => {
+        const tagMap = { trap: ['减污增碳陷阱','tag-neon-red'], imbalance: ['协同失衡','tag-neon-orange'], good: ['协同改善','tag-neon-green'] };
+        const tag = tagMap[h.result] || ['协同改善','tag-neon-green'];
+        const cpColor = h.result === 'trap' ? '#f5222d' : h.result === 'imbalance' ? '#fa8c16' : '#52c41a';
+        return `<tr><td>${h.time}</td><td>${h.current}</td><td>${h.target}</td><td style="color:${cpColor}">${h.cpAfter}</td><td><span class="tag ${tag[1]}">${tag[0]}</span></td></tr>`;
+      }).join('');
+    }
+
+    function saveResult() {
+      if (!lastResult) { showToast('请先完成模拟计算', 'warn'); return; }
+      const now = new Date();
+      const timeStr = '2026-05-18 ' + ('0'+now.getHours()).slice(-2) + ':' + ('0'+now.getMinutes()).slice(-2);
+      DataStore.addSimulatorRecord({
+        time: timeStr,
+        current: lastResult.current,
+        target: lastResult.target,
+        cpBefore: lastResult.cpBefore,
+        cpAfter: lastResult.cpAfter,
+        vocsChange: lastResult.vocsChange,
+        gasChange: lastResult.gasChange,
+        carbonChange: lastResult.carbonChange,
+        result: lastResult.result,
+      });
+      renderHistory();
+      showToast('✅ 评估结果已保存', 'success');
+    }
+
+    renderHistory();
   </script>
   <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
 </body>

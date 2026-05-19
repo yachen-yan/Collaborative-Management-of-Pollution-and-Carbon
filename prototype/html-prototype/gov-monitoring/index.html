@@ -78,6 +78,7 @@
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader" style="z-index:9999"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="dt-wrap">
     <div class="dt-header">
       <div class="dt-header-title">
@@ -327,6 +328,14 @@
       const typeNames = { green:'双减标兵', yellow:'关注企业', red:'减污增碳/减碳增污悖论风险', gray:'数据不足' };
       showToast(`已定位到 ${list.length} 家${typeNames[type]}`, 'success');
     }
+
+    // 页面加载完成后隐藏 loader
+    window.addEventListener("load", function() {
+      setTimeout(function() {
+        var el = document.getElementById("pageLoader");
+        if (el) el.classList.add("done");
+      }, 800);
+    });
   </script>
 </body>
 </html>

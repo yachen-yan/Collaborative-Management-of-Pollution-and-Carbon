@@ -258,6 +258,88 @@
     
     <div style="height:40px"></div>
   </div>
-  <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
+  <script>
+window.addEventListener("load",function(){
+  setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);
+
+  // ========== DataStore 动态数据接入 ==========
+  function initRealtimeData() {
+    const rt = DataStore.getRealtime();
+    const ent = DataStore.get('enterprise', MOCK_DATA.enterprise);
+    const health = DataStore.get('healthScore', MOCK_DATA.healthScore);
+
+    // 更新时间
+    const now = new Date();
+    const timeStr = '2026-05-18 ' + ('0'+now.getHours()).slice(-2) + ':' + ('0'+now.getMinutes()).slice(-2);
+    document.querySelector('.update-time').textContent = '⏱️ 数据更新时间：' + timeStr + '（每5分钟刷新）';
+
+    // 核心指标大卡
+    const metrics = [
+      { selector: '.rt-big-grid .rt-big-card:nth-child(1) .rt-big-value', value: rt.vocsRate, suffix: '', color: '#1677ff', unit: 'kg/h', trend: '环比 -8.2%', trendCls: 'down' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(2) .rt-big-value', value: rt.vocsEfficiency, suffix: '%', color: '#52c41a', unit: '', trend: '环比 +1.5%', trendCls: 'up' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(3) .rt-big-value', value: rt.carbonTotal, suffix: '', color: '#fa8c16', unit: 'tCO₂/h', trend: '环比 +18.6%', trendCls: 'up' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(4) .rt-big-value', value: rt.cpIndex, suffix: '', color: '#f5222d', unit: '', trend: '环比 -15.6%', trendCls: 'up' },
+    ];
+    metrics.forEach(m => {
+      const el = document.querySelector(m.selector);
+      if (el) { el.textContent = m.value + m.suffix; el.style.color = m.color; }
+    });
+
+    // 对比数据动态化
+    const compareBars = document.querySelectorAll('.compare-bar');
+    if (compareBars.length >= 4) {
+      compareBars[0].querySelector('.compare-value').textContent = rt.vocsIntensity;
+      compareBars[2].querySelector('.compare-value').textContent = rt.cpIndex;
+    }
+
+    // 设备状态动态化
+    const deviceData = {
+      '燃烧室温度': { value: rt.chamberTemp + '°C', color: '#52c41a', cls: 'normal' },
+      '废气风量': { value: '4200 m³/h', color: '#52c41a', cls: 'normal' },
+      '天然气流量': { value: rt.gasFlow + ' Nm³/h', color: '#faad14', cls: 'warn' },
+      '热回收效率': { value: '87%', color: '#f5222d', cls: 'danger' },
+      '电表功率': { value: '45 kW', color: '#52c41a', cls: 'normal' },
+      '空烧判定': { value: rt.cpIndex < 0.4 ? '是' : '否', color: rt.cpIndex < 0.4 ? '#f5222d' : '#52c41a', cls: rt.cpIndex < 0.4 ? 'danger' : 'normal' },
+    };
+    document.querySelectorAll('.status-item').forEach(item => {
+      const name = item.querySelector('.status-name').textContent.trim();
+      const data = deviceData[name];
+      if (data) {
+        item.className = 'status-item ' + data.cls;
+        item.querySelector('.status-value').textContent = data.value;
+        item.querySelector('.status-value').style.color = data.color;
+      }
+    });
+
+    // 告警提示动态化
+    const alertBox = document.querySelector('.status-grid').parentNode.querySelector('div:last-child');
+    if (alertBox && rt.cpIndex < 0.4) {
+      alertBox.innerHTML = '🚨 检测到 RTO 空烧：入口 VOCs 浓度 ' + Math.round(rt.vocsRate * 40) + ' mg/m³，天然气流量 ' + rt.gasFlow + ' Nm³/h，空烧时长占比 22%';
+    }
+  }
+
+  // 数字滚动动画
+  function animateNumbers() {
+    document.querySelectorAll('.rt-big-value').forEach(el => {
+      const target = parseFloat(el.textContent);
+      if (isNaN(target)) return;
+      const suffix = el.textContent.replace(/[\d.]/g, '');
+      const start = performance.now();
+      const from = 0;
+      function step(now) {
+        const progress = Math.min((now - start) / 1000, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const val = from + (target - from) * ease;
+        el.textContent = (target < 1 ? val.toFixed(2) : val.toFixed(1)) + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  initRealtimeData();
+  setTimeout(animateNumbers, 300);
+});
+</script>
 </body>
 </html>

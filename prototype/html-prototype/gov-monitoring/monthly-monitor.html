@@ -49,6 +49,7 @@
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局 · 监测数据科</span><div class="avatar">王</div><span>王监测</span></div>
@@ -175,5 +176,6 @@
       showToast('监测月报已审核通过并发布', 'success');
     }
   </script>
+  <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
 </body>
 </html>

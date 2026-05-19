@@ -10,7 +10,8 @@
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
     .page-sub { font-size: 13px; color: rgba(226,232,240,0.4); margin-bottom: 20px; }
-    .back-link { font-size: 13px; color: #1677ff; margin-bottom: 12px; display: inline-block; }
+    .back-link { font-size: 13px; color: #22d3ee; margin-bottom: 12px; display: inline-block; transition:all 0.2s; }
+    .back-link:hover { text-shadow:0 0 8px rgba(34,211,238,0.5); }
     
     .alert-banner {
       background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px;
@@ -28,8 +29,8 @@
     }
     .trace-map-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
     .trace-map-area {
-      position: relative; height: 260px; background: linear-gradient(180deg, #e6f7ff 0%, #f6ffed 100%);
-      border-radius: 8px; border: 1px dashed #d9d9d9;
+      position: relative; height: 260px; background: linear-gradient(180deg, rgba(14,165,233,0.08) 0%, rgba(34,197,94,0.04) 100%);
+      border-radius: 8px; border: 1px dashed rgba(34,211,238,0.2);
     }
     .trace-zone {
       position: absolute; padding: 10px 16px; border-radius: 8px; font-size: 13px;
@@ -67,7 +68,7 @@
     .trace-card-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
     .trace-ent-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px;
+      padding: 10px 0; border-bottom: 1px solid rgba(34,211,238,0.08); font-size: 13px;
     }
     .trace-ent-row:last-child { border-bottom: none; }
     .trace-ent-name { font-weight: 500; }
@@ -79,8 +80,8 @@
     .analysis-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
     .analysis-item { display: flex; gap: 12px; margin-bottom: 12px; }
     .analysis-num {
-      width: 24px; height: 24px; border-radius: 50%; background: #1677ff;
-      color: #fff; font-size: 12px; display: flex; align-items: center;
+      width: 24px; height: 24px; border-radius: 50%; background: rgba(34,211,238,0.2); border:1px solid rgba(34,211,238,0.3);
+      color: #22d3ee; font-size: 12px; display: flex; align-items: center;
       justify-content: center; flex-shrink: 0;
     }
     .analysis-text { font-size: 13px; line-height: 1.8; flex: 1; }
@@ -90,6 +91,7 @@
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局 · 监测数据科</span><div class="avatar">王</div><span>王监测</span></div>
@@ -205,7 +207,7 @@
     
     <div class="card" style="margin-top:16px">
       <div style="font-size:15px;font-weight:600;margin-bottom:14px">📋 处置建议</div>
-      <div style="font-size:13px;line-height:2;color:rgba(0,0,0,0.65)">
+      <div style="font-size:13px;line-height:2;color:rgba(226,232,240,0.7)">
         ① 将 A厂与 B厂纳入<strong>「关联监管组」</strong>，合并计算两厂 VOCs 排放总量<br>
         ② 要求 A厂如实申报外包喷涂业务比例，纳入排污许可管理<br>
         ③ 对 B厂开展现场核查，确认其治污设施是否匹配新增产能<br>
@@ -220,5 +222,6 @@
     
     <div style="height:40px"></div>
   </div>
+  <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
 </body>
 </html>

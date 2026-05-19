@@ -26,7 +26,7 @@
     .chart-placeholder {
       height: 220px; background: rgba(34,211,238,0.04); border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      border: 1px dashed #d9d9d9; margin-bottom: 16px;
+      border: 1px dashed rgba(34,211,238,0.2); margin-bottom: 16px;
     }
     .chart-bar-demo {
       display: flex; align-items: flex-end; gap: 16px; height: 160px; padding: 0 40px;
@@ -49,18 +49,19 @@
     .trend-line-demo svg { width: 100%; height: 100%; }
     
     .conclusion-box {
-      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 8px;
-      padding: 16px 20px; font-size: 14px; line-height: 1.8;
+      background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px;
+      padding: 16px 20px; font-size: 14px; line-height: 1.8; color: rgba(226,232,240,0.8);
     }
-    .conclusion-box strong { color: #52c41a; }
+    .conclusion-box strong { color: #4ade80; }
     
     .report-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .report-table th, .report-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+    .report-table th, .report-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(34,211,238,0.1); }
     .report-table th { background: rgba(34,211,238,0.04); font-weight: 600; }
     .report-table tr:hover { background: rgba(34,211,238,0.04); }
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
   <div class="topbar">
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局</span><div class="avatar">李</div><span>李管理</span></div>
@@ -163,10 +164,10 @@
             <circle cx="440" cy="90" r="3" fill="#f5222d"/>
             <circle cx="520" cy="82" r="3" fill="#1677ff"/>
             <circle cx="560" cy="78" r="4" fill="#1677ff" stroke="#fff" stroke-width="2"/>
-            <text x="40" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/1</text>
-            <text x="200" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/10</text>
-            <text x="360" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/20</text>
-            <text x="520" y="156" font-size="10" fill="rgba(0,0,0,0.35)" text-anchor="middle">4/30</text>
+            <text x="40" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/1</text>
+            <text x="200" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/10</text>
+            <text x="360" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/20</text>
+            <text x="520" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/30</text>
           </svg>
         </div>
       </div>
@@ -197,5 +198,6 @@
       <div style="height:40px"></div>
     </div>
   </div>
+  <script>window.addEventListener("load",function(){setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);});</script>
 </body>
 </html>
