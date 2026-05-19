@@ -263,6 +263,11 @@
             <label>当前电价<span class="unit">元/kWh</span></label>
             <input type="number" id="elecPrice" value="0.8">
           </div>
+          <div class="param-item">
+            <label>产量环比变化<span class="unit">%</span></label>
+            <input type="number" id="outputChange" value="3" style="border-color:rgba(34,197,94,0.3)">
+            <div style="font-size:11px;color:#4ade80;margin-top:4px">✓ &lt;10%，排除产能扩张因素</div>
+          </div>
         </div>
       </div>
       
@@ -436,6 +441,10 @@
       const runDays = parseFloat(document.getElementById('runDays').value) || 300;
       const dailyHours = parseFloat(document.getElementById('dailyHours').value) || 10;
       const paintUsage = parseFloat(document.getElementById('paintUsage').value) || 15000;
+      const outputChange = parseFloat(document.getElementById('outputChange').value) || 0;
+
+      // 产量排除逻辑：产量变化 >= 10% 时提示排除
+      const excludeOutput = Math.abs(outputChange) >= 10;
 
       // 简化计算模型
       const vocsChange = Math.round(((targetParams.vocsFactor - currentParams.vocsFactor) / currentParams.vocsFactor) * 100);
@@ -454,7 +463,12 @@
       let resultIcon = '✅';
       let resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 升至 ' + cpAfter;
 
-      if (cpAfter < 0.4) {
+      if (excludeOutput) {
+        resultTitle = '产能变化排除';
+        resultColor = '#22d3ee';
+        resultIcon = 'ℹ️';
+        resultDesc = '产量变化 ' + outputChange + '% ≥ 10%，已排除产能扩张因素对悖论判定的影响。实际 C-P 变化需结合产量基准校正。';
+      } else if (cpAfter < 0.4) {
         resultType = 'trap';
         resultTitle = '减污增碳陷阱';
         resultColor = '#f5222d';

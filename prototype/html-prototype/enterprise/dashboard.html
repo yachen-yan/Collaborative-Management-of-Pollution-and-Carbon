@@ -278,6 +278,32 @@
       }, 300);
     });
 
+    // 健康评分定时更新模拟（每小时）
+    function simulateHealthUpdate() {
+      const scoreEl = document.querySelector('.score-big');
+      const health = DataStore.get('healthScore', MOCK_DATA.healthScore);
+      // 模拟微小波动
+      const change = (Math.random() - 0.5) * 4;
+      let newScore = Math.round(health.score + change);
+      newScore = Math.max(40, Math.min(95, newScore));
+      health.score = newScore;
+      DataStore.set('healthScore', health);
+      // 更新显示
+      if (scoreEl) {
+        scoreEl.textContent = newScore;
+        const label = document.querySelector('.score-level-tag');
+        if (newScore >= 80) { label.textContent = '优秀'; label.style.cssText = 'background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.2)'; scoreEl.style.color = '#4ade80'; }
+        else if (newScore >= 60) { label.textContent = '一般'; label.style.cssText = 'background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.2)'; scoreEl.style.color = '#fbbf24'; }
+        else { label.textContent = '较差'; label.style.cssText = 'background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)'; scoreEl.style.color = '#f87171'; }
+      }
+      // 更新时间提示
+      const updateHint = document.querySelector('.score-left div:last-child');
+      if (updateHint) updateHint.textContent = '上次更新：' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+      showToast('🔄 健康评分已更新：' + newScore + '分', 'info');
+    }
+    // 每30秒模拟一次更新（演示用，实际应为每小时）
+    setInterval(simulateHealthUpdate, 30000);
+
     const qw = document.getElementById('quadrantWrap');
     DataStore.get('quadrantBubbles', MOCK_DATA.quadrantBubbles).forEach(b => {
       const el = document.createElement('div');

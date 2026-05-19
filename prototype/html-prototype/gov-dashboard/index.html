@@ -305,6 +305,16 @@
           <select id="dType"><option value="减污增碳/减碳增污悖论">减污增碳/减碳增污悖论 风险</option><option value="data">数据异常</option><option value="permit">证件到期</option><option value="imbalance">协同失衡</option></select>
         </div>
         <div class="form-group">
+          <label>指令模板</label>
+          <select id="dTemplate" onchange="applyTemplate(this.value)">
+            <option value="">-- 选择模板自动填充 --</option>
+            <option value="selfcheck">📋 自查自纠建议</option>
+            <option value="inspect">🔍 现场核查通知</option>
+            <option value="optimize">⚡ 工艺优化建议</option>
+            <option value="expert">👥 专家会诊通知</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>截止期限</label>
           <input type="date" id="dDeadline" value="2026-05-25">
         </div>
@@ -381,6 +391,19 @@
     function openDispatchModal() {
       document.getElementById('dispatchModal').classList.add('active');
     }
+    const templates = {
+      selfcheck: { title: '自查自纠建议', content: '经AI监测分析，贵司近期C-P协同指数出现波动。请立即开展自查自纠：\n1. 检查RTO燃烧室温度是否在760-800°C正常区间\n2. 核实喷涂排班是否集中，避免分散作业导致空烧\n3. 检查蓄热体是否堵塞，热回收效率是否达标\n请于5个工作日内提交自查报告及整改计划。' },
+      inspect: { title: '现场核查通知', content: '根据监测数据异常提示，我科将于近日派员赴贵司开展现场核查。重点核查内容：\n1. RTO设备运行台账与实际工况一致性\n2. 天然气计量表读数准确性\n3. 涂料消耗与产出匹配性\n请提前准备相关运行记录备查。' },
+      optimize: { title: '工艺优化建议', content: '经AI评估，贵司当前工艺存在优化空间。建议方案：\n1. 引入热泵辅助烘干，降低天然气依赖\n2. 优化RTO启停策略，减少空烧时长\n3. 调整涂料配比，逐步提高水性漆占比\n如需技术支持，可申请专家会诊。' },
+      expert: { title: '专家会诊通知', content: '鉴于贵司近期多次触发减污增碳/减碳增污悖论预警，我局拟组织专家会诊。会诊安排：\n1. 时间：另行通知\n2. 专家：环保、节能、涂装工艺领域专家\n3. 内容：现场诊断+整改方案制定\n请贵司环保负责人及相关技术人员准时参加。' }
+    };
+
+    function applyTemplate(key) {
+      if (!key) return;
+      const t = templates[key];
+      if (t) document.getElementById('dContent').value = t.content;
+    }
+
     function submitDispatch() {
       const enterprise = document.getElementById('dEnterprise').value;
       const type = document.getElementById('dType').value;

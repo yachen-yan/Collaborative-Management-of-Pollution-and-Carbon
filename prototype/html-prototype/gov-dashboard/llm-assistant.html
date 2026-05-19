@@ -7,14 +7,45 @@
   <style>
     body { background: #020617; color: #e2e8f0; }
     .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
-    .main { margin-left: 0; margin-top: 64px; padding: 24px; min-height: calc(100vh - 64px); }
+    .main { margin-left: 220px; margin-top: 64px; padding: 24px; min-height: calc(100vh - 64px); }
+
+    /* 侧边栏 */
+    .chat-sidebar {
+      position: fixed; top: 64px; left: 0; width: 220px; bottom: 0;
+      background: rgba(2,6,23,0.95); border-right: 1px solid rgba(34,211,238,0.1);
+      display: flex; flex-direction: column; z-index: 50;
+    }
+    .chat-sidebar-header {
+      padding: 16px; border-bottom: 1px solid rgba(34,211,238,0.1);
+    }
+    .btn-new-chat {
+      width: 100%; padding: 8px 0; background: rgba(34,211,238,0.08);
+      border: 1px solid rgba(34,211,238,0.25); border-radius: 8px;
+      color: #22d3ee; font-size: 13px; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-new-chat:hover { background: rgba(34,211,238,0.15); border-color: #22d3ee; }
+    .chat-sidebar-list { flex: 1; overflow-y: auto; padding: 8px; }
+    .chat-sidebar-list::-webkit-scrollbar { width: 4px; }
+    .chat-sidebar-list::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.2); border-radius: 2px; }
+    .session-item {
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      margin-bottom: 6px; transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .session-item:hover { background: rgba(34,211,238,0.06); border-color: rgba(34,211,238,0.1); }
+    .session-item.active { background: rgba(34,211,238,0.08); border-color: rgba(34,211,238,0.2); }
+    .session-title { font-size: 13px; color: rgba(226,232,240,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .session-time { font-size: 11px; color: rgba(226,232,240,0.35); margin-top: 4px; }
+    .session-empty { padding: 20px; text-align: center; font-size: 12px; color: rgba(226,232,240,0.3); }
+
     .llm-wrap { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; height: calc(100vh - 112px); }
     .llm-header { text-align: center; margin-bottom: 20px; }
     .llm-header-title { font-size: 20px; font-weight: 600; }
     .llm-header-sub { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 4px; }
     .llm-body { flex: 1; overflow-y: auto; padding: 0 20px; }
     .llm-body::-webkit-scrollbar { width: 6px; }
-    .llm-body::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 3px; }
+    .llm-body::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.2); border-radius: 3px; }
     .msg { display: flex; gap: 12px; margin-bottom: 20px; }
     .msg.user { flex-direction: row-reverse; }
     .msg-avatar {
@@ -22,45 +53,49 @@
       display: flex; align-items: center; justify-content: center; font-size: 16px;
     }
     .msg-avatar.ai { background: linear-gradient(135deg, #1677ff, #36cfc9); }
-    .msg-avatar.user { background: #f0f0f0; }
+    .msg-avatar.user { background: #f0f0f0; color: #333; }
     .msg-bubble {
       max-width: 70%; padding: 14px 18px; border-radius: 12px; font-size: 14px; line-height: 1.8;
       position: relative;
     }
-    .msg.ai .msg-bubble { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15); border-top-left-radius: 2px; }
+    .msg.ai .msg-bubble { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15); border-top-left-radius: 2px; color: rgba(226,232,240,0.85); }
     .msg.user .msg-bubble { background: #1677ff; color: #fff; border-top-right-radius: 2px; }
     .msg-bubble strong { font-weight: 600; }
-    .msg.ai .msg-bubble strong { color: #1677ff; }
+    .msg.ai .msg-bubble strong { color: #22d3ee; }
     .msg-time { font-size: 11px; color: rgba(226,232,240,0.2); margin-top: 4px; text-align: right; }
     .msg.user .msg-time { color: rgba(255,255,255,0.6); }
-    
+
     .ai-card {
-      background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 8px;
+      background: rgba(34,211,238,0.06); border: 1px solid rgba(34,211,238,0.15); border-radius: 8px;
       padding: 12px 16px; margin: 8px 0; font-size: 13px;
+      color: rgba(226,232,240,0.85);
     }
-    .ai-card-title { font-weight: 600; color: #52c41a; margin-bottom: 6px; }
+    .ai-card-title { font-weight: 600; color: #22d3ee; margin-bottom: 6px; }
     .ai-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
-    .ai-table th, .ai-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; }
-    .ai-table th { background: rgba(34,211,238,0.04); font-weight: 600; }
-    .ai-source { font-size: 11px; color: rgba(226,232,240,0.3); margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
-    .ai-source a { color: #1677ff; }
-    .ai-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 2px; }
-    
+    .ai-table th, .ai-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid rgba(34,211,238,0.1); color: rgba(226,232,240,0.85); }
+    .ai-table th { background: rgba(34,211,238,0.08); font-weight: 600; color: #22d3ee; }
+    .ai-source { font-size: 11px; color: rgba(226,232,240,0.35); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(34,211,238,0.1); }
+    .ai-source a { color: #22d3ee; }
+    .ai-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 2px; background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.2); color: #22d3ee; }
+
+    .verify-tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:11px; background:rgba(250,173,20,0.1); color:#fbbf24; border:1px solid rgba(250,173,20,0.3); }
+
     .llm-input-bar {
       display: flex; gap: 10px; padding: 16px 20px; background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1);
       border-radius: 12px; box-shadow: 0 -2px 8px rgba(0,0,0,0.04); margin-top: 8px;
     }
     .llm-input {
       flex: 1; padding: 10px 16px; border: 1px solid rgba(34,211,238,0.15); border-radius: 8px;
-      font-size: 14px; outline: none;
+      font-size: 14px; outline: none; background: rgba(2,6,23,0.6); color: #e2e8f0;
     }
-    .llm-input:focus { border-color: #1677ff; }
+    .llm-input:focus { border-color: #22d3ee; }
+    .llm-input::placeholder { color: rgba(226,232,240,0.3); }
     .llm-send {
       padding: 10px 20px; background: #1677ff; color: #fff; border: none;
       border-radius: 8px; font-size: 14px; cursor: pointer;
     }
     .llm-send:hover { background: #4096ff; }
-    
+
     .quick-questions {
       display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; justify-content: center;
     }
@@ -70,7 +105,7 @@
       transition: all 0.2s;
     }
     .quick-q:hover { border-color: #22d3ee; color: #22d3ee; background: rgba(34,211,238,0.08); }
-    
+
     .llm-welcome {
       text-align: center; padding: 40px 20px;
     }
@@ -94,14 +129,26 @@
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局</span><div class="avatar">李</div><span>李管理</span></div>
   </div>
-  
+
+  <!-- 历史会话侧边栏 -->
+  <aside class="chat-sidebar" id="chatSidebar">
+    <div class="chat-sidebar-header">
+      <button class="btn-new-chat" onclick="startNewSession()">
+        <span>＋</span> 新会话
+      </button>
+    </div>
+    <div class="chat-sidebar-list" id="sessionList">
+      <div class="session-empty">暂无历史会话</div>
+    </div>
+  </aside>
+
   <div class="main">
     <div class="llm-wrap">
       <div class="llm-header">
         <div class="llm-header-title">🤖 LLM 智能政务助手</div>
         <div class="llm-header-sub">政策秒查 · 异常归因 · 决策建议 · 自然语言报表</div>
       </div>
-      
+
       <div class="llm-body" id="chatBody">
         <div class="llm-welcome" id="welcomeArea">
           <div class="llm-welcome-icon">🤖</div>
@@ -133,25 +180,128 @@
             </div>
           </div>
         </div>
-        
+
         <div id="chatMessages"></div>
       </div>
-      
+
       <div class="quick-questions" id="quickQuestions">
-        <span class="quick-q" onclick="sendPreset('policy')">📚 RTO燃烧室温度最低多少度？</span>
-        <span class="quick-q" onclick="sendPreset('attribution')">🔍 为什么张镇工业园协同指数掉了？</span>
-        <span class="quick-q" onclick="sendPreset('report')">📊 生成上个月园区减污增碳/减碳增污悖论风险统计</span>
-        <span class="quick-q" onclick="sendPreset('schedule')">💡 建议三家企业的错峰运行方案</span>
+        <!-- 动态生成 -->
       </div>
-      
+
       <div class="llm-input-bar">
         <input class="llm-input" id="chatInput" placeholder="输入你的问题，例如：查询VOCs排放标准" onkeypress="if(event.key==='Enter')sendMsg()">
         <button class="llm-send" onclick="sendMsg()">发送</button>
       </div>
     </div>
   </div>
-  
+
+  <script src="../js/data.js"></script>
   <script>
+    // ========== 会话管理 ==========
+    const SESSIONS_KEY = 'pcap_llm_sessions';
+    let currentSessionId = null;
+
+    function loadSessions() {
+      try {
+        return JSON.parse(localStorage.getItem(SESSIONS_KEY)) || [];
+      } catch (e) { return []; }
+    }
+
+    function saveSessions(sessions) {
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+    }
+
+    function genSessionId() {
+      return 'sess_' + Date.now();
+    }
+
+    function getSessionTitle(messages) {
+      const firstUser = messages.find(m => m.role === 'user');
+      if (firstUser) {
+        const text = firstUser.content.replace(/<[^>]+>/g, '').trim();
+        return text.slice(0, 15) + (text.length > 15 ? '…' : '');
+      }
+      return '新会话';
+    }
+
+    function renderSessionList() {
+      const list = loadSessions();
+      const container = document.getElementById('sessionList');
+      if (list.length === 0) {
+        container.innerHTML = '<div class="session-empty">暂无历史会话</div>';
+        return;
+      }
+      container.innerHTML = list.map(s => {
+        const isActive = s.id === currentSessionId;
+        const timeStr = s.updatedAt ? new Date(s.updatedAt).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+        return `<div class="session-item ${isActive ? 'active' : ''}" onclick="switchSession('${s.id}')">
+          <div class="session-title">${escapeHtml(s.title || '新会话')}</div>
+          <div class="session-time">${timeStr}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' }[m]));
+    }
+
+    function switchSession(id) {
+      const sessions = loadSessions();
+      const sess = sessions.find(s => s.id === id);
+      if (!sess) return;
+      currentSessionId = id;
+      renderSessionList();
+
+      // 恢复聊天内容
+      document.getElementById('welcomeArea').style.display = sess.messages && sess.messages.length > 0 ? 'none' : 'block';
+      const body = document.getElementById('chatMessages');
+      body.innerHTML = '';
+      if (sess.messages) {
+        sess.messages.forEach(m => {
+          renderMsg(m.role, m.content, false);
+        });
+      }
+      updateQuickQuestions();
+    }
+
+    function startNewSession() {
+      currentSessionId = genSessionId();
+      const sessions = loadSessions();
+      sessions.unshift({ id: currentSessionId, title: '新会话', messages: [], createdAt: Date.now(), updatedAt: Date.now() });
+      saveSessions(sessions);
+      renderSessionList();
+
+      document.getElementById('welcomeArea').style.display = 'block';
+      document.getElementById('chatMessages').innerHTML = '';
+      updateQuickQuestions();
+      showToast('已开启新会话', 'info');
+    }
+
+    function ensureSession() {
+      if (!currentSessionId) {
+        currentSessionId = genSessionId();
+        const sessions = loadSessions();
+        sessions.unshift({ id: currentSessionId, title: '新会话', messages: [], createdAt: Date.now(), updatedAt: Date.now() });
+        saveSessions(sessions);
+        renderSessionList();
+      }
+    }
+
+    function appendToSession(role, content) {
+      ensureSession();
+      const sessions = loadSessions();
+      const sess = sessions.find(s => s.id === currentSessionId);
+      if (sess) {
+        sess.messages = sess.messages || [];
+        sess.messages.push({ role, content, time: Date.now() });
+        sess.updatedAt = Date.now();
+        sess.title = getSessionTitle(sess.messages);
+        saveSessions(sessions);
+        renderSessionList();
+      }
+    }
+
+    // ========== 预设问答 ==========
     const presets = {
       policy: {
         q: 'RTO 燃烧室温度最低多少度？',
@@ -164,7 +314,7 @@
             <tr><td>《工业涂装工序污染防治可行技术指南》HJ 1126-2020</td><td>第 4.2.3 条</td><td>RTO 运行温度 760-850°C 为正常区间</td></tr>
             <tr><td>北京市 DB11/501-2023</td><td>补充条款</td><td>低于 760°C 持续 15 分钟以上视为不正常运行</td></tr>
           </table>
-          <div class="ai-source">来源：<a href="#">HJ 1093-2020</a>、<a href="#">HJ 1126-2020</a>、<a href="#">DB11/501-2023</a> | <span style="color:#faad14">[待核实]</span> 请以正式文本为准</div>
+          <div class="ai-source">来源：<a href="#">HJ 1093-2020</a>、<a href="#">HJ 1126-2020</a>、<a href="#">DB11/501-2023</a> | [待核实] 请以正式文本为准</div>
         </div>
         <p>💡 <strong>补充说明</strong>：温度过高（>850°C）也可能导致能源浪费，建议将燃烧室温度控制在 <strong>760-800°C</strong> 的最佳效率区间。</p>`
       },
@@ -184,15 +334,15 @@
           </table>
           <p><strong>Step 4 - 根因判定：</strong>3 家企业同时拉满 RTO 负荷求 VOCs 达标，天然气总耗环比增 28%</p>
         </div>
-        <div class="ai-card" style="background:rgba(34,211,238,0.06);border-color:rgba(34,211,238,0.15)">
-          <div class="ai-card-title" style="color:#22d3ee">💡 调度建议</div>
+        <div class="ai-card">
+          <div class="ai-card-title">💡 调度建议</div>
           <p>建议错峰运行：</p>
           <p>① 蓝天工业：8:00-12:00 集中喷涂</p>
           <p>② 红星喷涂：13:00-17:00 集中喷涂</p>
           <p>③ 鑫达汽修：18:00-22:00 集中喷涂</p>
           <p>预计错峰后园区天然气消耗降低 <strong>22%</strong>，协同指数回升至 <strong>0.72</strong></p>
         </div>
-        <div class="ai-source"><span style="color:#faad14">[待核实]</span> 本分析基于实时双算数据，建议结合现场核查确认</div>`
+        <div class="ai-source">[待核实] 本分析基于实时双算数据，建议结合现场核查确认</div>`
       },
       report: {
         q: '生成上个月园区 减污增碳/减碳增污悖论 风险统计',
@@ -202,18 +352,18 @@
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0">
             <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#f5222d">7</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">减污增碳/减碳增污悖论 事件</div></div>
             <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#fa8c16">5</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">减污增碳</div></div>
-            <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#faad14">2</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">减碳增污</div></div>
+            <div style="text-align:center"><div style="font-size:24px;font-weight:700;color:#fbbf24">2</div><div style="font-size:12px;color:rgba(226,232,240,0.45)">减碳增污</div></div>
           </div>
           <table class="ai-table">
             <tr><th>企业</th><th>类型</th><th>C-P最低</th><th>持续时长</th><th>状态</th></tr>
-            <tr><td>蓝天工业涂装</td><td><span class="ai-tag" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f5222d">减污增碳</span></td><td>0.35</td><td>36h</td><td>整改中</td></tr>
-            <tr><td>红星喷涂厂</td><td><span class="ai-tag" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f5222d">减污增碳</span></td><td>0.38</td><td>24h</td><td>已销号</td></tr>
-            <tr><td>鑫达汽修</td><td><span class="ai-tag" style="background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.2);color:#faad14">减碳增污</span></td><td>0.42</td><td>18h</td><td>整改中</td></tr>
-            <tr><td>金辉涂装</td><td><span class="ai-tag" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f5222d">减污增碳</span></td><td>0.40</td><td>12h</td><td>已销号</td></tr>
+            <tr><td>蓝天工业涂装</td><td><span class="ai-tag" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171">减污增碳</span></td><td>0.35</td><td>36h</td><td>整改中</td></tr>
+            <tr><td>红星喷涂厂</td><td><span class="ai-tag" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171">减污增碳</span></td><td>0.38</td><td>24h</td><td>已销号</td></tr>
+            <tr><td>鑫达汽修</td><td><span class="ai-tag" style="background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.2);color:#fbbf24">减碳增污</span></td><td>0.42</td><td>18h</td><td>整改中</td></tr>
+            <tr><td>金辉涂装</td><td><span class="ai-tag" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171">减污增碳</span></td><td>0.40</td><td>12h</td><td>已销号</td></tr>
           </table>
         </div>
         <p>📈 <strong>趋势分析</strong>：4月 减污增碳/减碳增污悖论 事件较 3月增加 40%，主要原因为季节性订单增长导致 RTO 超负荷运行。建议加强错峰调度管理。</p>
-        <p><a href="report-result.html" style="color:#1677ff">👉 查看完整可视化报表</a></p>`
+        <p><a href="report-result.html" style="color:#22d3ee">👉 查看完整可视化报表</a></p>`
       },
       schedule: {
         q: '建议三家企业的错峰运行方案',
@@ -237,14 +387,64 @@
         </div>`
       }
     };
-    
-    function sendPreset(key) {
+
+    // ========== 动态推荐问题 ==========
+    function buildQuickQuestions() {
+      const questions = [];
+      // 固定保留
+      questions.push({ key: 'policy', icon: '📚', text: 'RTO燃烧室温度最低多少度？' });
+
+      let dynamicAdded = false;
+      try {
+        const cpTrend = DataStore.get('healthScore', {}).cpTrend;
+        const alerts = DataStore.getAlerts();
+        const realtime = DataStore.getRealtime();
+        const unreadAlerts = alerts.filter(a => !a.read).length;
+        const currentCp = realtime ? realtime.cpIndex : null;
+
+        // C-P 下降趋势判断
+        let isCpDropping = false;
+        if (cpTrend && cpTrend.values && cpTrend.values.length >= 2) {
+          const vals = cpTrend.values;
+          // 最近两天对比
+          if (vals[vals.length - 1] < vals[vals.length - 2]) {
+            isCpDropping = true;
+          }
+        }
+
+        if (isCpDropping) {
+          questions.push({ key: 'attribution', icon: '🔍', text: '为什么C-P协同指数下降了？' });
+          dynamicAdded = true;
+        }
+        if (unreadAlerts > 0) {
+          questions.push({ key: 'attribution', icon: '⚠️', text: '如何处理最新的减污增碳/减碳增污悖论预警？' });
+          dynamicAdded = true;
+        }
+        if (!dynamicAdded) {
+          questions.push({ key: 'report', icon: '📊', text: '生成上个月园区减污增碳/减碳增污悖论风险统计' });
+        }
+      } catch (e) {
+        // DataStore 未就绪时回退
+        questions.push({ key: 'report', icon: '📊', text: '生成上个月园区减污增碳/减碳增污悖论风险统计' });
+      }
+
+      return questions;
+    }
+
+    function updateQuickQuestions() {
+      const container = document.getElementById('quickQuestions');
+      const qs = buildQuickQuestions();
+      container.innerHTML = qs.map(q => `<span class="quick-q" onclick="sendPreset('${q.key}', '${escapeHtml(q.text)}')">${q.icon} ${escapeHtml(q.text)}</span>`).join('');
+    }
+
+    function sendPreset(key, overrideText) {
       document.getElementById('welcomeArea').style.display = 'none';
       const p = presets[key];
-      addMsg('user', p.q);
+      const qText = overrideText || p.q;
+      addMsg('user', qText);
       setTimeout(() => addMsg('ai', p.a), 600);
     }
-    
+
     function sendMsg() {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
@@ -253,33 +453,55 @@
       addMsg('user', text);
       input.value = '';
       setTimeout(() => {
-        addMsg('ai', `<p>🤖 我理解你的问题是：<strong>"${text}"</strong></p><p>作为原型演示，我已预置了 4 组典型问答。请从上方快捷问题中选择，或输入以下关键词触发：</p><p>• <strong>政策</strong> / <strong>RTO</strong> / <strong>温度</strong> → 政策秒查</p><p>• <strong>为什么</strong> / <strong>归因</strong> / <strong>掉了</strong> → 异常归因</p><p>• <strong>报表</strong> / <strong>统计</strong> / <strong>上个月</strong> → 智能报表</p><p>• <strong>错峰</strong> / <strong>调度</strong> / <strong>建议</strong> → 决策建议</p>`);
+        addMsg('ai', `<p>🤖 我理解你的问题是：<strong>"${escapeHtml(text)}"</strong></p><p>作为原型演示，我已预置了典型问答。请从上方快捷问题中选择，或输入以下关键词触发：</p><p>• <strong>政策</strong> / <strong>RTO</strong> / <strong>温度</strong> → 政策秒查</p><p>• <strong>为什么</strong> / <strong>归因</strong> / <strong>掉了</strong> → 异常归因</p><p>• <strong>报表</strong> / <strong>统计</strong> / <strong>上个月</strong> → 智能报表</p><p>• <strong>错峰</strong> / <strong>调度</strong> / <strong>建议</strong> → 决策建议</p>`);
       }, 800);
     }
-    
-    function addMsg(role, html) {
+
+    function renderMsg(role, html, save) {
       const body = document.getElementById('chatMessages');
       const div = document.createElement('div');
       div.className = 'msg ' + role;
       const time = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+      let content = html;
+      if (role === 'ai') {
+        content = content.replace(/\[待核实\]/g, '<span class="verify-tag">[待核实]</span>');
+      }
       div.innerHTML = `
         <div class="msg-avatar ${role}">${role === 'ai' ? '🤖' : '李'}</div>
         <div>
-          <div class="msg-bubble">${html}</div>
+          <div class="msg-bubble">${content}</div>
           <div class="msg-time">${time}</div>
         </div>
       `;
       body.appendChild(div);
       div.scrollIntoView({ behavior: 'smooth' });
+      if (save !== false) {
+        appendToSession(role, html);
+      }
     }
+
+    function addMsg(role, html) {
+      renderMsg(role, html, true);
+    }
+
+    // ========== 初始化 ==========
+    window.addEventListener('load', function() {
+      updateQuickQuestions();
+      renderSessionList();
+
+      // 如果有最近会话则恢复，否则新建
+      const sessions = loadSessions();
+      if (sessions.length > 0) {
+        switchSession(sessions[0].id);
+      } else {
+        startNewSession();
+      }
+
+      setTimeout(function() {
+        var el = document.getElementById('pageLoader');
+        if (el) el.classList.add('done');
+      }, 500);
+    });
   </script>
-  <script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
-</script>
 </body>
 </html>

@@ -159,8 +159,18 @@
       </div>
     </div>
     
+    <!-- 生成动画覆盖层 -->
+    <div id="genOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(2,6,23,0.95);z-index:999;align-items:center;justify-content:center;flex-direction:column">
+      <div style="font-size:48px;margin-bottom:20px">🤖</div>
+      <div style="font-size:18px;font-weight:600;color:#22d3ee;margin-bottom:12px">AI 正在生成监测月报...</div>
+      <div style="width:300px;height:4px;background:rgba(34,211,238,0.1);border-radius:2px;overflow:hidden;margin-bottom:16px">
+        <div id="genProgress" style="width:0%;height:100%;background:linear-gradient(90deg,#0ea5e9,#22d3ee);transition:width 0.3s"></div>
+      </div>
+      <div id="genStatus" style="font-size:13px;color:rgba(226,232,240,0.4)">正在汇总28家企业数据...</div>
+    </div>
+
     <div class="action-bar">
-      <button class="btn btn-default" onclick="showToast('正在重新生成报告...','info');setTimeout(()=>showToast('报告重新生成完成','success'),1500)">🔄 重新生成</button>
+      <button class="btn btn-default" onclick="generateReport()">🔄 重新生成</button>
       <button class="btn btn-default" onclick="showToast('编辑模式开发中...','info')">✏️ 编辑内容</button>
       <button class="btn btn-primary" id="btnPublish" onclick="publishReport()">✅ 审核通过并发布</button>
       <button class="btn btn-primary" onclick="window.print()">📥 导出 PDF</button>
@@ -177,6 +187,42 @@
       document.getElementById('btnPublish').textContent = '✅ 已发布';
       document.getElementById('btnPublish').disabled = true;
       showToast('监测月报已审核通过并发布', 'success');
+    }
+
+    function generateReport() {
+      const overlay = document.getElementById('genOverlay');
+      const progress = document.getElementById('genProgress');
+      const status = document.getElementById('genStatus');
+      overlay.style.display = 'flex';
+      const steps = [
+        { pct: '15%', text: '正在汇总28家企业数据...' },
+        { pct: '30%', text: '正在分析VOCs排放趋势...' },
+        { pct: '50%', text: '正在计算碳排放强度...' },
+        { pct: '65%', text: '正在识别减污增碳/减碳增污悖论事件...' },
+        { pct: '80%', text: '正在生成AI分析结论...' },
+        { pct: '95%', text: '正在排版格式化...' },
+        { pct: '100%', text: '生成完成！' },
+      ];
+      let i = 0;
+      function next() {
+        if (i >= steps.length) {
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            showToast('✅ 监测月报重新生成完成', 'success');
+            // 随机微调数据模拟新报告
+            document.querySelectorAll('.summary-num').forEach(el => {
+              const orig = parseInt(el.textContent);
+              if (!isNaN(orig)) el.textContent = orig + Math.floor((Math.random()-0.5)*3);
+            });
+          }, 400);
+          return;
+        }
+        progress.style.width = steps[i].pct;
+        status.textContent = steps[i].text;
+        i++;
+        setTimeout(next, 400 + Math.random() * 300);
+      }
+      next();
     }
   </script>
   <script>
