@@ -2,26 +2,39 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>跨区转移溯源 — 污碳协同AI监管平台</title>
-
+  <script src="../js/data.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
     .page-sub { font-size: 13px; color: rgba(226,232,240,0.4); margin-bottom: 20px; }
     .back-link { font-size: 13px; color: #22d3ee; margin-bottom: 12px; display: inline-block; transition:all 0.2s; }
     .back-link:hover { text-shadow:0 0 8px rgba(34,211,238,0.5); }
-    
+
     .alert-banner {
       background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px;
       padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px;
     }
     .alert-banner-icon { font-size: 32px; }
     .alert-banner-content { flex: 1; }
-    .alert-banner-title { font-weight: 600; color: #f5222d; margin-bottom: 4px; }
+    .alert-banner-title { font-weight: 600; color: #f87171; margin-bottom: 4px; }
     .alert-banner-desc { font-size: 13px; color: rgba(226,232,240,0.6); }
-    
+
+    .case-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .case-tab {
+      padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(34,211,238,0.1);
+      background: rgba(34,211,238,0.04); color: rgba(226,232,240,0.5); font-size: 13px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .case-tab:hover { border-color: rgba(34,211,238,0.3); color: #22d3ee; }
+    .case-tab.active { background: rgba(34,211,238,0.12); color: #22d3ee; border-color: rgba(34,211,238,0.3); }
+    .case-tab .badge { font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 6px; }
+    .case-tab .badge.high { background: rgba(239,68,68,0.2); color: #f87171; }
+    .case-tab .badge.medium { background: rgba(234,179,8,0.2); color: #fbbf24; }
+
     .trace-map {
       background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 20px; margin-bottom: 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06); position: relative; height: 320px;
@@ -42,7 +55,7 @@
     .trace-zone-stat { font-size: 11px; color: rgba(226,232,240,0.4); }
     .trace-arrow {
       position: absolute; top: 35%; left: 35%; right: 35%; height: 3px;
-      background: linear-gradient(90deg, #f5222d, #faad14);
+      background: linear-gradient(90deg, #f87171, #faad14);
     }
     .trace-arrow::after {
       content: "▶"; position: absolute; right: -8px; top: -8px;
@@ -50,11 +63,11 @@
     }
     .trace-arrow-label {
       position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
-      font-size: 11px; color: #f5222d; font-weight: 600; white-space: nowrap;
+      font-size: 11px; color: #f87171; font-weight: 600; white-space: nowrap;
       background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(239,68,68,0.2);
     }
     .trace-flyline {
-      position: absolute; height: 2px; background: linear-gradient(90deg, transparent, #f5222d, transparent);
+      position: absolute; height: 2px; background: linear-gradient(90deg, transparent, #f87171, transparent);
       animation: flyMove 2s ease-in-out infinite;
     }
     @keyframes flyMove {
@@ -62,7 +75,7 @@
       50% { opacity: 1; }
       100% { opacity: 0.3; }
     }
-    
+
     .trace-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
     .trace-card { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .trace-card-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
@@ -73,9 +86,9 @@
     .trace-ent-row:last-child { border-bottom: none; }
     .trace-ent-name { font-weight: 500; }
     .trace-ent-change { font-family: monospace; font-size: 13px; }
-    .trace-ent-change.up { color: #f5222d; }
-    .trace-ent-change.down { color: #52c41a; }
-    
+    .trace-ent-change.up { color: #f87171; }
+    .trace-ent-change.down { color: #4ade80; }
+
     .analysis-card { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .analysis-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
     .analysis-item { display: flex; gap: 12px; margin-bottom: 12px; }
@@ -85,12 +98,18 @@
       justify-content: center; flex-shrink: 0;
     }
     .analysis-text { font-size: 13px; line-height: 1.8; flex: 1; }
-    .analysis-text strong { color: #f5222d; }
-    
+    .analysis-text strong { color: #f87171; }
+
     .action-bar { display: flex; gap: 12px; margin-top: 20px; }
+
+    /* 疑似转移监测表格 */
+    .watch-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .watch-table th, .watch-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(34,211,238,0.08); }
+    .watch-table th { background: rgba(34,211,238,0.04); font-weight: 600; color: #22d3ee; }
+    .watch-table tr:hover { background: rgba(34,211,238,0.03); }
+    .watch-badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
   </style>
   <link rel="stylesheet" href="../css/style.css">
-
 </head>
 <body>
   <div class="bg-honeycomb"></div>
@@ -99,122 +118,46 @@
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局 · 监测数据科</span><div class="avatar">王</div><span>王监测</span></div>
   </div>
-  
+
   <div class="main">
     <a class="back-link" href="index.html">← 返回 3D GIS 监测台</a>
-    
+
     <div class="page-header">🔍 跨区转移溯源分析</div>
-    <div class="page-sub">系统检测到疑似污染转移事件，AI 自动关联分析中</div>
-    
-    <div class="alert-banner">
+    <div class="page-sub">AI 自动关联分析疑似污染转移事件，实时监测企业间 VOCs 与碳排数据异动</div>
+
+    <!-- 案例切换标签 -->
+    <div class="case-tabs" id="caseTabs"></div>
+
+    <div class="alert-banner" id="alertBanner">
       <div class="alert-banner-icon">⚠️</div>
       <div class="alert-banner-content">
-        <div class="alert-banner-title">疑似污染转移事件 detected</div>
-        <div class="alert-banner-desc">
+        <div class="alert-banner-title" id="bannerTitle">疑似污染转移事件 detected</div>
+        <div class="alert-banner-desc" id="bannerDesc">
           A厂（主机厂）VOCs 骤降 80%，同时关联外包厂 B厂 VOCs 新增 70%。<br>
           系统判定置信度：<strong>85%</strong> | 关联类型：喷涂外包转移
         </div>
       </div>
     </div>
-    
+
     <div class="trace-map">
       <div class="trace-map-title">🗺️ 转移路径示意</div>
-      <div class="trace-map-area">
-        <div class="trace-zone from">
-          <div class="trace-zone-name">🏭 A厂（主机厂）</div>
-          <div class="trace-zone-stat">怀柔区张镇工业园</div>
-          <div class="trace-zone-stat" style="color:#52c41a">VOCs ↓80%</div>
-        </div>
-        <div class="trace-arrow">
-          <div class="trace-arrow-label">⇢ 外包转移</div>
-        </div>
-        <div class="trace-zone to">
-          <div class="trace-zone-name">🏭 B厂（外包厂）</div>
-          <div class="trace-zone-stat">怀柔区李村工业区</div>
-          <div class="trace-zone-stat" style="color:#f5222d">VOCs ↑70%</div>
-        </div>
-        <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(226,232,240,0.35);background:rgba(34,211,238,0.05);padding:4px 12px;border-radius:4px;border:1px solid rgba(34,211,238,0.1)">
-          距离：12km | 关联时长：3个月 | 置信度：85%
-        </div>
+      <div class="trace-map-area" id="traceMapArea">
+        <!-- 动态填充 -->
       </div>
     </div>
-    
-    <div class="trace-detail">
-      <div class="trace-card">
-        <div class="trace-card-title">📉 A厂（转出方）数据变化</div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">VOCs 排放速率</span>
-          <span class="trace-ent-change down">28.5 → 5.2 kg/h</span>
-        </div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">喷涂面积</span>
-          <span class="trace-ent-change down">3.2 → 0.8 万m²</span>
-        </div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">涂料消耗</span>
-          <span class="trace-ent-change down">4,500 → 1,200 kg</span>
-        </div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">RTO 运行时长</span>
-          <span class="trace-ent-change down">600 → 150 h</span>
-        </div>
-      </div>
-      <div class="trace-card">
-        <div class="trace-card-title">📈 B厂（转入方）数据变化</div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">VOCs 排放速率</span>
-          <span class="trace-ent-change up">8.3 → 14.1 kg/h</span>
-        </div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">喷涂面积</span>
-          <span class="trace-ent-change up">0.9 → 2.5 万m²</span>
-        </div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">涂料消耗</span>
-          <span class="trace-ent-change up">1,100 → 3,800 kg</span>
-        </div>
-        <div class="trace-ent-row">
-          <span class="trace-ent-name">RTO 运行时长</span>
-          <span class="trace-ent-change up">180 → 520 h</span>
-        </div>
-      </div>
+
+    <div class="trace-detail" id="traceDetail">
+      <!-- 动态填充 -->
     </div>
-    
-    <div class="analysis-card">
-      <div class="analysis-title">🤖 AI 关联分析结论</div>
-      <div class="analysis-item">
-        <div class="analysis-num">1</div>
-        <div class="analysis-text">
-          <strong>时序关联：</strong>A厂 VOCs 下降与 B厂 VOCs 上升发生在同一时段（2026年3月），时间差 < 7 天，符合外包转移的典型时序特征。
-        </div>
-      </div>
-      <div class="analysis-item">
-        <div class="analysis-num">2</div>
-        <div class="analysis-text">
-          <strong>业务量互补：</strong>A厂喷涂面积减少 2.4 万m²，B厂增加 1.6 万m²，差额 0.8 万m² 可能为其他外包渠道或产能压缩。
-        </div>
-      </div>
-      <div class="analysis-item">
-        <div class="analysis-num">3</div>
-        <div class="analysis-text">
-          <strong>供应链验证：</strong>通过企业工商信息关联，A厂与 B厂于 2025年12月 签订了《喷涂外包服务协议》，关联关系成立。
-        </div>
-      </div>
-      <div class="analysis-item">
-        <div class="analysis-num">4</div>
-        <div class="analysis-text">
-          <strong>风险判定：</strong>此事件属于<strong>「污染转移」</strong>而非真正的减排。A厂通过将喷涂工序外包给 B厂，实现了自身 VOCs 数据下降，但辖区总排放量未减少，反而因运输等环节可能增加碳排放。
-        </div>
-      </div>
+
+    <div class="analysis-card" id="analysisCard">
+      <!-- 动态填充 -->
     </div>
-    
+
     <div class="card" style="margin-top:16px">
       <div style="font-size:15px;font-weight:600;margin-bottom:14px">📋 处置建议</div>
-      <div style="font-size:13px;line-height:2;color:rgba(226,232,240,0.7)">
-        ① 将 A厂与 B厂纳入<strong>「关联监管组」</strong>，合并计算两厂 VOCs 排放总量<br>
-        ② 要求 A厂如实申报外包喷涂业务比例，纳入排污许可管理<br>
-        ③ 对 B厂开展现场核查，确认其治污设施是否匹配新增产能<br>
-        ④ 建议两厂同步优化工艺，实现真正的协同减排而非污染转移
+      <div id="suggestionBox" style="font-size:13px;line-height:2;color:rgba(226,232,240,0.7)">
+        <!-- 动态填充 -->
       </div>
       <div class="action-bar">
         <button class="btn btn-primary" onclick="showToast('已标记为重点关注','success')">🏷️ 标记为重点关注</button>
@@ -222,9 +165,206 @@
         <button class="btn btn-default" onclick="window.print()">📊 生成转移分析报告</button>
       </div>
     </div>
-    
+
+    <!-- 疑似转移监测列表 -->
+    <div class="card" style="margin-top:20px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:14px">👁️ 疑似转移实时监测列表</div>
+      <table class="watch-table">
+        <thead>
+          <tr><th>监测时间</th><th>转出企业</th><th>转入企业</th><th>VOCs异动</th><th>关联类型</th><th>置信度</th><th>状态</th></tr>
+        </thead>
+        <tbody id="watchTableBody"></tbody>
+      </table>
+    </div>
+
     <div style="height:40px"></div>
   </div>
+
+  <script>
+    const TRANSFER_CASES = [
+      {
+        id: 1,
+        title: 'A厂 → B厂 喷涂外包转移',
+        level: 'high',
+        from: { name: 'A厂（主机厂）', zone: '怀柔区张镇工业园', vocsChange: '↓80%', cp: '0.72→0.85' },
+        to: { name: 'B厂（外包厂）', zone: '怀柔区李村工业区', vocsChange: '↑70%', cp: '0.55→0.42' },
+        distance: '12km',
+        duration: '3个月',
+        confidence: '85%',
+        type: '喷涂外包转移',
+        fromData: [
+          { name: 'VOCs 排放速率', value: '28.5 → 5.2 kg/h', trend: 'down' },
+          { name: '喷涂面积', value: '3.2 → 0.8 万m²', trend: 'down' },
+          { name: '涂料消耗', value: '4,500 → 1,200 kg', trend: 'down' },
+          { name: 'RTO 运行时长', value: '600 → 150 h', trend: 'down' },
+        ],
+        toData: [
+          { name: 'VOCs 排放速率', value: '8.3 → 14.1 kg/h', trend: 'up' },
+          { name: '喷涂面积', value: '0.9 → 2.5 万m²', trend: 'up' },
+          { name: '涂料消耗', value: '1,100 → 3,800 kg', trend: 'up' },
+          { name: 'RTO 运行时长', value: '180 → 520 h', trend: 'up' },
+        ],
+        analysis: [
+          { title: '时序关联', text: 'A厂 VOCs 下降与 B厂 VOCs 上升发生在同一时段（2026年3月），时间差 < 7 天，符合外包转移的典型时序特征。' },
+          { title: '业务量互补', text: 'A厂喷涂面积减少 2.4 万m²，B厂增加 1.6 万m²，差额 0.8 万m² 可能为其他外包渠道或产能压缩。' },
+          { title: '供应链验证', text: '通过企业工商信息关联，A厂与 B厂于 2025年12月 签订了《喷涂外包服务协议》，关联关系成立。' },
+          { title: '风险判定', text: '此事件属于<strong>「污染转移」</strong>而非真正的减排。A厂通过将喷涂工序外包给 B厂，实现了自身 VOCs 数据下降，但辖区总排放量未减少。' },
+        ],
+        suggestions: '① 将 A厂与 B厂纳入<strong>「关联监管组」</strong>，合并计算两厂 VOCs 排放总量<br>② 要求 A厂如实申报外包喷涂业务比例，纳入排污许可管理<br>③ 对 B厂开展现场核查，确认其治污设施是否匹配新增产能<br>④ 建议两厂同步优化工艺，实现真正的协同减排而非污染转移',
+      },
+      {
+        id: 2,
+        title: 'C厂 → D厂 产能搬迁转移',
+        level: 'medium',
+        from: { name: 'C厂（搬迁方）', zone: '怀柔区张镇工业园', vocsChange: '↓65%', cp: '0.68→0.82' },
+        to: { name: 'D厂（承接方）', zone: '怀柔区李村工业区', vocsChange: '↑55%', cp: '0.48→0.38' },
+        distance: '8km',
+        duration: '2个月',
+        confidence: '72%',
+        type: '产能搬迁转移',
+        fromData: [
+          { name: 'VOCs 排放速率', value: '18.2 → 6.4 kg/h', trend: 'down' },
+          { name: '喷涂面积', value: '2.8 → 1.0 万m²', trend: 'down' },
+          { name: '涂料消耗', value: '3,200 → 1,100 kg', trend: 'down' },
+          { name: '员工人数', value: '120 → 45 人', trend: 'down' },
+        ],
+        toData: [
+          { name: 'VOCs 排放速率', value: '9.5 → 14.8 kg/h', trend: 'up' },
+          { name: '喷涂面积', value: '1.5 → 3.2 万m²', trend: 'up' },
+          { name: '涂料消耗', value: '1,800 → 4,200 kg', trend: 'up' },
+          { name: '员工人数', value: '60 → 150 人', trend: 'up' },
+        ],
+        analysis: [
+          { title: '产能匹配', text: 'C厂减少的喷涂面积 1.8 万m² 与 D厂增加的 1.7 万m² 高度匹配，差异在合理误差范围内。' },
+          { title: '人员流动', text: '监测到 35名 C厂员工于 2026年2月 社保转移至 D厂，进一步佐证产能搬迁。' },
+          { title: '设备迁移', text: 'C厂 RTO 设备运行时长骤降但未被拆除，疑似处于待机状态，可能为短期搬迁。' },
+          { title: '风险判定', text: '此事件属于<strong>「产能搬迁型污染转移」</strong>，需关注 D厂治污设施扩容是否及时到位。' },
+        ],
+        suggestions: '① 核实 D厂 RTO 处理风量是否满足新增产能需求<br>② 要求 C厂提交产能调整说明，明确搬迁计划与时限<br>③ 将 D厂纳入重点监测名单，跟踪其 C-P 协同指数变化<br>④ 评估是否需要对 D厂开展排污许可变更审核',
+      },
+      {
+        id: 3,
+        title: 'E厂 → F厂 订单转移',
+        level: 'medium',
+        from: { name: 'E厂（发包方）', zone: '怀柔区张镇工业园', vocsChange: '↓45%', cp: '0.58→0.72' },
+        to: { name: 'F厂（承包方）', zone: '怀柔区李村工业区', vocsChange: '↑40%', cp: '0.62→0.51' },
+        distance: '15km',
+        duration: '1个月',
+        confidence: '68%',
+        type: '订单转移',
+        fromData: [
+          { name: 'VOCs 排放速率', value: '15.0 → 8.2 kg/h', trend: 'down' },
+          { name: '喷涂面积', value: '2.5 → 1.4 万m²', trend: 'down' },
+          { name: '订单金额', value: '800 → 320 万元', trend: 'down' },
+        ],
+        toData: [
+          { name: 'VOCs 排放速率', value: '7.8 → 10.9 kg/h', trend: 'up' },
+          { name: '喷涂面积', value: '1.2 → 2.8 万m²', trend: 'up' },
+          { name: '订单金额', value: '350 → 580 万元', trend: 'up' },
+        ],
+        analysis: [
+          { title: '订单关联', text: 'F厂 2026年4月 新增订单中 62% 来自 E厂下游客户，疑似 E厂将部分订单导流至 F厂。' },
+          { title: '数据匹配', text: 'E厂减少的喷涂面积 1.1 万m² 与 F厂增加的 1.6 万m² 不完全匹配，可能涉及多方转包。' },
+          { title: '风险判定', text: '此事件属于<strong>「订单转移型污染转移」</strong>，置信度较低，建议继续观察。' },
+        ],
+        suggestions: '① 继续监测两厂数据异动，观察趋势是否持续<br>② 约谈 E厂了解订单流向变化原因<br>③ 关注 F厂环保设施运行负荷是否匹配新增订单',
+      },
+    ];
+
+    let currentCaseId = 1;
+
+    function renderCaseTabs() {
+      const container = document.getElementById('caseTabs');
+      container.innerHTML = TRANSFER_CASES.map(c => {
+        const active = c.id === currentCaseId ? 'active' : '';
+        const badgeClass = c.level === 'high' ? 'high' : 'medium';
+        const badgeText = c.level === 'high' ? '高危' : '关注';
+        return `<div class="case-tab ${active}" onclick="switchCase(${c.id})">${c.title}<span class="badge ${badgeClass}">${badgeText}</span></div>`;
+      }).join('');
+    }
+
+    function switchCase(id) {
+      currentCaseId = id;
+      renderCaseTabs();
+      renderCurrentCase();
+    }
+
+    function renderCurrentCase() {
+      const c = TRANSFER_CASES.find(x => x.id === currentCaseId);
+      if (!c) return;
+
+      document.getElementById('bannerTitle').textContent = '疑似污染转移事件 detected — ' + c.title;
+      document.getElementById('bannerDesc').innerHTML = c.from.name + ' VOCs ' + c.from.vocsChange + '，同时 ' + c.to.name + ' VOCs ' + c.to.vocsChange + '。<br>系统判定置信度：<strong>' + c.confidence + '</strong> | 关联类型：' + c.type;
+
+      document.getElementById('traceMapArea').innerHTML = `
+        <div class="trace-zone from">
+          <div class="trace-zone-name">🏭 ${c.from.name}</div>
+          <div class="trace-zone-stat">${c.from.zone}</div>
+          <div class="trace-zone-stat" style="color:${c.from.vocsChange.includes('↓')?'#4ade80':'#f87171'}">VOCs ${c.from.vocsChange}</div>
+        </div>
+        <div class="trace-arrow">
+          <div class="trace-arrow-label">⇢ ${c.type}</div>
+        </div>
+        <div class="trace-zone to">
+          <div class="trace-zone-name">🏭 ${c.to.name}</div>
+          <div class="trace-zone-stat">${c.to.zone}</div>
+          <div class="trace-zone-stat" style="color:${c.to.vocsChange.includes('↓')?'#4ade80':'#f87171'}">VOCs ${c.to.vocsChange}</div>
+        </div>
+        <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(226,232,240,0.35);background:rgba(34,211,238,0.05);padding:4px 12px;border-radius:4px;border:1px solid rgba(34,211,238,0.1)">
+          距离：${c.distance} | 关联时长：${c.duration} | 置信度：${c.confidence}
+        </div>
+      `;
+
+      document.getElementById('traceDetail').innerHTML = `
+        <div class="trace-card">
+          <div class="trace-card-title">📉 ${c.from.name} 数据变化</div>
+          ${c.fromData.map(d => `<div class="trace-ent-row"><span class="trace-ent-name">${d.name}</span><span class="trace-ent-change ${d.trend}">${d.value}</span></div>`).join('')}
+        </div>
+        <div class="trace-card">
+          <div class="trace-card-title">📈 ${c.to.name} 数据变化</div>
+          ${c.toData.map(d => `<div class="trace-ent-row"><span class="trace-ent-name">${d.name}</span><span class="trace-ent-change ${d.trend}">${d.value}</span></div>`).join('')}
+        </div>
+      `;
+
+      document.getElementById('analysisCard').innerHTML = `
+        <div class="analysis-title">🤖 AI 关联分析结论</div>
+        ${c.analysis.map((a, i) => `
+          <div class="analysis-item">
+            <div class="analysis-num">${i+1}</div>
+            <div class="analysis-text"><strong>${a.title}：</strong>${a.text}</div>
+          </div>
+        `).join('')}
+      `;
+
+      document.getElementById('suggestionBox').innerHTML = c.suggestions;
+    }
+
+    function renderWatchTable() {
+      const tbody = document.getElementById('watchTableBody');
+      const rows = [
+        { time: '2026-05-18 09:00', from: 'A厂（主机厂）', to: 'B厂（外包厂）', vocs: '↓80% / ↑70%', type: '喷涂外包', confidence: '85%', status: '已确认' },
+        { time: '2026-05-15 14:30', from: 'C厂（搬迁方）', to: 'D厂（承接方）', vocs: '↓65% / ↑55%', type: '产能搬迁', confidence: '72%', status: '监测中' },
+        { time: '2026-05-12 11:00', from: 'E厂（发包方）', to: 'F厂（承包方）', vocs: '↓45% / ↑40%', type: '订单转移', confidence: '68%', status: '观察中' },
+        { time: '2026-05-10 08:15', from: '蓝天工业涂装', to: '—', vocs: '↓35% / —', type: '疑似外迁', confidence: '45%', status: '初步筛查' },
+      ];
+      tbody.innerHTML = rows.map(r => `
+        <tr>
+          <td>${r.time}</td>
+          <td>${r.from}</td>
+          <td>${r.to}</td>
+          <td>${r.vocs}</td>
+          <td>${r.type}</td>
+          <td>${r.confidence}</td>
+          <td><span class="watch-badge" style="background:${r.status==='已确认'?'rgba(239,68,68,0.15);color:#f87171':(r.status==='监测中'?'rgba(234,179,8,0.15);color:#fbbf24':'rgba(34,211,238,0.15);color:#22d3ee')};border:1px solid currentColor">${r.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    renderCaseTabs();
+    renderCurrentCase();
+    renderWatchTable();
+  </script>
+
   <script>
   window.addEventListener('load', function() {
     setTimeout(function() {
@@ -232,6 +372,6 @@
       if (el) el.classList.add('done');
     }, 500);
   });
-</script>
+  </script>
 </body>
 </html>

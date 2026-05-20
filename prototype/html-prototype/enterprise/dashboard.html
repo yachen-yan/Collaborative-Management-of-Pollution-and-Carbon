@@ -2,11 +2,12 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>工作台 — 蓝天工业涂装有限公司</title>
 
   <script src="../js/data.js"></script>
   <style>
-    body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei",sans-serif; }
+    body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; }
     .topbar { height:64px; background:linear-gradient(90deg,rgba(12,74,110,0.9),rgba(3,105,161,0.9)); backdrop-filter:blur(12px); border-bottom:1px solid rgba(34,211,238,0.15); display:flex; align-items:center; justify-content:space-between; padding:0 24px; position:fixed; top:0; left:0; right:0; z-index:100; }
     .topbar .logo { font-size:16px; font-weight:600; color:#e2e8f0; }
     .topbar .user { display:flex; align-items:center; gap:12px; font-size:13px; color:rgba(226,232,240,0.7); }
@@ -278,31 +279,100 @@
       }, 300);
     });
 
-    // 健康评分定时更新模拟（每小时）
+    // 健康评分精确计算（PRD 6.3 公式）
+    function calculateHealthScore() {
+      const rt = DataStore.getRealtime();
+      const alerts = DataStore.getAlerts();
+      // 模拟近7日VOCs超标天数（从预警中推导）
+      const recentAlerts = alerts.filter(a => a.type === '减污增碳/减碳增污悖论' || a.type === 'imbalance');
+      const exceedDays = Math.min(7, recentAlerts.length); // 用预警数模拟超标天数
+
+      // 污染分（30%）：近7日VOCs均值<限值得100分；每超1天扣15分；超标≥3天得0分
+      let pollutionScore = 100;
+      if (exceedDays >= 3) pollutionScore = 0;
+      else pollutionScore -= exceedDays * 15;
+
+      // 能效分（25%）：RTO热回收效率≥95%得100分；<90%得60分；<85%得30分
+      const heatEff = 87; // 从实时数据或设备状态获取
+      let energyScore = heatEff >= 95 ? 100 : (heatEff >= 90 ? 60 : 30);
+
+      // 碳排分（25%）：碳排强度≤区域P25得100分；P25-P50得75分；P50-P75得50分；>P75得25分
+      const carbonInt = rt.carbonIntensity || 0.28;
+      let carbonScore = carbonInt <= 0.18 ? 100 : (carbonInt <= 0.22 ? 75 : (carbonInt <= 0.28 ? 50 : 25));
+
+      // 协同分（20%）：C-P≥0.8得100分；0.6-0.8得80分；0.4-0.6得50分；<0.4得20分
+      const cp = rt.cpIndex || 0.38;
+      let synergyScore = cp >= 0.8 ? 100 : (cp >= 0.6 ? 80 : (cp >= 0.4 ? 50 : 20));
+
+      // 加权总分
+      const total = Math.round(pollutionScore * 0.30 + energyScore * 0.25 + carbonScore * 0.25 + synergyScore * 0.20);
+
+      return { total, pollutionScore, energyScore, carbonScore, synergyScore, cp };
+    }
+
+    // 健康评分定时更新（每30秒演示一次）
     function simulateHealthUpdate() {
       const scoreEl = document.querySelector('.score-big');
-      const health = DataStore.get('healthScore', MOCK_DATA.healthScore);
-      // 模拟微小波动
-      const change = (Math.random() - 0.5) * 4;
-      let newScore = Math.round(health.score + change);
-      newScore = Math.max(40, Math.min(95, newScore));
-      health.score = newScore;
-      DataStore.set('healthScore', health);
+      const health = calculateHealthScore();
+      // 保存到 DataStore
+      DataStore.set('healthScore', {
+        score: health.total,
+        level: health.total >= 85 ? '优秀' : (health.total >= 70 ? '良好' : (health.total >= 60 ? '一般' : '较差')),
+        color: health.total >= 85 ? '#4ade80' : (health.total >= 70 ? '#fbbf24' : (health.total >= 60 ? '#fa8c16' : '#f87171')),
+        pollution: health.pollutionScore,
+        energy: health.energyScore,
+        carbon: health.carbonScore,
+        synergy: health.synergyScore,
+        updateTime: new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}),
+      });
+
       // 更新显示
       if (scoreEl) {
-        scoreEl.textContent = newScore;
+        scoreEl.textContent = health.total;
         const label = document.querySelector('.score-level-tag');
-        if (newScore >= 80) { label.textContent = '优秀'; label.style.cssText = 'background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.2)'; scoreEl.style.color = '#4ade80'; }
-        else if (newScore >= 60) { label.textContent = '一般'; label.style.cssText = 'background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.2)'; scoreEl.style.color = '#fbbf24'; }
-        else { label.textContent = '较差'; label.style.cssText = 'background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)'; scoreEl.style.color = '#f87171'; }
+        const level = health.total >= 85 ? '优秀' : (health.total >= 70 ? '良好' : (health.total >= 60 ? '一般' : '较差'));
+        const color = health.total >= 85 ? '#4ade80' : (health.total >= 70 ? '#fbbf24' : (health.total >= 60 ? '#fa8c16' : '#f87171'));
+        const bg = health.total >= 85 ? 'rgba(74,222,128,0.1)' : (health.total >= 70 ? 'rgba(251,191,36,0.1)' : (health.total >= 60 ? 'rgba(251,191,36,0.1)' : 'rgba(239,68,68,0.1)'));
+        const border = health.total >= 85 ? 'rgba(74,222,128,0.2)' : (health.total >= 70 ? 'rgba(251,191,36,0.2)' : (health.total >= 60 ? 'rgba(251,191,36,0.2)' : 'rgba(239,68,68,0.2)'));
+        label.textContent = level;
+        label.style.cssText = 'background:' + bg + ';color:' + color + ';border:1px solid ' + border;
+        scoreEl.style.color = color;
+        scoreEl.style.textShadow = '0 0 20px ' + color + '40';
       }
+
+      // 更新分项进度条
+      const detailValues = document.querySelectorAll('.score-detail-value');
+      const detailBars = document.querySelectorAll('.score-detail-fill');
+      const subScores = [health.pollutionScore, health.energyScore, health.carbonScore, health.synergyScore];
+      const subColors = [
+        health.pollutionScore >= 80 ? '#4ade80' : (health.pollutionScore >= 60 ? '#fbbf24' : '#ef4444'),
+        health.energyScore >= 80 ? '#4ade80' : (health.energyScore >= 60 ? '#fbbf24' : '#ef4444'),
+        health.carbonScore >= 80 ? '#4ade80' : (health.carbonScore >= 60 ? '#fbbf24' : '#ef4444'),
+        health.synergyScore >= 80 ? '#4ade80' : (health.synergyScore >= 60 ? '#fbbf24' : '#ef4444'),
+      ];
+      detailValues.forEach((el, i) => {
+        if (subScores[i] !== undefined) {
+          el.textContent = subScores[i];
+          el.style.color = subColors[i];
+        }
+      });
+      detailBars.forEach((bar, i) => {
+        if (subScores[i] !== undefined) {
+          bar.dataset.width = subScores[i];
+          bar.style.width = subScores[i] + '%';
+          bar.style.background = 'linear-gradient(90deg,' + subColors[i] + ',' + subColors[i] + '88)';
+        }
+      });
+
       // 更新时间提示
       const updateHint = document.querySelector('.score-left div:last-child');
       if (updateHint) updateHint.textContent = '上次更新：' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
-      showToast('🔄 健康评分已更新：' + newScore + '分', 'info');
+      showToast('🔄 健康评分已更新：' + health.total + '分（污染' + health.pollutionScore + ' 能效' + health.energyScore + ' 碳排' + health.carbonScore + ' 协同' + health.synergyScore + '）', 'info');
     }
     // 每30秒模拟一次更新（演示用，实际应为每小时）
     setInterval(simulateHealthUpdate, 30000);
+    // 页面加载时立即计算一次
+    setTimeout(simulateHealthUpdate, 1000);
 
     const qw = document.getElementById('quadrantWrap');
     DataStore.get('quadrantBubbles', MOCK_DATA.quadrantBubbles).forEach(b => {

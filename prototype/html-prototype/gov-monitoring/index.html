@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D GIS 数字孪生监测台 — 怀柔区污碳协同监测</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="../js/data.js"></script>
@@ -49,6 +50,35 @@
     .dt-timebar-thumb { position:absolute; top:-5px; left:65%; width:14px; height:14px; background:#22d3ee; border-radius:50%; cursor:pointer; box-shadow:0 0 10px #22d3ee; }
     .dt-timebar-label { font-size:11px; color:#22d3ee; font-family:monospace; min-width:100px; }
 
+    /* 文字操控地图输入 */
+    .map-command-box {
+      position:absolute; top:68px; left:16px; z-index:500;
+      display:flex; gap:8px; align-items:center;
+      background:rgba(2,6,23,0.85); backdrop-filter:blur(12px);
+      border:1px solid rgba(34,211,238,0.2); border-radius:8px;
+      padding:6px 10px; box-shadow:0 4px 20px rgba(0,0,0,0.4);
+    }
+    .map-command-input {
+      width:220px; padding:6px 10px; border-radius:6px; border:1px solid rgba(34,211,238,0.15);
+      background:rgba(2,6,23,0.6); color:#e2e8f0; font-size:13px; outline:none;
+    }
+    .map-command-input:focus { border-color:#22d3ee; }
+    .map-command-input::placeholder { color:rgba(226,232,240,0.3); }
+    .map-command-btn {
+      padding:6px 12px; border-radius:6px; border:none; background:rgba(34,211,238,0.15);
+      color:#22d3ee; font-size:12px; cursor:pointer; border:1px solid rgba(34,211,238,0.3);
+    }
+    .map-command-btn:hover { background:rgba(34,211,238,0.25); }
+    .map-command-hint {
+      position:absolute; top:110px; left:16px; z-index:500;
+      font-size:11px; color:rgba(226,232,240,0.35);
+      background:rgba(2,6,23,0.7); padding:4px 10px; border-radius:4px;
+      border:1px solid rgba(34,211,238,0.08); display:none;
+    }
+    .map-command-hint.active { display:block; }
+    .map-command-hint span { color:#22d3ee; cursor:pointer; }
+    .map-command-hint span:hover { text-decoration:underline; }
+
     /* Leaflet自定义 */
     .leaflet-container { background:#0f172a !important; }
     .bubble-marker { text-align:center; }
@@ -93,10 +123,25 @@
         <a href="../index.html">🏠 首页</a>
         <a href="../gov-dashboard/index.html">📊 指挥大屏</a>
         <a href="../gov-dashboard/llm-assistant.html">🤖 LLM助手</a>
+        <a href="../gov-dashboard/knowledge-base.html">📚 案例库</a>
         <a class="active">🌐 3D监测</a>
       </div>
     </div>
     <div id="map"></div>
+    <!-- 文字操控输入框 -->
+    <div class="map-command-box">
+      <input type="text" class="map-command-input" id="mapCommandInput" placeholder="输入地图指令，如：飞到蓝天工业..."
+        onfocus="document.getElementById('cmdHint').classList.add('active')"
+        onblur="setTimeout(()=>document.getElementById('cmdHint').classList.remove('active'),200)"
+        onkeydown="if(event.key==='Enter')executeMapCommand()">
+      <button class="map-command-btn" onclick="executeMapCommand()">执行</button>
+    </div>
+    <div class="map-command-hint" id="cmdHint">
+      试试：<span onclick="setCmd('飞到蓝天工业')">飞到蓝天工业</span> ·
+      <span onclick="setCmd('显示所有高风险企业')">显示所有高风险企业</span> ·
+      <span onclick="setCmd('显示双减标兵')">显示双减标兵</span> ·
+      <span onclick="setCmd('切换到热力图')">切换到热力图</span>
+    </div>
     <div class="dt-sidebar">
       <div class="dt-panel">
         <div class="dt-panel-title">📊 辖区概览</div>
@@ -297,7 +342,7 @@
     });
 
     // ========== 定位与闪烁 ==========
-    function flyToEnt(lng, lat) { map.flyTo([lat, lng], 14, { duration:1.5 }); }
+    function flyToEnt(lat, lng) { map.flyTo([lat, lng], 14, { duration:1.5 }); }
 
     function flyToEntByName(name) {
       const m = markerMap[name];
@@ -331,6 +376,93 @@
       });
       const typeNames = { green:'双减标兵', yellow:'关注企业', red:'减污增碳/减碳增污悖论风险', gray:'数据不足' };
       showToast(`已定位到 ${list.length} 家${typeNames[type]}`, 'success');
+    }
+
+    // ========== 文字操控地图 ==========
+    function setCmd(text) {
+      document.getElementById('mapCommandInput').value = text;
+      document.getElementById('mapCommandInput').focus();
+    }
+
+    function executeMapCommand() {
+      const input = document.getElementById('mapCommandInput');
+      const cmd = input.value.trim();
+      if (!cmd) return;
+
+      const q = cmd.toLowerCase();
+      // 飞到某企业
+      const entMatch = enterprises.find(e => q.includes(e.name.toLowerCase()) || (e.name.length > 2 && q.includes(e.name.substring(0,2))));
+      if (q.includes('飞到') || q.includes('定位')) {
+        if (entMatch) {
+          flyToEntByName(entMatch.name);
+          showToast('🚁 已飞到：' + entMatch.name, 'success');
+          input.value = '';
+          return;
+        }
+      }
+      // 显示某类型企业
+      if (q.includes('高风险') || q.includes('减污增碳') || q.includes('红色')) {
+        flyToType('red');
+        showToast('🔴 已定位所有高风险企业', 'success');
+        input.value = '';
+        return;
+      }
+      if (q.includes('双减标兵') || q.includes('绿色') || q.includes('优秀')) {
+        flyToType('green');
+        showToast('🟢 已定位所有双减标兵', 'success');
+        input.value = '';
+        return;
+      }
+      if (q.includes('关注') || q.includes('黄色')) {
+        flyToType('yellow');
+        showToast('🟡 已定位所有关注企业', 'success');
+        input.value = '';
+        return;
+      }
+      // 热力图切换
+      if (q.includes('热力图') || q.includes('热力')) {
+        toggleHeatmap();
+        showToast('🌡️ 热力图已' + (heatmapVisible ? '显示' : '隐藏'), 'success');
+        input.value = '';
+        return;
+      }
+      // 飞线
+      if (q.includes('飞线') || q.includes('转移')) {
+        showAllFlyLines();
+        showToast('⇢ 污染转移飞线已显示', 'success');
+        input.value = '';
+        return;
+      }
+      showToast('❓ 未识别指令：' + cmd + '，请尝试「飞到XX厂」或「显示高风险企业」', 'warn');
+    }
+
+    // ========== 简化版热力图（Leaflet CircleMarker 叠加） ==========
+    let heatmapLayer = null;
+    let heatmapVisible = false;
+
+    function toggleHeatmap() {
+      if (heatmapVisible && heatmapLayer) {
+        map.removeLayer(heatmapLayer);
+        heatmapVisible = false;
+        return;
+      }
+      heatmapLayer = L.layerGroup();
+      // 按 C-P 指数生成热力：指数越低越红，越高越绿
+      enterprises.forEach(e => {
+        if (e.cp == null) return;
+        const intensity = 1 - e.cp; // 0.88->0.12(弱), 0.35->0.65(强)
+        const color = e.cp < 0.4 ? 'rgba(239,68,68,' : (e.cp < 0.6 ? 'rgba(234,179,8,' : 'rgba(34,197,94,');
+        const radius = 800 + intensity * 1500;
+        const circle = L.circle([e.lat, e.lng], {
+          radius: radius,
+          fillColor: color + (0.15 + intensity * 0.25) + ')',
+          color: 'transparent',
+          fillOpacity: 1,
+        });
+        heatmapLayer.addLayer(circle);
+      });
+      heatmapLayer.addTo(map);
+      heatmapVisible = true;
     }
 
     // ========== 时间轴回放控制 ==========

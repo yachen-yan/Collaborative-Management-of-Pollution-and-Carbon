@@ -2,11 +2,12 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>自然语言报表 — 污碳协同AI监管平台</title>
-
+  <script src="../js/data.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
     .report-wrap { max-width: 1000px; margin: 0 auto; }
     .report-header-bar {
@@ -16,13 +17,13 @@
     .report-actions { display: flex; gap: 10px; }
     .report-card { background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .report-section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-    .report-section-title::before { content: ""; display: inline-block; width: 4px; height: 16px; background: #1677ff; border-radius: 2px; }
-    
+    .report-section-title::before { content: ""; display: inline-block; width: 4px; height: 16px; background: #0ea5e9; border-radius: 2px; }
+
     .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
     .stat-box { text-align: center; padding: 20px; background: rgba(34,211,238,0.04); border-radius: 8px; }
     .stat-num { font-size: 32px; font-weight: 700; }
     .stat-label { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 6px; }
-    
+
     .chart-placeholder {
       height: 220px; background: rgba(34,211,238,0.04); border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
@@ -35,32 +36,91 @@
     .chart-bar-fill { width: 48px; border-radius: 4px 4px 0 0; transition: height 0.6s; }
     .chart-bar-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 8px; }
     .chart-bar-value { font-size: 11px; color: rgba(226,232,240,0.3); }
-    
+
     .pie-demo { display: flex; align-items: center; justify-content: center; gap: 40px; }
     .pie-ring { width: 120px; height: 120px; border-radius: 50%; position: relative; }
     .pie-ring svg { transform: rotate(-90deg); }
     .pie-legend { display: flex; flex-direction: column; gap: 8px; }
     .pie-legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
     .pie-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-    
+
     .trend-line-demo {
       height: 180px; position: relative; padding: 20px 40px 30px;
     }
     .trend-line-demo svg { width: 100%; height: 100%; }
-    
+
     .conclusion-box {
       background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px;
       padding: 16px 20px; font-size: 14px; line-height: 1.8; color: rgba(226,232,240,0.8);
     }
     .conclusion-box strong { color: #4ade80; }
-    
+
     .report-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .report-table th, .report-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(34,211,238,0.1); }
     .report-table th { background: rgba(34,211,238,0.04); font-weight: 600; }
     .report-table tr:hover { background: rgba(34,211,238,0.04); }
+
+    /* 自然语言查询输入区 */
+    .nl-query-area {
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15); border-radius: 12px;
+      padding: 24px; margin-bottom: 20px;
+    }
+    .nl-query-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #22d3ee; }
+    .nl-input-wrap {
+      display: flex; gap: 10px; align-items: stretch;
+    }
+    .nl-input {
+      flex: 1; padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(34,211,238,0.2);
+      background: rgba(2,6,23,0.6); color: #e2e8f0; font-size: 14px; outline: none;
+      transition: all 0.2s;
+    }
+    .nl-input:focus { border-color: #22d3ee; box-shadow: 0 0 12px rgba(34,211,238,0.1); }
+    .nl-input::placeholder { color: rgba(226,232,240,0.3); }
+    .nl-btn {
+      padding: 12px 24px; border-radius: 8px; border: none; background: rgba(34,211,238,0.15);
+      color: #22d3ee; font-size: 14px; font-weight: 600; cursor: pointer;
+      border: 1px solid rgba(34,211,238,0.3); transition: all 0.2s; white-space: nowrap;
+    }
+    .nl-btn:hover { background: rgba(34,211,238,0.25); box-shadow: 0 0 16px rgba(34,211,238,0.15); }
+    .nl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .nl-quick-tags {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;
+    }
+    .nl-tag {
+      padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(34,211,238,0.15);
+      background: rgba(34,211,238,0.04); color: rgba(226,232,240,0.5); font-size: 12px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .nl-tag:hover { border-color: rgba(34,211,238,0.4); color: #22d3ee; background: rgba(34,211,238,0.08); }
+
+    /* AI生成覆盖层 */
+    .ai-gen-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(2,6,23,0.95); z-index: 500;
+      flex-direction: column; align-items: center; justify-content: center;
+    }
+    .ai-gen-overlay.active { display: flex; }
+    .ai-gen-icon { font-size: 48px; margin-bottom: 16px; animation: pulse 1.5s infinite; }
+    .ai-gen-text { font-size: 16px; color: #22d3ee; margin-bottom: 24px; }
+    .ai-gen-bar { width: 300px; height: 4px; background: rgba(34,211,238,0.1); border-radius: 2px; overflow: hidden; }
+    .ai-gen-bar-inner { height: 100%; background: linear-gradient(90deg, #22d3ee, #0ea5e9); width: 0%; transition: width 0.3s; }
+    .ai-gen-step { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 12px; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.1)} }
+
+    /* 查询历史 */
+    .query-history { margin-top: 16px; }
+    .query-history-title { font-size: 13px; color: rgba(226,232,240,0.4); margin-bottom: 8px; }
+    .query-history-item {
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+      border-radius: 6px; font-size: 13px; color: rgba(226,232,240,0.6);
+      cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+    }
+    .query-history-item:hover { background: rgba(34,211,238,0.04); border-color: rgba(34,211,238,0.1); color: #22d3ee; }
+    .query-history-item .time { font-size: 11px; color: rgba(226,232,240,0.3); margin-left: auto; }
+
+    .hidden { display: none !important; }
   </style>
   <link rel="stylesheet" href="../css/style.css">
-
 </head>
 <body>
   <div class="bg-honeycomb"></div>
@@ -69,138 +129,364 @@
     <div class="logo">🌿 污碳协同AI监管平台</div>
     <div class="user"><span>怀柔区生态环境局</span><div class="avatar">李</div><span>李管理</span></div>
   </div>
-  
+
   <div class="main">
     <div class="report-wrap">
-      <div class="report-header-bar">
-        <div class="report-title">📊 2026年4月 张镇工业园 减污增碳/减碳增污悖论 风险统计报告</div>
-        <div class="report-actions">
-          <button class="btn btn-default" onclick="window.print()">🖨️ 打印</button>
-          <button class="btn btn-primary" onclick="showToast('Word导出功能开发中...','info')">📥 导出 Word</button>
-          <button class="btn btn-primary" onclick="window.print()">📥 导出 PDF</button>
+      <!-- 查询输入区 -->
+      <div class="nl-query-area" id="queryArea">
+        <div class="nl-query-title">🤖 自然语言报表查询</div>
+        <div class="nl-input-wrap">
+          <input type="text" class="nl-input" id="nlInput" placeholder="输入自然语言查询，例如：生成上个月园区减污增碳/减碳增污悖论风险统计..."
+            onkeydown="if(event.key==='Enter')submitQuery()">
+          <button class="nl-btn" id="nlBtn" onclick="submitQuery()">🚀 生成报表</button>
         </div>
-      </div>
-      
-      <div class="report-card">
-        <div class="report-section-title">📈 核心指标</div>
-        <div class="stat-row">
-          <div class="stat-box">
-            <div class="stat-num" style="color:#f5222d">7</div>
-            <div class="stat-label">减污增碳/减碳增污悖论 事件总数</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-num" style="color:#fa8c16">5</div>
-            <div class="stat-label">减污增碳陷阱</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-num" style="color:#faad14">2</div>
-            <div class="stat-label">减碳增污陷阱</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-num" style="color:#52c41a">88%</div>
-            <div class="stat-label">闭环处置率</div>
-          </div>
+        <div class="nl-quick-tags">
+          <span style="font-size:12px;color:rgba(226,232,240,0.4)">快捷提问：</span>
+          <span class="nl-tag" onclick="setQuery('生成上个月园区减污增碳/减碳增污悖论风险统计')">上个月园区悖论风险统计</span>
+          <span class="nl-tag" onclick="setQuery('张镇工业园C-P协同指数变化趋势')">张镇工业园C-P趋势</span>
+          <span class="nl-tag" onclick="setQuery('蓝天工业涂装近90天VOCs和碳排对比')">蓝天工业90天对比</span>
+          <span class="nl-tag" onclick="setQuery('辖区企业三评合一报告平均分排名')">三评合一平均分排名</span>
+          <span class="nl-tag" onclick="setQuery('本月RTO空烧企业名单及处置状态')">RTO空烧企业名单</span>
         </div>
+        <div class="query-history" id="queryHistory"></div>
       </div>
-      
-      <div class="report-card">
-        <div class="report-section-title">📊 减污增碳/减碳增污悖论 类型分布</div>
-        <div class="chart-placeholder">
-          <div class="pie-demo">
-            <div class="pie-ring">
-              <svg width="120" height="120" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="50" fill="none" stroke="#f0f0f0" stroke-width="16"/>
-                <circle cx="60" cy="60" r="50" fill="none" stroke="#f5222d" stroke-width="16" stroke-dasharray="157 314" stroke-linecap="round"/>
-                <circle cx="60" cy="60" r="50" fill="none" stroke="#faad14" stroke-width="16" stroke-dasharray="78 314" stroke-dashoffset="-157" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="pie-legend">
-              <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#f5222d"></div>减污增碳 5起 (71%)</div>
-              <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#faad14"></div>减碳增污 2起 (29%)</div>
-            </div>
+
+      <!-- AI生成覆盖层 -->
+      <div class="ai-gen-overlay" id="aiGenOverlay">
+        <div class="ai-gen-icon">🤖</div>
+        <div class="ai-gen-text" id="aiGenText">AI 正在理解查询意图...</div>
+        <div class="ai-gen-bar"><div class="ai-gen-bar-inner" id="aiGenBar"></div></div>
+        <div class="ai-gen-step" id="aiGenStep">Step 1/5</div>
+      </div>
+
+      <!-- 结果展示区 -->
+      <div id="resultArea" class="hidden">
+        <div class="report-header-bar">
+          <div class="report-title" id="resultTitle">📊 报表结果</div>
+          <div class="report-actions">
+            <button class="btn btn-default" onclick="window.print()">🖨️ 打印</button>
+            <button class="btn btn-primary" onclick="showToast('Word导出功能开发中...','info')">📥 导出 Word</button>
+            <button class="btn btn-primary" onclick="window.print()">📥 导出 PDF</button>
+            <button class="btn btn-default" onclick="showQueryArea()">🔙 重新查询</button>
           </div>
         </div>
-      </div>
-      
-      <div class="report-card">
-        <div class="report-section-title">📈 企业 减污增碳/减碳增污悖论 事件统计</div>
-        <div class="chart-placeholder">
-          <div class="chart-bar-demo">
-            <div class="chart-bar-item">
-              <div class="chart-bar-fill" style="height:140px;background:linear-gradient(180deg,#f5222d,#cf1322)"></div>
-              <div class="chart-bar-label">蓝天工业</div>
-              <div class="chart-bar-value">3起</div>
+
+        <div class="report-card">
+          <div class="report-section-title">📈 核心指标</div>
+          <div class="stat-row" id="statRow">
+            <div class="stat-box">
+              <div class="stat-num" style="color:#f87171" id="stat1">7</div>
+              <div class="stat-label" id="stat1Label">减污增碳/减碳增污悖论 事件总数</div>
             </div>
-            <div class="chart-bar-item">
-              <div class="chart-bar-fill" style="height:90px;background:linear-gradient(180deg,#fa8c16,#d48806)"></div>
-              <div class="chart-bar-label">红星喷涂</div>
-              <div class="chart-bar-value">2起</div>
+            <div class="stat-box">
+              <div class="stat-num" style="color:#fbbf24" id="stat2">5</div>
+              <div class="stat-label" id="stat2Label">减污增碳陷阱</div>
             </div>
-            <div class="chart-bar-item">
-              <div class="chart-bar-fill" style="height:45px;background:linear-gradient(180deg,#faad14,#d48806)"></div>
-              <div class="chart-bar-label">鑫达汽修</div>
-              <div class="chart-bar-value">1起</div>
+            <div class="stat-box">
+              <div class="stat-num" style="color:#fbbf24" id="stat3">2</div>
+              <div class="stat-label" id="stat3Label">减碳增污陷阱</div>
             </div>
-            <div class="chart-bar-item">
-              <div class="chart-bar-fill" style="height:45px;background:linear-gradient(180deg,#faad14,#d48806)"></div>
-              <div class="chart-bar-label">金辉涂装</div>
-              <div class="chart-bar-value">1起</div>
+            <div class="stat-box">
+              <div class="stat-num" style="color:#4ade80" id="stat4">88%</div>
+              <div class="stat-label" id="stat4Label">闭环处置率</div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div class="report-card">
-        <div class="report-section-title">📉 区域协同指数变化趋势</div>
-        <div class="trend-line-demo">
-          <svg viewBox="0 0 600 160" preserveAspectRatio="none">
-            <line x1="40" y1="20" x2="40" y2="140" stroke="#f0f0f0" stroke-width="1"/>
-            <line x1="40" y1="140" x2="560" y2="140" stroke="#f0f0f0" stroke-width="1"/>
-            <line x1="40" y1="80" x2="560" y2="80" stroke="#f5222d" stroke-width="1" stroke-dasharray="6,4"/>
-            <text x="565" y="84" font-size="10" fill="#f5222d">关注线 70</text>
-            <polyline points="40,60 120,65 200,55 280,70 360,85 440,90 520,82 560,78" fill="none" stroke="#1677ff" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="40" cy="60" r="3" fill="#1677ff"/>
-            <circle cx="120" cy="65" r="3" fill="#1677ff"/>
-            <circle cx="200" cy="55" r="3" fill="#1677ff"/>
-            <circle cx="280" cy="70" r="3" fill="#1677ff"/>
-            <circle cx="360" cy="85" r="3" fill="#f5222d"/>
-            <circle cx="440" cy="90" r="3" fill="#f5222d"/>
-            <circle cx="520" cy="82" r="3" fill="#1677ff"/>
-            <circle cx="560" cy="78" r="4" fill="#1677ff" stroke="#fff" stroke-width="2"/>
-            <text x="40" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/1</text>
-            <text x="200" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/10</text>
-            <text x="360" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/20</text>
-            <text x="520" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/30</text>
-          </svg>
+
+        <div class="report-card">
+          <div class="report-section-title">📊 减污增碳/减碳增污悖论 类型分布</div>
+          <div class="chart-placeholder">
+            <div class="pie-demo">
+              <div class="pie-ring">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(34,211,238,0.1)" stroke-width="16"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#f87171" stroke-width="16" stroke-dasharray="157 314" stroke-linecap="round"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="#fbbf24" stroke-width="16" stroke-dasharray="78 314" stroke-dashoffset="-157" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="pie-legend">
+                <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#f87171"></div>减污增碳 <span id="pie1">5</span>起 (<span id="pie1Pct">71</span>%)</div>
+                <div class="pie-legend-item"><div class="pie-legend-dot" style="background:#fbbf24"></div>减碳增污 <span id="pie2">2</span>起 (<span id="pie2Pct">29</span>%)</div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div class="report-card">
-        <div class="report-section-title">📋 事件明细表</div>
-        <table class="report-table">
-          <tr><th>日期</th><th>企业</th><th>类型</th><th>C-P最低</th><th>根因</th><th>状态</th></tr>
-          <tr><td>04-28</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.35</td><td>RTO空烧22%</td><td>整改中</td></tr>
-          <tr><td>04-25</td><td>红星喷涂厂</td><td><span class="tag tag-red">减污增碳</span></td><td>0.38</td><td>过度燃烧</td><td>已销号</td></tr>
-          <tr><td>04-22</td><td>鑫达汽修</td><td><span class="tag tag-yellow">减碳增污</span></td><td>0.42</td><td>温度设定过低</td><td>整改中</td></tr>
-          <tr><td>04-18</td><td>金辉涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.40</td><td>涂料切换未调参</td><td>已销号</td></tr>
-          <tr><td>04-15</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.36</td><td>RTO低效运行</td><td>已销号</td></tr>
-          <tr><td>04-10</td><td>红星喷涂厂</td><td><span class="tag tag-yellow">减碳增污</span></td><td>0.45</td><td>蓄热体老化</td><td>已销号</td></tr>
-          <tr><td>04-05</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.37</td><td>RTO空烧18%</td><td>已销号</td></tr>
-        </table>
-      </div>
-      
-      <div class="report-card">
-        <div class="report-section-title">🤖 AI 分析结论</div>
-        <div class="conclusion-box">
-          <strong>核心发现：</strong>4月 减污增碳/减碳增污悖论 事件较 3月增加 40%（3月 5起 → 4月 7起），主要原因为季节性订单增长导致 RTO 超负荷运行。<br><br>
-          <strong>重点风险企业：</strong>蓝天工业涂装（3起/月）连续出现 RTO 空烧问题，建议纳入重点监管名单，限期整改。<br><br>
-          <strong>改进建议：</strong>① 强化错峰调度管理 ② 推广热泵辅助烘干技术 ③ 建立 RTO 空烧实时预警机制
+
+        <div class="report-card">
+          <div class="report-section-title">📈 企业 减污增碳/减碳增污悖论 事件统计</div>
+          <div class="chart-placeholder">
+            <div class="chart-bar-demo" id="barChart">
+              <div class="chart-bar-item">
+                <div class="chart-bar-fill" style="height:140px;background:linear-gradient(180deg,#f87171,#cf1322)"></div>
+                <div class="chart-bar-label">蓝天工业</div>
+                <div class="chart-bar-value">3起</div>
+              </div>
+              <div class="chart-bar-item">
+                <div class="chart-bar-fill" style="height:90px;background:linear-gradient(180deg,#fbbf24,#d48806)"></div>
+                <div class="chart-bar-label">红星喷涂</div>
+                <div class="chart-bar-value">2起</div>
+              </div>
+              <div class="chart-bar-item">
+                <div class="chart-bar-fill" style="height:45px;background:linear-gradient(180deg,#fbbf24,#d48806)"></div>
+                <div class="chart-bar-label">鑫达汽修</div>
+                <div class="chart-bar-value">1起</div>
+              </div>
+              <div class="chart-bar-item">
+                <div class="chart-bar-fill" style="height:45px;background:linear-gradient(180deg,#fbbf24,#d48806)"></div>
+                <div class="chart-bar-label">金辉涂装</div>
+                <div class="chart-bar-value">1起</div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <div class="report-card">
+          <div class="report-section-title">📉 区域协同指数变化趋势</div>
+          <div class="trend-line-demo">
+            <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+              <line x1="40" y1="20" x2="40" y2="140" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+              <line x1="40" y1="140" x2="560" y2="140" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>
+              <line x1="40" y1="80" x2="560" y2="80" stroke="#f87171" stroke-width="1" stroke-dasharray="6,4"/>
+              <text x="565" y="84" font-size="10" fill="#f87171">关注线 70</text>
+              <polyline points="40,60 120,65 200,55 280,70 360,85 440,90 520,82 560,78" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="40" cy="60" r="3" fill="#0ea5e9"/>
+              <circle cx="120" cy="65" r="3" fill="#0ea5e9"/>
+              <circle cx="200" cy="55" r="3" fill="#0ea5e9"/>
+              <circle cx="280" cy="70" r="3" fill="#0ea5e9"/>
+              <circle cx="360" cy="85" r="3" fill="#f87171"/>
+              <circle cx="440" cy="90" r="3" fill="#f87171"/>
+              <circle cx="520" cy="82" r="3" fill="#0ea5e9"/>
+              <circle cx="560" cy="78" r="4" fill="#0ea5e9" stroke="#fff" stroke-width="2"/>
+              <text x="40" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/1</text>
+              <text x="200" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/10</text>
+              <text x="360" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/20</text>
+              <text x="520" y="156" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">4/30</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-section-title">📋 事件明细表</div>
+          <table class="report-table" id="eventTable">
+            <tr><th>日期</th><th>企业</th><th>类型</th><th>C-P最低</th><th>根因</th><th>状态</th></tr>
+            <tr><td>04-28</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.35</td><td>RTO空烧22%</td><td>整改中</td></tr>
+            <tr><td>04-25</td><td>红星喷涂厂</td><td><span class="tag tag-red">减污增碳</span></td><td>0.38</td><td>过度燃烧</td><td>已销号</td></tr>
+            <tr><td>04-22</td><td>鑫达汽修</td><td><span class="tag tag-yellow">减碳增污</span></td><td>0.42</td><td>温度设定过低</td><td>整改中</td></tr>
+            <tr><td>04-18</td><td>金辉涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.40</td><td>涂料切换未调参</td><td>已销号</td></tr>
+            <tr><td>04-15</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.36</td><td>RTO低效运行</td><td>已销号</td></tr>
+            <tr><td>04-10</td><td>红星喷涂厂</td><td><span class="tag tag-yellow">减碳增污</span></td><td>0.45</td><td>蓄热体老化</td><td>已销号</td></tr>
+            <tr><td>04-05</td><td>蓝天工业涂装</td><td><span class="tag tag-red">减污增碳</span></td><td>0.37</td><td>RTO空烧18%</td><td>已销号</td></tr>
+          </table>
+        </div>
+
+        <div class="report-card">
+          <div class="report-section-title">🤖 AI 分析结论</div>
+          <div class="conclusion-box" id="aiConclusion">
+            <strong>核心发现：</strong>4月 减污增碳/减碳增污悖论 事件较 3月增加 40%（3月 5起 → 4月 7起），主要原因为季节性订单增长导致 RTO 超负荷运行。<br><br>
+            <strong>重点风险企业：</strong>蓝天工业涂装（3起/月）连续出现 RTO 空烧问题，建议纳入重点监管名单，限期整改。<br><br>
+            <strong>改进建议：</strong>① 强化错峰调度管理 ② 推广热泵辅助烘干技术 ③ 建立 RTO 空烧实时预警机制
+          </div>
+        </div>
+
+        <div style="height:40px"></div>
       </div>
-      
-      <div style="height:40px"></div>
     </div>
   </div>
+
+  <script>
+    const NL_HISTORY_KEY = 'pcap_nlReportQueries';
+
+    function loadQueryHistory() {
+      const history = DataStore.get('nlReportQueries', []);
+      const container = document.getElementById('queryHistory');
+      if (!history.length) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = '<div class="query-history-title">🕐 最近查询</div>' +
+        history.slice(0, 5).map(h =>
+          `<div class="query-history-item" onclick="setQuery('${h.text.replace(/'/g,"\\'")}')">
+            <span>🔍 ${h.text}</span><span class="time">${h.time}</span>
+          </div>`
+        ).join('');
+    }
+
+    function setQuery(text) {
+      document.getElementById('nlInput').value = text;
+      document.getElementById('nlInput').focus();
+    }
+
+    function saveQuery(text) {
+      const history = DataStore.get('nlReportQueries', []);
+      history.unshift({ text, time: new Date().toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) });
+      if (history.length > 10) history.pop();
+      DataStore.set('nlReportQueries', history);
+      loadQueryHistory();
+    }
+
+    function showQueryArea() {
+      document.getElementById('queryArea').classList.remove('hidden');
+      document.getElementById('resultArea').classList.add('hidden');
+    }
+
+    function showResultArea() {
+      document.getElementById('queryArea').classList.add('hidden');
+      document.getElementById('resultArea').classList.remove('hidden');
+    }
+
+    // 解析查询意图，动态渲染报表
+    function parseQueryIntent(query) {
+      const q = query.toLowerCase();
+      if (q.includes(' paradox') || q.includes('减污增碳') || q.includes('减碳增污') || q.includes('悖论')) {
+        return { type: 'paradox', title: '减污增碳/减碳增污悖论 风险统计报告', period: '2026年4月' };
+      }
+      if (q.includes('cp') || q.includes('协同指数') || q.includes('趋势')) {
+        return { type: 'cp_trend', title: '区域 C-P 协同指数趋势报告', period: '近30天' };
+      }
+      if (q.includes('vocs') || q.includes('碳排') || q.includes('对比')) {
+        return { type: 'compare', title: 'VOCs 与碳排放对比分析报告', period: '近90天' };
+      }
+      if (q.includes('rto') || q.includes('空烧')) {
+        return { type: 'rto', title: 'RTO 空烧企业专项统计报告', period: '2026年4月' };
+      }
+      if (q.includes('排名') || q.includes('评分') || q.includes('三评')) {
+        return { type: 'ranking', title: '辖区企业三评合一评分排名报告', period: '2026年5月' };
+      }
+      return { type: 'paradox', title: '自定义查询报表', period: '近期' };
+    }
+
+    function renderReportByIntent(intent, query) {
+      const alerts = DataStore.getAlerts();
+      const dispatches = DataStore.getDispatches();
+      const reports = DataStore.getTripleReports();
+
+      // 统计悖论事件
+      const paradoxAlerts = alerts.filter(a => a.type === '减污增碳/减碳增污悖论');
+      const pollutionReduce = paradoxAlerts.filter(a => a.cpValue < 0.4 && ((a.rootCause || '').includes('空烧') || (a.rootCause || '').includes('过度') || (a.rootCause || '').includes('涂料'))).length || Math.max(1, Math.floor(paradoxAlerts.length * 0.7));
+      const carbonReduce = paradoxAlerts.length - pollutionReduce;
+      const closureRate = Math.round((dispatches.filter(d => d.statusCode === 'closed').length / dispatches.length) * 100) || 88;
+
+      // 动态更新标题
+      document.getElementById('resultTitle').textContent = '📊 ' + intent.title;
+
+      // 根据意图类型渲染不同内容
+      if (intent.type === 'paradox' || intent.type === 'rto') {
+        document.getElementById('stat1').textContent = paradoxAlerts.length || 7;
+        document.getElementById('stat1Label').textContent = '减污增碳/减碳增污悖论 事件总数';
+        document.getElementById('stat2').textContent = Math.max(1, pollutionReduce);
+        document.getElementById('stat2Label').textContent = '减污增碳陷阱';
+        document.getElementById('stat3').textContent = Math.max(1, carbonReduce);
+        document.getElementById('stat3Label').textContent = '减碳增污陷阱';
+        document.getElementById('stat4').textContent = closureRate + '%';
+        document.getElementById('stat4Label').textContent = '闭环处置率';
+
+        document.getElementById('pie1').textContent = pollutionReduce;
+        const totalPie = pollutionReduce + carbonReduce;
+        document.getElementById('pie1Pct').textContent = totalPie > 0 ? Math.round(pollutionReduce / totalPie * 100) : 0;
+        document.getElementById('pie2').textContent = carbonReduce;
+        document.getElementById('pie2Pct').textContent = totalPie > 0 ? Math.round(carbonReduce / totalPie * 100) : 0;
+
+        document.getElementById('aiConclusion').innerHTML = `
+          <strong>核心发现：</strong>${intent.period} 减污增碳/减碳增污悖论 事件共 ${paradoxAlerts.length || 7} 起，其中减污增碳陷阱 ${pollutionReduce} 起、减碳增污陷阱 ${carbonReduce} 起。
+          闭环处置率 ${closureRate}%，${closureRate >= 85 ? '整体处置效率良好' : '存在处置滞后，需加强催办'}。<br><br>
+          <strong>重点风险企业：</strong>蓝天工业涂装（连续出现 RTO 空烧问题），建议纳入重点监管名单。<br><br>
+          <strong>改进建议：</strong>① 强化错峰调度管理 ② 推广热泵辅助烘干技术 ③ 建立 RTO 空烧实时预警机制
+        `;
+      } else if (intent.type === 'ranking') {
+        document.getElementById('stat1').textContent = reports.length || 12;
+        document.getElementById('stat1Label').textContent = '参评企业数';
+        document.getElementById('stat2').textContent = '68';
+        document.getElementById('stat2Label').textContent = '平均分';
+        document.getElementById('stat3').textContent = '82';
+        document.getElementById('stat3Label').textContent = '最高分';
+        document.getElementById('stat4').textContent = '45';
+        document.getElementById('stat4Label').textContent = '最低分';
+        document.getElementById('aiConclusion').innerHTML = `
+          <strong>核心发现：</strong>辖区 ${reports.length || 12} 家企业三评合一平均分为 68 分，处于「一般」等级。
+          污染评价平均分最高（72分），碳排评价平均分最低（58分），C-P 协同指数平均 0.61。<br><br>
+          <strong>重点关注：</strong>碳排评价低于 60 分的企业共 5 家，建议优先推进 RTO 能效优化。
+        `;
+      } else if (intent.type === 'cp_trend') {
+        document.getElementById('stat1').textContent = '0.62';
+        document.getElementById('stat1Label').textContent = '区域平均 C-P';
+        document.getElementById('stat2').textContent = '0.38';
+        document.getElementById('stat2Label').textContent = '最低 C-P';
+        document.getElementById('stat3').textContent = '0.88';
+        document.getElementById('stat3Label').textContent = '最高 C-P';
+        document.getElementById('stat4').textContent = '3';
+        document.getElementById('stat4Label').textContent = '跌破 0.4 次数';
+        document.getElementById('aiConclusion').innerHTML = `
+          <strong>核心发现：</strong>近30天区域 C-P 协同指数呈下降趋势，从月初 0.72 降至月末 0.62。
+          3 家企业累计 8 次跌破 0.4 警戒线，主要原因是 RTO 超负荷运行导致天然气消耗激增。<br><br>
+          <strong>预测：</strong>如不及时干预，预计下月区域 C-P 可能跌至 0.55 以下，进入「危险区」。
+        `;
+      } else {
+        document.getElementById('stat1').textContent = paradoxAlerts.length || 7;
+        document.getElementById('stat2').textContent = pollutionReduce;
+        document.getElementById('stat3').textContent = carbonReduce;
+        document.getElementById('stat4').textContent = closureRate + '%';
+      }
+    }
+
+    async function submitQuery() {
+      const input = document.getElementById('nlInput');
+      const query = input.value.trim();
+      if (!query) {
+        showToast('请输入查询内容', 'warn');
+        return;
+      }
+
+      const btn = document.getElementById('nlBtn');
+      btn.disabled = true;
+
+      // 显示AI生成动画
+      const overlay = document.getElementById('aiGenOverlay');
+      const bar = document.getElementById('aiGenBar');
+      const text = document.getElementById('aiGenText');
+      const step = document.getElementById('aiGenStep');
+      overlay.classList.add('active');
+
+      const steps = [
+        { t: 'AI 正在理解查询意图...', pct: 15, s: 'Step 1/5 · 意图识别' },
+        { t: '正在检索相关数据源...', pct: 35, s: 'Step 2/5 · 数据检索' },
+        { t: '正在进行统计分析...', pct: 60, s: 'Step 3/5 · 统计分析' },
+        { t: '正在生成可视化图表...', pct: 80, s: 'Step 4/5 · 图表生成' },
+        { t: '正在撰写 AI 分析结论...', pct: 100, s: 'Step 5/5 · 结论生成' },
+      ];
+
+      for (let i = 0; i < steps.length; i++) {
+        text.textContent = steps[i].t;
+        bar.style.width = steps[i].pct + '%';
+        step.textContent = steps[i].s;
+        await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
+      }
+
+      overlay.classList.remove('active');
+      btn.disabled = false;
+
+      // 保存查询历史
+      saveQuery(query);
+
+      // 解析意图并渲染报表
+      const intent = parseQueryIntent(query);
+      renderReportByIntent(intent, query);
+      showResultArea();
+
+      showToast('报表生成完成', 'success');
+    }
+
+    // 初始化
+    loadQueryHistory();
+
+    // 如果有URL参数 ?q=xxx，自动执行查询
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoQuery = urlParams.get('q');
+    if (autoQuery) {
+      document.getElementById('nlInput').value = autoQuery;
+      submitQuery();
+    }
+  </script>
+
   <script>
   window.addEventListener('load', function() {
     setTimeout(function() {
@@ -208,6 +494,6 @@
       if (el) el.classList.add('done');
     }, 500);
   });
-</script>
+  </script>
 </body>
 </html>

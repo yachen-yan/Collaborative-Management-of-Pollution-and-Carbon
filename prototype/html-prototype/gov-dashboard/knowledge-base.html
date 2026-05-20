@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>污碳协同知识库 — 悖论案例库</title>
+  <script src="../js/data.js"></script>
+  <style>
+    body { background: #020617; color: #e2e8f0; }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); border-bottom:1px solid rgba(34,211,238,0.2); }
+    .main { margin-left: 0; margin-top: 64px; padding: 24px; }
+    .page-header { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: rgba(226,232,240,0.4); margin-bottom: 20px; }
+    .back-link { font-size: 13px; color: #22d3ee; margin-bottom: 12px; display: inline-block; transition:all 0.2s; }
+    .back-link:hover { text-shadow:0 0 8px rgba(34,211,238,0.5); }
+
+    .kb-tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(34,211,238,0.05); padding: 4px; border-radius: 8px; width: fit-content; border:1px solid rgba(34,211,238,0.1); }
+    .kb-tab { padding: 8px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; color: rgba(226,232,240,0.4); transition: all 0.2s; }
+    .kb-tab.active { background: rgba(34,211,238,0.15); color: #22d3ee; font-weight: 500; box-shadow:0 0 12px rgba(34,211,238,0.1); }
+    .kb-tab:hover:not(.active) { color: rgba(226,232,240,0.6); }
+
+    .kb-content { display: none; }
+    .kb-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+    .case-card {
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1);
+      border-radius: 10px; padding: 20px; margin-bottom: 14px;
+      transition: all 0.3s; cursor: pointer;
+    }
+    .case-card:hover { border-color: rgba(34,211,238,0.25); box-shadow: 0 0 20px rgba(34,211,238,0.06); transform: translateY(-2px); }
+    .case-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .case-id { font-size: 11px; color: rgba(226,232,240,0.3); font-family: monospace; }
+    .case-title { font-size: 15px; font-weight: 600; color: #22d3ee; margin-bottom: 6px; }
+    .case-meta { display: flex; gap: 12px; font-size: 12px; color: rgba(226,232,240,0.4); margin-bottom: 10px; flex-wrap: wrap; }
+    .case-meta span { padding: 2px 8px; background: rgba(34,211,238,0.05); border-radius: 4px; border: 1px solid rgba(34,211,238,0.08); }
+    .case-desc { font-size: 13px; line-height: 1.8; color: rgba(226,232,240,0.6); margin-bottom: 12px; }
+    .case-data-row { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+    .case-data-item { text-align: center; padding: 10px 16px; background: rgba(34,211,238,0.03); border-radius: 6px; border: 1px solid rgba(34,211,238,0.06); }
+    .case-data-num { font-size: 18px; font-weight: 700; }
+    .case-data-label { font-size: 11px; color: rgba(226,232,240,0.35); margin-top: 2px; }
+    .case-section { margin-top: 12px; }
+    .case-section-title { font-size: 12px; font-weight: 600; color: #fbbf24; margin-bottom: 6px; }
+    .case-section-text { font-size: 12px; line-height: 1.8; color: rgba(226,232,240,0.5); }
+    .case-tag {
+      display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; margin-right: 6px;
+    }
+    .case-tag.trap { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+    .case-tag.good { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+    .case-tag.imbalance { background: rgba(234,179,8,0.1); color: #fbbf24; border: 1px solid rgba(234,179,8,0.2); }
+
+    .search-bar {
+      display: flex; gap: 10px; margin-bottom: 20px;
+    }
+    .search-input {
+      flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(34,211,238,0.15);
+      background: rgba(2,6,23,0.6); color: #e2e8f0; font-size: 14px; outline: none;
+    }
+    .search-input:focus { border-color: #22d3ee; }
+    .search-input::placeholder { color: rgba(226,232,240,0.3); }
+    .search-btn {
+      padding: 10px 20px; border-radius: 8px; border: none; background: rgba(34,211,238,0.15);
+      color: #22d3ee; font-size: 14px; cursor: pointer; border: 1px solid rgba(34,211,238,0.3);
+    }
+
+    .factor-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .factor-table th, .factor-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(34,211,238,0.08); }
+    .factor-table th { background: rgba(34,211,238,0.04); font-weight: 600; color: #22d3ee; }
+    .factor-table tr:hover { background: rgba(34,211,238,0.03); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-card { text-align: center; padding: 16px; background: rgba(34,211,238,0.04); border-radius: 8px; border: 1px solid rgba(34,211,238,0.08); }
+    .stat-num { font-size: 28px; font-weight: 700; }
+    .stat-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 4px; }
+  </style>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="bg-honeycomb"></div>
+  <div class="page-loader" id="pageLoader"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
+  <div class="topbar">
+    <div class="logo">🌿 污碳协同AI监管平台</div>
+    <div class="user"><span>怀柔区生态环境局</span><div class="avatar">李</div><span>李管理</span></div>
+  </div>
+
+  <div class="main">
+    <div class="screen-nav">
+      <a href="../index.html">🏠 首页</a>
+      <a href="index.html">📊 指挥大屏</a>
+      <a href="llm-assistant.html">🤖 LLM助手</a>
+      <span class="active">📚 案例库</span>
+      <a href="enterprise-management.html">📋 企业管理</a>
+      <a href="data-management.html">📊 数据管理</a>
+      <a href="device-management.html">🔧 设备管理</a>
+      <a href="../gov-monitoring/index.html">🌐 3D监测</a>
+    </div>
+    <div class="page-header">📚 污碳协同知识库</div>
+    <div class="page-sub">涂装工艺参数、悖论典型案例、碳排放因子等行业知识积累</div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" style="color:#22d3ee">12</div><div class="stat-label">悖论典型案例</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#4ade80">5</div><div class="stat-label">涂料类型</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#fbbf24">28</div><div class="stat-label">入库企业</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:#f87171">3</div><div class="stat-label">重点风险类型</div></div>
+    </div>
+
+    <div class="kb-tabs">
+      <div class="kb-tab active" onclick="switchKbTab(this,0)">⚠️ 悖论案例库</div>
+      <div class="kb-tab" onclick="switchKbTab(this,1)">🎨 涂装工艺参数</div>
+      <div class="kb-tab" onclick="switchKbTab(this,2)">🌍 碳排放因子</div>
+      <div class="kb-tab" onclick="switchKbTab(this,3)">📊 行业阈值配置</div>
+    </div>
+
+    <!-- 悖论案例库 -->
+    <div class="kb-content active" id="kbTab0">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="caseSearch" placeholder="搜索案例名称、行业、根因关键词..." onkeydown="if(event.key==='Enter')filterCases()">
+        <button class="search-btn" onclick="filterCases()">🔍 搜索</button>
+      </div>
+      <div id="caseList"></div>
+    </div>
+
+    <!-- 涂装工艺参数 -->
+    <div class="kb-content" id="kbTab1">
+      <div class="card" style="padding:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:14px;color:#22d3ee">🎨 涂料配方库</div>
+        <table class="factor-table">
+          <tr><th>涂料类型</th><th>VOCs产生系数(kg/kg)</th><th>碳排放因子(kg CO₂/kg)</th><th>典型烘干温度</th><th>烘干能耗相对值</th></tr>
+          <tr><td>溶剂型涂料（硝基漆）</td><td>0.75–0.85</td><td>2.5</td><td>常温–40°C</td><td>1.0（基准）</td></tr>
+          <tr><td>溶剂型涂料（聚氨酯漆）</td><td>0.50–0.65</td><td>2.5</td><td>常温–40°C</td><td>1.0（基准）</td></tr>
+          <tr><td>水性涂料（单组分）</td><td>0.08–0.15</td><td>1.8</td><td>60–80°C</td><td>1.3–1.5</td></tr>
+          <tr><td>水性涂料（双组分）</td><td>0.05–0.10</td><td>1.8</td><td>60–80°C</td><td>1.3–1.5</td></tr>
+          <tr><td>粉末涂料</td><td>≈ 0</td><td>1.2</td><td>160–200°C</td><td>1.8–2.2</td></tr>
+          <tr><td>高固体分涂料</td><td>0.30–0.45</td><td>2.0</td><td>40–60°C</td><td>1.1–1.2</td></tr>
+        </table>
+      </div>
+      <div class="card" style="padding:20px;margin-top:14px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:14px;color:#22d3ee">🔥 RTO 设备参数基准</div>
+        <table class="factor-table">
+          <tr><th>参数项</th><th>优秀线</th><th>警戒线</th><th>说明</th></tr>
+          <tr><td>热回收效率</td><td>≥ 95%</td><td>< 90%</td><td>蓄热体老化会导致效率下降</td></tr>
+          <tr><td>燃烧室温度</td><td>760–800°C</td><td>< 760°C 或 > 850°C</td><td>低于760°C分解效率不足，高于850°C过度燃烧</td></tr>
+          <tr><td>空烧时长占比</td><td>< 5%</td><td>> 15%</td><td>喷涂排班分散是主因</td></tr>
+          <tr><td>VOCs 去除效率</td><td>≥ 99%</td><td>< 95%</td><td>与燃烧室温度和停留时间相关</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 碳排放因子 -->
+    <div class="kb-content" id="kbTab2">
+      <div class="card" style="padding:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:14px;color:#22d3ee">🌍 碳排放因子库</div>
+        <table class="factor-table">
+          <tr><th>排放源</th><th>排放因子</th><th>单位</th><th>适用范围</th></tr>
+          <tr><td>天然气燃烧</td><td>1.63</td><td>tCO₂/万 Nm³</td><td>全国通用</td></tr>
+          <tr><td>电力（华北电网）</td><td>0.5703</td><td>tCO₂/万 kWh</td><td>华北区域</td></tr>
+          <tr><td>电力（北京电网）</td><td>0.3512</td><td>tCO₂/万 kWh</td><td>北京市</td></tr>
+          <tr><td>溶剂型涂料（隐含碳）</td><td>2.5</td><td>kg CO₂/kg 涂料</td><td>工业涂装</td></tr>
+          <tr><td>水性涂料（隐含碳）</td><td>1.8</td><td>kg CO₂/kg 涂料</td><td>工业涂装</td></tr>
+          <tr><td>粉末涂料（隐含碳）</td><td>1.2</td><td>kg CO₂/kg 涂料</td><td>工业涂装</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 行业阈值配置 -->
+    <div class="kb-content" id="kbTab3">
+      <div class="card" style="padding:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:14px;color:#22d3ee">📊 C-P 协同指数分行业阈值（PRD 5.4）</div>
+        <table class="factor-table">
+          <tr><th>行业</th><th>ΔP_threshold</th><th>危险线（80%阈值）</th><th>警戒区间</th><th>说明</th></tr>
+          <tr><td>汽车整车涂装</td><td>0.4</td><td>0.32</td><td>0.32 – 0.4</td><td>工艺复杂，允许适度增碳</td></tr>
+          <tr><td>汽车零部件涂装</td><td>0.5</td><td>0.4</td><td>0.4 – 0.5</td><td>基准阈值</td></tr>
+          <tr><td>家具涂装</td><td>0.6</td><td>0.48</td><td>0.48 – 0.6</td><td>工艺相对简单，要求更高协同</td></tr>
+          <tr><td>金属制品涂装</td><td>0.55</td><td>0.44</td><td>0.44 – 0.55</td><td>中小型设备多，阈值适中</td></tr>
+          <tr><td>汽修行业</td><td>0.7</td><td>0.56</td><td>0.56 – 0.7</td><td>规模小，应优先追求协同</td></tr>
+        </table>
+        <div style="margin-top:12px;padding:10px;background:rgba(34,211,238,0.03);border-radius:6px;font-size:12px;color:rgba(226,232,240,0.5);border:1px solid rgba(34,211,238,0.08)">
+          💡 说明：C-P 协同指数 < 危险线 时触发减污增碳/减碳增污悖论风险预警；处于警戒区间时触发协同失衡预警。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CASES = [
+      {
+        id: 'PARA-2024-001',
+        name: '水性漆切换后天然气激增案',
+        type: 'trap',
+        typeLabel: '减污增碳陷阱',
+        industry: '汽车涂装',
+        desc: '企业将底漆从溶剂型切换为水性漆，VOCs 排放降低 65%，但烘干天然气消耗增加 42%，C-P 协同指数从 0.75 降至 0.48。',
+        cpBefore: 0.75, cpAfter: 0.48,
+        vocsChange: -65, gasChange: 42, carbonChange: 35,
+        rootCauses: ['水性漆烘干温度从 40°C 升至 75°C', '未同步引入热泵或余热回收'],
+        lessons: ['涂料切换必须同步评估烘干能耗', '建议引入红外烘干或热泵辅助'],
+        solution: '沸石转轮浓缩 + RTO + 余热回收',
+        date: '2024-08',
+      },
+      {
+        id: 'PARA-2024-002',
+        name: 'RTO 空烧导致协同指数暴跌案',
+        type: 'trap',
+        typeLabel: '减污增碳陷阱',
+        industry: '汽车零部件涂装',
+        desc: '企业为应对环保检查，将喷涂作业分散至4个时段，RTO 空烧时长占比升至 22%，天然气消耗环比增加 35%，C-P 指数从 0.72 跌至 0.38。',
+        cpBefore: 0.72, cpAfter: 0.38,
+        vocsChange: -12, gasChange: 35, carbonChange: 28,
+        rootCauses: ['喷涂排班过于分散', 'RTO 启停频繁导致空烧累积', '未设置集中生产时段'],
+        lessons: ['喷涂排班应集中至 2-3 个时段', 'RTO 连续运行效率远高于间歇运行'],
+        solution: '调整排班 + 引入蓄热体保温措施',
+        date: '2024-11',
+      },
+      {
+        id: 'PARA-2025-003',
+        name: '蓄热体老化引发能效断崖案',
+        type: 'imbalance',
+        typeLabel: '协同失衡',
+        industry: '金属制品涂装',
+        desc: 'RTO 蓄热陶瓷使用 3 年未更换，热回收效率从 95% 降至 82%，为维持去除效率天然气流量被迫提升 28%，C-P 指数从 0.68 降至 0.52。',
+        cpBefore: 0.68, cpAfter: 0.52,
+        vocsChange: -5, gasChange: 28, carbonChange: 22,
+        rootCauses: ['蓄热体老化导致热回收效率下降', '未建立定期维护计划'],
+        lessons: ['蓄热体应每 2-3 年检查更换', '建立热回收效率月度监测机制'],
+        solution: '更换蓄热陶瓷 + 建立预防性维护制度',
+        date: '2025-03',
+      },
+      {
+        id: 'PARA-2025-004',
+        name: '过度燃烧温度设定过高案',
+        type: 'trap',
+        typeLabel: '减污增碳陷阱',
+        industry: '家具涂装',
+        desc: '企业担心 VOCs 不达标，将燃烧室温度设定为 830°C（远高于 760°C 分解温度），天然气消耗增加 25%，C-P 指数从 0.65 降至 0.42。',
+        cpBefore: 0.65, cpAfter: 0.42,
+        vocsChange: -8, gasChange: 25, carbonChange: 20,
+        rootCauses: ['燃烧室温度设定过高', '对 VOCs 分解温度认知不足'],
+        lessons: '760°C 已可确保 99% 分解效率，过度燃烧无环保收益',
+        solution: '将燃烧室温度下调至 760-780°C 区间',
+        date: '2025-06',
+      },
+      {
+        id: 'PARA-2025-005',
+        name: '粉末涂料切换成功协同改善案',
+        type: 'good',
+        typeLabel: '协同改善',
+        industry: '金属制品涂装',
+        desc: '企业将底漆切换为粉末涂料，虽然烘干温度升至 180°C，但由于粉末涂料几乎零 VOCs，且采用天然气红外烘干，整体 C-P 指数从 0.55 提升至 0.78。',
+        cpBefore: 0.55, cpAfter: 0.78,
+        vocsChange: -95, gasChange: 15, carbonChange: -18,
+        rootCauses: [],
+        lessons: ['粉末涂料适合形状规则的金属件', '红外烘干比热风烘干能效高 30%'],
+        solution: '粉末涂料 + 红外烘干流水线',
+        date: '2025-09',
+      },
+      {
+        id: 'PARA-2025-006',
+        name: '涂料切换未调参导致双失衡案',
+        type: 'trap',
+        typeLabel: '减污增碳陷阱',
+        industry: '汽修行业',
+        desc: '汽修厂将溶剂型涂料切换为水性漆，但未调整喷枪压力和烘干时间，导致漆膜返工率增加 20%，整体能耗反而上升，C-P 指数从 0.62 降至 0.41。',
+        cpBefore: 0.62, cpAfter: 0.41,
+        vocsChange: -40, gasChange: 38, carbonChange: 32,
+        rootCauses: ['未调整喷枪参数', '烘干时间不足导致返工', '工人操作培训不到位'],
+        lessons: ['涂料切换必须配套工艺参数调整', '需对操作工人进行专项培训'],
+        solution: '重新标定喷枪参数 + 延长烘干时间 + 工人培训',
+        date: '2025-10',
+      },
+    ];
+
+    function renderCases(list) {
+      const container = document.getElementById('caseList');
+      if (list.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(226,232,240,0.3)">未找到匹配案例</div>';
+        return;
+      }
+      container.innerHTML = list.map(c => {
+        const tagClass = c.type === 'trap' ? 'trap' : (c.type === 'good' ? 'good' : 'imbalance');
+        const cpColor = c.cpAfter < 0.4 ? '#f87171' : (c.cpAfter < 0.6 ? '#fbbf24' : '#4ade80');
+        return `
+          <div class="case-card" onclick="showToast('案例 ${c.id} 详情查看功能开发中...','info')">
+            <div class="case-header">
+              <div>
+                <div class="case-id">${c.id}</div>
+                <div class="case-title">${c.name}</div>
+              </div>
+              <span class="case-tag ${tagClass}">${c.typeLabel}</span>
+            </div>
+            <div class="case-meta">
+              <span>🏭 ${c.industry}</span>
+              <span>📅 ${c.date}</span>
+              <span>C-P ${c.cpBefore} → <span style="color:${cpColor};font-weight:600">${c.cpAfter}</span></span>
+            </div>
+            <div class="case-desc">${c.desc}</div>
+            <div class="case-data-row">
+              <div class="case-data-item"><div class="case-data-num" style="color:${c.vocsChange<0?'#4ade80':'#f87171'}">${c.vocsChange>0?'+':''}${c.vocsChange}%</div><div class="case-data-label">VOCs变化</div></div>
+              <div class="case-data-item"><div class="case-data-num" style="color:${c.gasChange>0?'#f87171':'#4ade80'}">${c.gasChange>0?'+':''}${c.gasChange}%</div><div class="case-data-label">天然气变化</div></div>
+              <div class="case-data-item"><div class="case-data-num" style="color:${c.carbonChange>0?'#f87171':'#4ade80'}">${c.carbonChange>0?'+':''}${c.carbonChange}%</div><div class="case-data-label">碳排变化</div></div>
+            </div>
+            <div class="case-section">
+              <div class="case-section-title">🔍 根因分析</div>
+              <div class="case-section-text">${Array.isArray(c.rootCauses) ? c.rootCauses.join('；') : c.rootCauses}</div>
+            </div>
+            <div class="case-section">
+              <div class="case-section-title">💡 经验教训</div>
+              <div class="case-section-text">${Array.isArray(c.lessons) ? c.lessons.join('；') : c.lessons}</div>
+            </div>
+            <div class="case-section">
+              <div class="case-section-title">✅ 参考解决方案</div>
+              <div class="case-section-text" style="color:#4ade80">${c.solution}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterCases() {
+      const q = document.getElementById('caseSearch').value.trim().toLowerCase();
+      if (!q) { renderCases(CASES); return; }
+      const filtered = CASES.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        c.industry.toLowerCase().includes(q) ||
+        c.desc.toLowerCase().includes(q) ||
+        (Array.isArray(c.rootCauses) ? c.rootCauses.some(r => r.toLowerCase().includes(q)) : c.rootCauses.toLowerCase().includes(q))
+      );
+      renderCases(filtered);
+    }
+
+    function switchKbTab(el, idx) {
+      document.querySelectorAll('.kb-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.kb-content').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('kbTab' + idx).classList.add('active');
+    }
+
+    renderCases(CASES);
+  </script>
+
+  <script>
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      var el = document.getElementById('pageLoader');
+      if (el) el.classList.add('done');
+    }, 500);
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设备管理 — 治理设施全生命周期管理</title>
+<script src="../js/data.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; min-height:100vh; }
+.screen-wrap { width:100vw; min-height:100vh; padding:16px 20px 48px; display:flex; flex-direction:column; }
+.screen-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(34,211,238,0.15); }
+.screen-header-title { font-size:20px; font-weight:700; letter-spacing:2px; display:flex; align-items:center; gap:10px; }
+.pulse-dot { width:8px; height:8px; border-radius:50%; background:#22d3ee; box-shadow:0 0 8px #22d3ee; animation:pulseDot 2s ease-in-out infinite; }
+@keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.screen-header-sub { font-size:12px; color:rgba(226,232,240,0.4); margin-top:4px; }
+.screen-nav { display:flex; gap:8px; flex-wrap:wrap; }
+.screen-nav a { padding:5px 14px; border-radius:6px; font-size:12px; color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1); text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05); }
+.screen-nav a:hover, .screen-nav a.active { color:#22d3ee; border-color:rgba(34,211,238,0.4); background:rgba(34,211,238,0.1); }
+
+.filter-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:12px 16px; }
+.filter-bar select { padding:7px 12px; border:1px solid rgba(34,211,238,0.15); border-radius:6px; background:rgba(2,6,23,0.6); color:#e2e8f0; font-size:12px; outline:none; }
+.filter-bar select:focus { border-color:#22d3ee; }
+.filter-bar .btn-filter { padding:7px 18px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(34,211,238,0.3); background:rgba(34,211,238,0.1); color:#22d3ee; transition:all 0.2s; }
+.filter-bar .btn-filter:hover { background:rgba(34,211,238,0.2); }
+
+.alert-panel { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:16px; }
+.alert-card { background:rgba(239,68,68,0.04); border:1px solid rgba(239,68,68,0.12); border-radius:10px; padding:14px; transition:all 0.3s; }
+.alert-card.warn { background:rgba(251,191,36,0.04); border-color:rgba(251,191,36,0.12); }
+.alert-card:hover { border-color:rgba(239,68,68,0.25); box-shadow:0 0 20px rgba(239,68,68,0.08); }
+.alert-card.warn:hover { border-color:rgba(251,191,36,0.25); box-shadow:0 0 20px rgba(251,191,36,0.08); }
+.alert-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.alert-severity { font-size:10px; padding:2px 8px; border-radius:4px; font-weight:500; }
+.alert-severity.critical { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+.alert-severity.warning { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); }
+.alert-text { font-size:13px; color:rgba(226,232,240,0.8); line-height:1.6; }
+.alert-meta { font-size:11px; color:rgba(226,232,240,0.4); margin-top:6px; }
+
+.device-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:16px; }
+.device-card { background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:16px; position:relative; overflow:hidden; transition:all 0.3s; }
+.device-card:hover { border-color:rgba(34,211,238,0.3); box-shadow:0 0 24px rgba(34,211,238,0.1); transform:translateY(-2px); }
+.device-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#22d3ee,transparent); opacity:0.6; }
+.device-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.device-code { font-size:13px; font-weight:600; color:#f1f5f9; }
+.device-type { font-size:10px; padding:2px 8px; border-radius:4px; border:1px solid rgba(34,211,238,0.2); background:rgba(34,211,238,0.06); color:#7dd3fc; }
+.device-info { font-size:12px; color:rgba(226,232,240,0.5); margin-bottom:10px; line-height:1.6; }
+.device-metrics { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0; }
+.dev-metric { text-align:center; padding:8px; background:rgba(2,6,23,0.4); border-radius:6px; }
+.dev-metric-label { font-size:10px; color:rgba(226,232,240,0.35); margin-bottom:3px; }
+.dev-metric-value { font-size:16px; font-weight:700; }
+
+.efficiency-bar { height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; margin:8px 0; }
+.efficiency-fill { height:100%; border-radius:3px; transition:width 0.6s; }
+
+.status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; }
+.status-online { background:#4ade80; box-shadow:0 0 6px rgba(74,222,128,0.4); }
+.status-offline { background:#f87171; box-shadow:0 0 6px rgba(239,68,68,0.4); }
+.status-maintenance { background:#fbbf24; box-shadow:0 0 6px rgba(251,191,36,0.4); }
+
+.device-actions { display:flex; gap:6px; margin-top:10px; }
+.device-actions button { flex:1; padding:6px 0; font-size:11px; border-radius:5px; cursor:pointer; border:1px solid transparent; transition:all 0.2s; }
+.btn-view { background:rgba(34,211,238,0.08); color:#22d3ee; border-color:rgba(34,211,238,0.18); }
+.btn-view:hover { background:rgba(34,211,238,0.18); }
+.btn-maint { background:rgba(251,191,36,0.08); color:#fbbf24; border-color:rgba(251,191,36,0.18); }
+.btn-maint:hover { background:rgba(251,191,36,0.18); }
+
+.rank-table { width:100%; border-collapse:collapse; font-size:12px; }
+.rank-table th { text-align:left; padding:10px 8px; color:#22d3ee; border-bottom:1px solid rgba(34,211,238,0.15); font-weight:600; background:rgba(34,211,238,0.03); }
+.rank-table td { padding:9px 8px; border-bottom:1px solid rgba(255,255,255,0.03); color:rgba(226,232,240,0.7); }
+.rank-table tr:hover td { background:rgba(34,211,238,0.03); }
+.rank-table .low-rank { color:#f87171; }
+
+.drawer-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:600; }
+.drawer-overlay.active { display:block; }
+.drawer { position:fixed; top:0; right:0; width:480px; max-width:95vw; height:100vh; background:rgba(2,6,23,0.98); border-left:1px solid rgba(34,211,238,0.2); box-shadow:-8px 0 40px rgba(0,0,0,0.5); z-index:610; transform:translateX(100%); transition:transform 0.35s ease; display:flex; flex-direction:column; }
+.drawer.active { transform:translateX(0); }
+.drawer-header { padding:16px 20px; border-bottom:1px solid rgba(34,211,238,0.1); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.drawer-title { font-size:15px; font-weight:600; color:#22d3ee; }
+.drawer-close { font-size:20px; color:rgba(226,232,240,0.3); cursor:pointer; transition:all 0.2s; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+.drawer-close:hover { color:#22d3ee; background:rgba(34,211,238,0.08); }
+.drawer-body { flex:1; overflow-y:auto; padding:16px 20px; }
+.drawer-body::-webkit-scrollbar { width:4px; }
+.drawer-body::-webkit-scrollbar-thumb { background:rgba(34,211,238,0.2); }
+.drawer-section { margin-bottom:20px; }
+.drawer-section-title { font-size:13px; font-weight:600; color:#22d3ee; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.drawer-section-title::before { content:""; width:3px; height:12px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; }
+.drawer-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid rgba(34,211,238,0.05); font-size:12px; }
+.drawer-row span:first-child { color:rgba(226,232,240,0.4); }
+.drawer-row span:last-child { font-weight:500; }
+
+.sparkline-wrap { height:60px; position:relative; margin-top:6px; }
+.sparkline-svg { width:100%; height:100%; }
+
+.badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:500; }
+.badge-pass { background:rgba(74,222,128,0.1); color:#4ade80; border:1px solid rgba(74,222,128,0.2); }
+.badge-fail { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+.badge-warn { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); }
+
+.empty-state { text-align:center; padding:60px 20px; color:rgba(226,232,240,0.25); font-size:13px; }
+</style>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="bg-honeycomb"></div>
+<div class="page-loader" id="pageLoader" style="z-index:9999"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
+
+<div class="screen-wrap">
+<div class="screen-header">
+  <div class="screen-header-left">
+    <div class="screen-header-title"><span class="pulse-dot"></span>设备管理 — 治理设施全生命周期管理</div>
+    <div class="screen-header-sub">北京市怀柔区生态环境局 · 工业涂装行业 · 2026-05-18</div>
+  </div>
+  <div class="screen-nav">
+    <a href="../index.html">首页</a>
+    <a href="index.html">指挥大屏</a>
+    <a href="enterprise-management.html">企业管理</a>
+    <a href="data-management.html">数据管理</a>
+    <a class="active" style="text-decoration:none">设备管理</a>
+    <a href="llm-assistant.html">LLM助手</a>
+    <a href="knowledge-base.html">案例库</a>
+    <a href="../gov-monitoring/index.html">3D监测</a>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <select id="fEnt"><option value="">全部企业</option><option>华瑞汽车涂装</option><option>绿源家具制造</option><option>东升金属喷涂</option><option>盛世汽修中心</option></select>
+  <select id="fOut"><option value="">全部排口</option><option>喷涂线废气排口</option><option>烘干线废气排口</option><option>调漆间无组织排放</option></select>
+  <select id="fType"><option value="">全部类型</option><option>RTO</option><option>RCO</option><option>活性炭吸附</option><option>沸石转轮+催化燃烧</option></select>
+  <select id="fStatus"><option value="">全部状态</option><option>运行中</option><option>离线</option><option>维护中</option></select>
+  <button class="btn-filter" onclick="filterDevices()">查询</button>
+</div>
+
+<div class="alert-panel" id="alertPanel"></div>
+<div class="device-grid" id="deviceGrid"></div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+  <div class="chart-card" style="background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:16px;">
+    <div style="font-size:13px; font-weight:600; color:#22d3ee; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+      <span style="width:3px; height:12px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; display:inline-block;"></span>
+      去除效率排名
+    </div>
+    <table class="rank-table" id="effTable">
+      <thead><tr><th>排名</th><th>设备编号</th><th>企业</th><th>设计效率</th><th>实际效率</th><th>差值</th></tr></thead>
+      <tbody id="effBody"></tbody>
+    </table>
+  </div>
+  <div class="chart-card" style="background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:16px;">
+    <div style="font-size:13px; font-weight:600; color:#22d3ee; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+      <span style="width:3px; height:12px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; display:inline-block;"></span>
+      能效比排名
+    </div>
+    <table class="rank-table" id="energyTable">
+      <thead><tr><th>排名</th><th>设备编号</th><th>企业</th><th>单位去除能耗(kWh/kg)</th><th>评分</th></tr></thead>
+      <tbody id="energyBody"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="detailDrawer">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawerTitle">设备详情</div>
+    <div class="drawer-close" onclick="closeDrawer()">&times;</div>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<script>
+const DEVICES = [
+  {id:'DEV-001',code:'RTO-01',name:'RTO蓄热燃烧-01',type:'RTO',ent:'华瑞汽车涂装',outlet:'喷涂线废气排口',mfr:'青岛蓝盾',model:'LD-RTO-15000',capacity:15000,designEff:95,actualEff:92.5,status:'online',runtime:8760,chamberTemp:785,gasFlow:1200,nextMaint:'2026-07-15',daysLeft:56,energyPerKg:0.85,inlet:{tvoc:850,nmhc:600},outlet:{tvoc:85,nmhc:60}},
+  {id:'DEV-002',code:'RCO-01',name:'RCO催化燃烧-01',type:'RCO',ent:'华瑞汽车涂装',outlet:'烘干线废气排口',mfr:'北京中环',model:'ZH-RCO-8000',capacity:8000,designEff:90,actualEff:78.2,status:'online',runtime:7200,chamberTemp:320,gasFlow:800,nextMaint:'2026-06-10',daysLeft:21,energyPerKg:1.12,inlet:{tvoc:520,nmhc:380},outlet:{tvoc:120,nmhc:85}},
+  {id:'DEV-003',code:'AC-01',name:'活性炭吸附-01',type:'活性炭吸附',ent:'绿源家具制造',outlet:'喷涂线废气排口',mfr:'江苏绿净',model:'LJ-AC-5000',capacity:5000,designEff:85,actualEff:81.0,status:'online',runtime:6500,chamberTemp:null,gasFlow:500,nextMaint:'2026-06-05',daysLeft:16,energyPerKg:0.45,inlet:{tvoc:380,nmhc:250},outlet:{tvoc:72,nmhc:48}},
+  {id:'DEV-004',code:'RTO-02',name:'RTO蓄热燃烧-02',type:'RTO',ent:'东升金属喷涂',outlet:'喷涂线废气排口',mfr:'青岛蓝盾',model:'LD-RTO-12000',capacity:12000,designEff:95,actualEff:88.5,status:'maintenance',runtime:4200,chamberTemp:0,gasFlow:0,nextMaint:'2026-05-25',daysLeft:5,energyPerKg:0.92,inlet:{tvoc:0,nmhc:0},outlet:{tvoc:0,nmhc:0}},
+  {id:'DEV-005',code:'ZE-01',name:'沸石转轮+催化燃烧-01',type:'沸石转轮+催化燃烧',ent:'盛世汽修中心',outlet:'烘干线废气排口',mfr:'上海净源',model:'JY-ZR-10000',capacity:10000,designEff:92,actualEff:91.2,status:'online',runtime:8000,chamberTemp:280,gasFlow:950,nextMaint:'2026-08-20',daysLeft:92,energyPerKg:0.78,inlet:{tvoc:650,nmhc:450},outlet:{tvoc:55,nmhc:38}},
+  {id:'DEV-006',code:'AC-02',name:'活性炭吸附-02',type:'活性炭吸附',ent:'东升金属喷涂',outlet:'调漆间无组织排放',mfr:'江苏绿净',model:'LJ-AC-3000',capacity:3000,designEff:80,actualEff:62.5,status:'online',runtime:5800,chamberTemp:null,gasFlow:300,nextMaint:'2026-05-28',daysLeft:8,energyPerKg:1.35,inlet:{tvoc:200,nmhc:140},outlet:{tvoc:75,nmhc:52}},
+  {id:'DEV-007',code:'RCO-02',name:'RCO催化燃烧-02',type:'RCO',ent:'绿源家具制造',outlet:'烘干线废气排口',mfr:'北京中环',model:'ZH-RCO-6000',capacity:6000,designEff:90,actualEff:85.8,status:'online',runtime:7800,chamberTemp:310,gasFlow:650,nextMaint:'2026-07-01',daysLeft:42,energyPerKg:0.95,inlet:{tvoc:450,nmhc:300},outlet:{tvoc:64,nmhc:43}},
+  {id:'DEV-008',code:'RTO-03',name:'RTO蓄热燃烧-03',type:'RTO',ent:'华美塑料制品',outlet:'喷涂线废气排口',mfr:'青岛蓝盾',model:'LD-RTO-18000',capacity:18000,designEff:95,actualEff:0,status:'offline',runtime:0,chamberTemp:0,gasFlow:0,nextMaint:'2026-06-15',daysLeft:26,energyPerKg:0,inlet:{tvoc:0,nmhc:0},outlet:{tvoc:0,nmhc:0}}
+];
+
+const ALERTS = [
+  {device:'DEV-001',code:'RTO-01',severity:'critical',text:'蓄热体热回收效率连续7天<90%，建议更换蓄热陶瓷',meta:'预计剩余寿命: 45天 · 建议动作: 预约维保'},
+  {device:'DEV-003',code:'AC-01',severity:'warning',text:'活性炭预计15天后饱和，建议提前准备更换物料',meta:'当前吸附容量剩余: 18% · 建议动作: 采购活性炭'},
+  {device:'DEV-002',code:'RCO-01',severity:'warning',text:'催化剂活性下降，预计30天后需更换，去除效率已降至78%',meta:'当前效率 vs 设计: 78% / 90% · 建议动作: 评估更换成本'}
+];
+
+function renderAlerts() {
+  document.getElementById('alertPanel').innerHTML = ALERTS.map(a=>{
+    const cls = a.severity==='critical'?'':'warn';
+    const sev = a.severity==='critical'?'<span class="badge badge-fail">严重</span>':'<span class="badge badge-warn">警告</span>';
+    return '<div class="alert-card '+cls+'"><div class="alert-header"><strong style="font-size:12px;color:#f1f5f9">'+a.code+'</strong>'+sev+'</div><div class="alert-text">'+a.text+'</div><div class="alert-meta">'+a.meta+'</div></div>';
+  }).join('');
+}
+
+function renderDevices() {
+  const grid = document.getElementById('deviceGrid');
+  const ent = document.getElementById('fEnt').value;
+  const out = document.getElementById('fOut').value;
+  const type = document.getElementById('fType').value;
+  const status = document.getElementById('fStatus').value;
+  let filtered = DEVICES;
+  if(ent) filtered = filtered.filter(d=>d.ent===ent);
+  if(out) filtered = filtered.filter(d=>d.outlet===out);
+  if(type) filtered = filtered.filter(d=>d.type===type);
+  if(status) filtered = filtered.filter(d=>d.status===(status==='运行中'?'online':status==='离线'?'offline':'maintenance'));
+
+  grid.innerHTML = filtered.map(d=>{
+    const effRatio = d.actualEff / d.designEff;
+    const effColor = effRatio>=0.9?'#4ade80':effRatio>=0.7?'#fbbf24':'#f87171';
+    const statusText = d.status==='online'?'运行中':d.status==='offline'?'离线':'维护中';
+    const statusDot = d.status==='online'?'status-online':d.status==='offline'?'status-offline':'status-maintenance';
+    const maintWarn = d.daysLeft<=30?'<span style="color:'+(d.daysLeft<=7?'#f87171':'#fbbf24')+'">('+d.daysLeft+'天后)</span>':'';
+    return '<div class="device-card"><div class="device-header"><div><div class="device-code">'+d.code+'</div><div style="font-size:11px;color:rgba(226,232,240,0.4);margin-top:2px">'+d.ent+'</div></div><span class="device-type">'+d.type+'</span></div>'+
+    '<div class="device-info">'+d.mfr+' · '+d.model+'<br>处理风量: '+d.capacity+' m³/h · 排口: '+d.outlet+'</div>'+
+    '<div class="device-metrics"><div class="dev-metric"><div class="dev-metric-label">设计效率</div><div class="dev-metric-value" style="color:#22d3ee">'+d.designEff+'%</div></div>'+
+    '<div class="dev-metric"><div class="dev-metric-label">实际效率</div><div class="dev-metric-value" style="color:'+effColor+'">'+d.actualEff+'%</div></div></div>'+
+    '<div style="font-size:11px;color:rgba(226,232,240,0.4);margin-bottom:4px">效率达成率</div><div class="efficiency-bar"><div class="efficiency-fill" style="width:'+(effRatio*100)+'%; background:'+effColor+'"></div></div>'+
+    '<div style="font-size:11px;color:rgba(226,232,240,0.4);margin-top:8px"><span class="status-dot '+statusDot+'"></span>'+statusText+' · 下次维保: '+d.nextMaint+' '+maintWarn+'</div>'+
+    '<div class="device-actions"><button class="btn-view" onclick="openDrawer(\''+d.id+'\')">查看详情</button><button class="btn-maint" onclick="showToast(\'维保记录功能开发中\',\'warn\')">维保记录</button></div></div>';
+  }).join('');
+}
+
+function filterDevices() { renderDevices(); renderRankings(); }
+
+function renderRankings() {
+  const effSorted = [...DEVICES].filter(d=>d.actualEff>0).sort((a,b)=>a.actualEff-b.actualEff);
+  const cutoff = Math.ceil(effSorted.length * 0.2);
+  document.getElementById('effBody').innerHTML = effSorted.map((d,i)=>{
+    const cls = i<cutoff?'low-rank':'';
+    return '<tr class="'+cls+'"><td>'+(i+1)+'</td><td>'+d.code+'</td><td>'+d.ent+'</td><td>'+d.designEff+'%</td><td>'+d.actualEff+'%</td><td>'+(d.actualEff-d.designEff).toFixed(1)+'%</td></tr>';
+  }).join('');
+
+  const engSorted = [...DEVICES].filter(d=>d.energyPerKg>0).sort((a,b)=>b.energyPerKg-a.energyPerKg);
+  document.getElementById('energyBody').innerHTML = engSorted.map((d,i)=>{
+    const cls = i<cutoff?'low-rank':'';
+    const score = Math.max(0, Math.round(100 - d.energyPerKg*50));
+    return '<tr class="'+cls+'"><td>'+(i+1)+'</td><td>'+d.code+'</td><td>'+d.ent+'</td><td>'+d.energyPerKg+'</td><td style="color:'+(score>=80?'#4ade80':score>=60?'#fbbf24':'#f87171')+'">'+score+'</td></tr>';
+  }).join('');
+}
+
+function openDrawer(id) {
+  const d = DEVICES.find(x=>x.id===id);
+  if(!d) return;
+  document.getElementById('drawerTitle').innerText = d.code + ' — ' + d.name;
+  const months = ['2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05'];
+  const effHistory = months.map((m,i)=>{
+    const base = d.designEff;
+    const decay = i * (d.designEff - d.actualEff) / 12;
+    return Math.max(0, Math.round((base - decay + (Math.random()-0.5)*3)*10)/10);
+  });
+  const W=400, H=60, PAD=5;
+  const pts = effHistory.map((v,i)=>{
+    const x=PAD+(W-PAD*2)*i/(months.length-1);
+    const y=H-PAD-(H-PAD*2)*(v/100);
+    return x+','+y;
+  }).join(' ');
+  const designPts = months.map((_,i)=>{
+    const x=PAD+(W-PAD*2)*i/(months.length-1);
+    const y=H-PAD-(H-PAD*2)*(d.designEff/100);
+    return x+','+y;
+  }).join(' ');
+  const sparkline = '<svg class="sparkline-svg" viewBox="0 0 '+W+' '+H+'"><polyline points="'+designPts+'" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="3,3"/><polyline points="'+pts+'" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/></svg>';
+
+  document.getElementById('drawerBody').innerHTML =
+    '<div class="drawer-section"><div class="drawer-section-title">基本信息</div>'+
+    '<div class="drawer-row"><span>设备编号</span><span>'+d.code+'</span></div>'+
+    '<div class="drawer-row"><span>设备名称</span><span>'+d.name+'</span></div>'+
+    '<div class="drawer-row"><span>设备类型</span><span>'+d.type+'</span></div>'+
+    '<div class="drawer-row"><span>制造商</span><span>'+d.mfr+'</span></div>'+
+    '<div class="drawer-row"><span>型号</span><span>'+d.model+'</span></div>'+
+    '<div class="drawer-row"><span>所属企业</span><span>'+d.ent+'</span></div>'+
+    '<div class="drawer-row"><span>关联排口</span><span>'+d.outlet+'</span></div>'+
+    '<div class="drawer-row"><span>安装日期</span><span>2023-03-15</span></div>'+
+    '<div class="drawer-row"><span>质保到期</span><span>2028-03-15</span></div></div>'+
+    '<div class="drawer-section"><div class="drawer-section-title">效率衰减曲线</div><div class="sparkline-wrap">'+sparkline+'</div><div style="font-size:10px;color:rgba(226,232,240,0.3);margin-top:4px">虚线=设计效率 · 实线=实际效率（过去12个月）</div></div>'+
+    '<div class="drawer-section"><div class="drawer-section-title">运行参数</div>'+
+    '<div class="drawer-row"><span>入口TVOC</span><span>'+d.inlet.tvoc+' mg/m³</span></div>'+
+    '<div class="drawer-row"><span>出口TVOC</span><span>'+d.outlet.tvoc+' mg/m³</span></div>'+
+    '<div class="drawer-row"><span>去除效率</span><span>'+d.actualEff+'%</span></div>'+
+    '<div class="drawer-row"><span>炉膛温度</span><span>'+(d.chamberTemp?d.chamberTemp+' °C':'—')+'</span></div>'+
+    '<div class="drawer-row"><span>处理风量</span><span>'+d.gasFlow+' m³/h</span></div>'+
+    '<div class="drawer-row"><span>累计运行</span><span>'+d.runtime+' h</span></div></div>'+
+    '<div class="drawer-section"><div class="drawer-section-title">维保历史</div>'+
+    '<table class="rank-table"><thead><tr><th>日期</th><th>类型</th><th>内容</th><th>执行方</th></tr></thead><tbody>'+
+    '<tr><td>2026-01-15</td><td>定期保养</td><td>更换蓄热陶瓷、清洗燃烧室</td><td>厂家上门</td></tr>'+
+    '<tr><td>2025-10-20</td><td>故障维修</td><td>修复热旁通阀门泄漏</td><td>厂家上门</td></tr>'+
+    '<tr><td>2025-07-12</td><td>定期保养</td><td>催化剂活性检测、更换密封件</td><td>第三方维保</td></tr>'+
+    '</tbody></table></div>';
+  document.getElementById('drawerOverlay').classList.add('active');
+  document.getElementById('detailDrawer').classList.add('active');
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('active');
+  document.getElementById('detailDrawer').classList.remove('active');
+}
+
+renderAlerts();
+renderDevices();
+renderRankings();
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var el = document.getElementById('pageLoader');
+    if(el) el.classList.add('done');
+  }, 500);
+});
+</script>
+</body>
+</html>

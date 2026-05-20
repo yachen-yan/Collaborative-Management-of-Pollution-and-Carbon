@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>悖论模拟器 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
@@ -20,12 +21,12 @@
       font-size: 14px; font-weight: 600; flex-shrink: 0;
       border: 2px solid #d9d9d9; color: rgba(226,232,240,0.3); background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px);
     }
-    .step-item.active .step-circle { border-color: #1677ff; color: #1677ff; background: #e6f4ff; }
-    .step-item.done .step-circle { border-color: #52c41a; color: #fff; background: #52c41a; }
+    .step-item.active .step-circle { border-color: #0ea5e9; color: #0ea5e9; background: #e6f4ff; }
+    .step-item.done .step-circle { border-color: #4ade80; color: #fff; background: #4ade80; }
     .step-text { font-size: 14px; color: rgba(226,232,240,0.4); }
     .step-item.active .step-text { color: #e2e8f0; font-weight: 500; }
     .step-line { flex: 1; height: 2px; background: #f0f0f0; margin: 0 12px; }
-    .step-line.done { background: #52c41a; }
+    .step-line.done { background: #4ade80; }
     
     /* 步骤内容 */
     .step-content { display: none; }
@@ -37,14 +38,14 @@
       border: 2px solid #f0f0f0; border-radius: 8px; padding: 20px;
       cursor: pointer; transition: all 0.2s; position: relative;
     }
-    .process-card:hover { border-color: #1677ff; box-shadow: 0 2px 12px rgba(22,119,255,0.1); }
-    .process-card.selected { border-color: #1677ff; background: #e6f4ff; }
+    .process-card:hover { border-color: #0ea5e9; box-shadow: 0 2px 12px rgba(22,119,255,0.1); }
+    .process-card.selected { border-color: #0ea5e9; background: #e6f4ff; }
     .process-card .check {
       position: absolute; top: 12px; right: 12px; width: 20px; height: 20px;
       border-radius: 50%; border: 2px solid #d9d9d9; display: flex;
       align-items: center; justify-content: center; font-size: 12px;
     }
-    .process-card.selected .check { background: #1677ff; border-color: #1677ff; color: #fff; }
+    .process-card.selected .check { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
     .process-icon { font-size: 32px; margin-bottom: 10px; }
     .process-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
     .process-desc { font-size: 12px; color: rgba(226,232,240,0.4); line-height: 1.6; }
@@ -59,11 +60,11 @@
       width: 100%; padding: 10px 12px; border: 1px solid rgba(34,211,238,0.15);
       border-radius: 6px; font-size: 14px; outline: none;
     }
-    .param-item input:focus { border-color: #1677ff; }
+    .param-item input:focus { border-color: #0ea5e9; }
     
     /* 对比箭头 */
     .vs-arrow {
-      text-align: center; padding: 12px; font-size: 20px; color: #1677ff; font-weight: 700;
+      text-align: center; padding: 12px; font-size: 20px; color: #0ea5e9; font-weight: 700;
     }
     
     /* 结果页 */
@@ -72,11 +73,11 @@
     }
     .result-banner.trap {
       background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(234,179,8,0.1) 100%); border: 1px solid rgba(239,68,68,0.2);
-      border: 2px solid #f5222d;
+      border: 2px solid #f87171;
     }
     .result-banner.good {
       background: linear-gradient(135deg, #f6ffed 0%, #e6fffb 100%);
-      border: 2px solid #52c41a;
+      border: 2px solid #4ade80;
     }
     .result-icon { font-size: 48px; margin-bottom: 8px; }
     .result-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
@@ -87,14 +88,14 @@
     .result-value { font-size: 28px; font-weight: 700; }
     .result-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 6px; }
     .result-change { font-size: 12px; margin-top: 4px; }
-    .result-change.up { color: #52c41a; }
-    .result-change.down { color: #f5222d; }
+    .result-change.up { color: #4ade80; }
+    .result-change.down { color: #f87171; }
     
     .suggestion-box {
       background: #e6f4ff; border: 1px solid #91caff; border-radius: 8px;
       padding: 16px; margin-bottom: 20px;
     }
-    .suggestion-title { font-weight: 600; color: #1677ff; margin-bottom: 8px; }
+    .suggestion-title { font-weight: 600; color: #0ea5e9; margin-bottom: 8px; }
     .suggestion-list { font-size: 13px; line-height: 2; }
     .suggestion-list li { margin-left: 18px; }
     
@@ -237,6 +238,22 @@
     <!-- 步骤2：输入参数 -->
     <div class="step-content" id="step2">
       <div class="card">
+        <div style="font-size:15px;font-weight:600;margin-bottom:16px">🏭 企业行业信息</div>
+        <div class="param-grid">
+          <div class="param-item">
+            <label>所属行业</label>
+            <select id="industrySelect" onchange="updateThresholdHint()">
+              <option value="auto_part">汽车零部件涂装（ΔP阈值 0.5）</option>
+              <option value="auto_whole">汽车整车涂装（ΔP阈值 0.4）</option>
+              <option value="furniture">家具涂装（ΔP阈值 0.6）</option>
+              <option value="metal">金属制品涂装（ΔP阈值 0.55）</option>
+              <option value="repair">汽修行业（ΔP阈值 0.7）</option>
+            </select>
+            <div id="thresholdHint" style="font-size:11px;color:#22d3ee;margin-top:4px">当前行业 C-P 协同阈值：0.5（汽车零部件涂装基准）</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px">
         <div style="font-size:15px;font-weight:600;margin-bottom:16px">📋 基础生产参数</div>
         <div class="param-grid">
           <div class="param-item">
@@ -299,35 +316,35 @@
     <div class="step-content" id="step3">
       <div class="result-banner trap" id="resultBanner">
         <div class="result-icon" id="resultIcon">⚠️</div>
-        <div class="result-title" id="resultTitle" style="color:#f5222d">减污增碳陷阱</div>
+        <div class="result-title" id="resultTitle" style="color:#f87171">减污增碳陷阱</div>
         <div class="result-desc" id="resultDesc">水性涂料切换后 VOCs 预计降低 60%，但天然气消耗预计增加 35%，C-P 协同指数将从 0.75 降至 0.48</div>
       </div>
 
       <div class="row" id="resultGrid">
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" id="vocsChange" style="color:#52c41a">-60%</div>
+            <div class="result-value" id="vocsChange" style="color:#4ade80">-60%</div>
             <div class="result-label">VOCs 排放变化</div>
             <div class="result-change up" id="vocsChangeLabel">↓ 大幅下降</div>
           </div>
         </div>
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" id="gasChange" style="color:#f5222d">+35%</div>
+            <div class="result-value" id="gasChange" style="color:#f87171">+35%</div>
             <div class="result-label">天然气消耗变化</div>
             <div class="result-change down" id="gasChangeLabel">↑ 显著增加</div>
           </div>
         </div>
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" id="carbonChange" style="color:#f5222d">+28%</div>
+            <div class="result-value" id="carbonChange" style="color:#f87171">+28%</div>
             <div class="result-label">碳排放变化</div>
             <div class="result-change down" id="carbonChangeLabel">↑ 碳排增加</div>
           </div>
         </div>
         <div class="col-3">
           <div class="card result-card">
-            <div class="result-value" id="cpResult" style="color:#f5222d">0.48</div>
+            <div class="result-value" id="cpResult" style="color:#f87171">0.48</div>
             <div class="result-label">预测 C-P 协同指数</div>
             <div class="result-change down" id="cpChangeLabel">↓ 从 0.75 降至 0.48</div>
           </div>
@@ -383,6 +400,23 @@
       '粉末涂料': { vocsFactor: 0.0, carbonFactor: 1.2, dryTemp: 180, dryEnergy: 3.5 },
       '高固体分涂料': { vocsFactor: 0.38, carbonFactor: 2.0, dryTemp: 50, dryEnergy: 1.4 },
     };
+
+    // 分行业 C-P 阈值配置（PRD 5.4）
+    const INDUSTRY_THRESHOLD = {
+      auto_whole: { name: '汽车整车涂装', threshold: 0.4 },
+      auto_part: { name: '汽车零部件涂装', threshold: 0.5 },
+      furniture: { name: '家具涂装', threshold: 0.6 },
+      metal: { name: '金属制品涂装', threshold: 0.55 },
+      repair: { name: '汽修行业', threshold: 0.7 },
+    };
+
+    function updateThresholdHint() {
+      const industry = document.getElementById('industrySelect').value;
+      const cfg = INDUSTRY_THRESHOLD[industry];
+      if (cfg) {
+        document.getElementById('thresholdHint').textContent = '当前行业 C-P 协同阈值：' + cfg.threshold + '（' + cfg.name + '）';
+      }
+    }
 
     function goStep(n) {
       document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
@@ -451,34 +485,44 @@
       const gasChange = Math.round(((targetParams.dryEnergy - currentParams.dryEnergy) / currentParams.dryEnergy) * 100);
       const carbonChange = Math.round(((targetParams.carbonFactor * targetParams.dryEnergy - currentParams.carbonFactor * currentParams.dryEnergy) / (currentParams.carbonFactor * currentParams.dryEnergy)) * 100);
 
+      // 获取行业阈值
+      const industry = document.getElementById('industrySelect').value || 'auto_part';
+      const industryCfg = INDUSTRY_THRESHOLD[industry] || INDUSTRY_THRESHOLD.auto_part;
+      const threshold = industryCfg.threshold;
+
       // C-P 协同指数估算
       const cpBefore = 0.72;
       let cpAfter = cpBefore + (vocsChange / 100) * 0.3 - (gasChange / 100) * 0.4;
       cpAfter = Math.max(0.2, Math.min(0.95, cpAfter));
       cpAfter = Math.round(cpAfter * 100) / 100;
 
+      // 使用行业阈值判定（而非固定 0.4/0.6）
+      const dangerLine = threshold * 0.8; // 危险线 = 阈值的80%
+      const warnLine = threshold; // 警戒线 = 阈值
+
       let resultType = 'good';
       let resultTitle = '协同改善';
-      let resultColor = '#52c41a';
+      let resultColor = '#4ade80';
       let resultIcon = '✅';
-      let resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 升至 ' + cpAfter;
+      let resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 变为 ' + cpAfter + '（' + industryCfg.name + '阈值 ' + threshold + '）';
 
       if (excludeOutput) {
         resultTitle = '产能变化排除';
         resultColor = '#22d3ee';
         resultIcon = 'ℹ️';
         resultDesc = '产量变化 ' + outputChange + '% ≥ 10%，已排除产能扩张因素对悖论判定的影响。实际 C-P 变化需结合产量基准校正。';
-      } else if (cpAfter < 0.4) {
+      } else if (cpAfter < dangerLine) {
         resultType = 'trap';
         resultTitle = '减污增碳陷阱';
-        resultColor = '#f5222d';
+        resultColor = '#f87171';
         resultIcon = '⚠️';
-        resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，但天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 降至 ' + cpAfter;
-      } else if (cpAfter < 0.6) {
+        resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，但天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 降至 ' + cpAfter + '，低于 ' + industryCfg.name + ' 危险线 ' + dangerLine;
+      } else if (cpAfter < warnLine) {
         resultType = 'imbalance';
         resultTitle = '协同失衡';
         resultColor = '#fa8c16';
         resultIcon = '🔶';
+        resultDesc = 'C-P 协同指数 ' + cpAfter + ' 处于 ' + industryCfg.name + ' 警戒区间（' + dangerLine + '–' + threshold + '），需关注';
       }
 
       // 更新 UI
@@ -490,21 +534,21 @@
       document.getElementById('resultDesc').textContent = resultDesc;
 
       document.getElementById('vocsChange').textContent = (vocsChange > 0 ? '+' : '') + vocsChange + '%';
-      document.getElementById('vocsChange').style.color = vocsChange < 0 ? '#52c41a' : '#f5222d';
+      document.getElementById('vocsChange').style.color = vocsChange < 0 ? '#4ade80' : '#f87171';
       document.getElementById('vocsChangeLabel').textContent = vocsChange < 0 ? '↓ 大幅下降' : '↑ 增加';
       document.getElementById('vocsChangeLabel').className = 'result-change ' + (vocsChange < 0 ? 'up' : 'down');
 
       document.getElementById('gasChange').textContent = (gasChange > 0 ? '+' : '') + gasChange + '%';
-      document.getElementById('gasChange').style.color = gasChange > 0 ? '#f5222d' : '#52c41a';
+      document.getElementById('gasChange').style.color = gasChange > 0 ? '#f87171' : '#4ade80';
       document.getElementById('gasChangeLabel').textContent = gasChange > 0 ? '↑ 显著增加' : '↓ 下降';
 
       document.getElementById('carbonChange').textContent = (carbonChange > 0 ? '+' : '') + carbonChange + '%';
-      document.getElementById('carbonChange').style.color = carbonChange > 0 ? '#f5222d' : '#52c41a';
+      document.getElementById('carbonChange').style.color = carbonChange > 0 ? '#f87171' : '#4ade80';
       document.getElementById('carbonChangeLabel').textContent = carbonChange > 0 ? '↑ 碳排增加' : '↓ 碳排减少';
 
       document.getElementById('cpResult').textContent = cpAfter;
       document.getElementById('cpResult').style.color = resultColor;
-      document.getElementById('cpChangeLabel').textContent = '↓ 从 ' + cpBefore + ' 降至 ' + cpAfter;
+      document.getElementById('cpChangeLabel').textContent = '↓ 从 ' + cpBefore + ' 降至 ' + cpAfter + '（阈值' + threshold + '）';
 
       // 动态建议
       const suggestions = document.getElementById('suggestionList');
@@ -542,7 +586,7 @@
       tbody.innerHTML = history.map(h => {
         const tagMap = { trap: ['减污增碳陷阱','tag-neon-red'], imbalance: ['协同失衡','tag-neon-orange'], good: ['协同改善','tag-neon-green'] };
         const tag = tagMap[h.result] || ['协同改善','tag-neon-green'];
-        const cpColor = h.result === 'trap' ? '#f5222d' : h.result === 'imbalance' ? '#fa8c16' : '#52c41a';
+        const cpColor = h.result === 'trap' ? '#f87171' : h.result === 'imbalance' ? '#fa8c16' : '#4ade80';
         const checked = selectedCompareIds.includes(h.id) ? 'checked' : '';
         const disabled = !checked && selectedCompareIds.length >= 2 ? 'disabled' : '';
         return `<tr><td><input type="checkbox" ${checked} ${disabled} onchange="toggleCompare('${h.id}', this.checked)"></td><td>${h.time}</td><td>${h.current}</td><td>${h.target}</td><td style="color:${cpColor}">${h.cpAfter}</td><td><span class="tag ${tag[1]}">${tag[0]}</span></td></tr>`;
@@ -587,7 +631,7 @@
 
       function barHtml(val, max, color, label) {
         const h = Math.max(8, Math.abs(val) / max * 36);
-        const bg = val >= 0 ? `linear-gradient(180deg,${color},${color}88)` : `linear-gradient(180deg,#52c41a,#52c41a88)`;
+        const bg = val >= 0 ? `linear-gradient(180deg,${color},${color}88)` : `linear-gradient(180deg,#4ade80,#4ade8088)`;
         const sign = val > 0 ? '+' : '';
         return `<div style="flex:1"><div class="compare-bar-item" style="height:${h}px;background:${bg}" data-val="${sign}${val}%"></div><div class="compare-bar-name">${label}</div></div>`;
       }
@@ -607,9 +651,9 @@
           <span><strong style="color:#22d3ee">${a.time}</strong> ${a.current} → ${a.target}</span>
           <span><strong style="color:#22d3ee">${b.time}</strong> ${b.current} → ${b.target}</span>
         </div>
-        ${compareRow('VOCs变化', 'vocsChange', maxVocs, '#1677ff')}
+        ${compareRow('VOCs变化', 'vocsChange', maxVocs, '#0ea5e9')}
         ${compareRow('天然气变化', 'gasChange', maxGas, '#fa8c16')}
-        ${compareRow('碳排变化', 'carbonChange', maxCarbon, '#f5222d')}
+        ${compareRow('碳排变化', 'carbonChange', maxCarbon, '#f87171')}
         ${compareRow('C-P指数', 'cpAfter', maxCp, '#22d3ee')}
       `;
       panel.classList.add('active');

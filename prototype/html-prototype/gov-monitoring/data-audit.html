@@ -2,12 +2,13 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>数据质量AI审核 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
-    .topbar { background: linear-gradient(90deg, #0c4a6e 0%, #0369a1 100%); border-bottom:1px solid rgba(34,211,238,0.2); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); border-bottom:1px solid rgba(34,211,238,0.2); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; color:#22d3ee; }
     .audit-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -298,7 +299,7 @@
           <div style="display:flex;gap:10px;margin-top:20px">
             <button class="btn btn-default" style="flex:1;background:rgba(34,211,238,0.08);border-color:rgba(34,211,238,0.2);color:#22d3ee" onclick="viewReport()">📋 查看原始报表</button>
             <div style="flex:1;text-align:center;padding:10px;color:rgba(226,232,240,0.4);font-size:13px">
-              ${rev.statusCode === 'passed' ? '✅ 该报告已审核通过' : '↩️ 该报告已退回修改'}
+              ${rev && rev.statusCode === 'passed' ? '✅ 该报告已审核通过' : '↩️ 该报告已退回修改'}
             </div>
           </div>`;
       }

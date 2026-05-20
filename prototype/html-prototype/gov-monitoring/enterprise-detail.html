@@ -2,11 +2,12 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>企业详情透视 — 污碳协同AI监管平台</title>
   <script src="../js/data.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
-    .topbar { background: linear-gradient(90deg, #0c4a6e 0%, #0369a1 100%); border-bottom:1px solid rgba(34,211,238,0.2); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); border-bottom:1px solid rgba(34,211,238,0.2); }
     .main { margin-left: 0; margin-top: 64px; padding: 24px; }
     .back-link { font-size: 13px; color: #22d3ee; margin-bottom: 12px; display: inline-block; transition:all 0.2s; }
     .back-link:hover { text-shadow:0 0 8px rgba(34,211,238,0.5); }
@@ -282,28 +283,20 @@
     <!-- OCR对照 -->
     <div class="ent-content" id="tab3">
       <div class="card-dark">
-        <div class="card-title">📄 2026年5月 月度数据 OCR 解析对照</div>
-        <div class="ocr-compare">
-          <div class="ocr-compare-col">
-            <div class="ocr-compare-title">📄 OCR 解析结果</div>
-            <div class="ocr-row"><span>溶剂型涂料</span><span>1,250 kg</span></div>
-            <div class="ocr-row"><span>水性涂料</span><span>680 kg</span></div>
-            <div class="ocr-row"><span>粉末涂料</span><span>320 kg</span></div>
-            <div class="ocr-row"><span>RTO运行时长</span><span>520 h</span></div>
-            <div class="ocr-row"><span>天然气消耗</span><span class="diff">18,500 Nm³ ?</span></div>
-            <div class="ocr-row"><span>燃烧室温度</span><span>785 °C</span></div>
-            <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px">置信度：92%（天然气项 67%，建议核对）</div>
-          </div>
-          <div class="ocr-compare-col">
-            <div class="ocr-compare-title">✏️ 企业填报数据</div>
-            <div class="ocr-row"><span>溶剂型涂料</span><span class="match">1,250 kg ✓</span></div>
-            <div class="ocr-row"><span>水性涂料</span><span class="match">680 kg ✓</span></div>
-            <div class="ocr-row"><span>粉末涂料</span><span class="match">320 kg ✓</span></div>
-            <div class="ocr-row"><span>RTO运行时长</span><span class="match">520 h ✓</span></div>
-            <div class="ocr-row"><span>天然气消耗</span><span class="diff">18,500 Nm³</span></div>
-            <div class="ocr-row"><span>燃烧室温度</span><span class="match">785 °C ✓</span></div>
-            <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px">填报时间：2026-05-18 09:15</div>
-          </div>
+        <div class="card-title">📄 月度数据 OCR 解析对照</div>
+        <div id="ocrReportSelector" style="margin-bottom:12px">
+          <span style="font-size:13px;color:rgba(226,232,240,0.5)">选择报告月份：</span>
+          <select id="ocrMonthSelect" onchange="renderOcrCompare()" style="padding:4px 10px;border-radius:4px;border:1px solid rgba(34,211,238,0.2);background:rgba(34,211,238,0.05);color:#22d3ee;font-size:13px;outline:none">
+            <option value="2026-05">2026年5月</option>
+            <option value="2026-04">2026年4月</option>
+          </select>
+        </div>
+        <div class="ocr-compare" id="ocrCompareBox">
+          <!-- 动态填充 -->
+        </div>
+        <div id="ocrAttachmentBox" style="margin-top:16px">
+          <div class="card-title" style="margin-top:16px">📎 附件资料区</div>
+          <div id="ocrAttachmentList" style="display:flex;gap:12px;flex-wrap:wrap"></div>
         </div>
       </div>
     </div>
@@ -411,6 +404,88 @@
       }
     }
 
+    // OCR 解析数据模拟
+    const OCR_DATA = {
+      '2026-05': {
+        ocrItems: [
+          { name: '溶剂型涂料', ocrValue: '1,250 kg', fillValue: '1,250 kg', confidence: 98, match: true },
+          { name: '水性涂料', ocrValue: '680 kg', fillValue: '680 kg', confidence: 96, match: true },
+          { name: '粉末涂料', ocrValue: '—', fillValue: '320 kg', confidence: 45, match: false, note: 'OCR未识别，企业手动补录' },
+          { name: 'RTO运行时长', ocrValue: '520 h', fillValue: '520 h', confidence: 94, match: true },
+          { name: '天然气消耗', ocrValue: '18,500 Nm³', fillValue: '18,500 Nm³', confidence: 67, match: true, note: '置信度偏低，建议核对' },
+          { name: '燃烧室温度', ocrValue: '785 °C', fillValue: '785 °C', confidence: 99, match: true },
+        ],
+        attachments: [
+          { name: '排污许可执行报告_202605.pdf', type: 'PDF', size: '2.3MB', status: '已解析' },
+          { name: '危险废物台账_202605.xlsx', type: 'Excel', size: '156KB', status: '已解析' },
+          { name: '涂料进货单_202605.jpg', type: '图片', size: '1.1MB', status: '解析中...', progress: 60 },
+        ],
+        overallConfidence: 92,
+      },
+      '2026-04': {
+        ocrItems: [
+          { name: '溶剂型涂料', ocrValue: '1,180 kg', fillValue: '1,180 kg', confidence: 97, match: true },
+          { name: '水性涂料', ocrValue: '620 kg', fillValue: '620 kg', confidence: 95, match: true },
+          { name: '粉末涂料', ocrValue: '280 kg', fillValue: '280 kg', confidence: 92, match: true },
+          { name: 'RTO运行时长', ocrValue: '480 h', fillValue: '480 h', confidence: 93, match: true },
+          { name: '天然气消耗', ocrValue: '16,200 Nm³', fillValue: '16,200 Nm³', confidence: 88, match: true },
+          { name: '燃烧室温度', ocrValue: '790 °C', fillValue: '790 °C', confidence: 98, match: true },
+        ],
+        attachments: [
+          { name: '排污许可执行报告_202604.pdf', type: 'PDF', size: '2.1MB', status: '已解析' },
+          { name: '危险废物台账_202604.xlsx', type: 'Excel', size: '148KB', status: '已解析' },
+        ],
+        overallConfidence: 95,
+      },
+    };
+
+    function renderOcrCompare() {
+      const month = document.getElementById('ocrMonthSelect').value;
+      const data = OCR_DATA[month];
+      const box = document.getElementById('ocrCompareBox');
+      const attachList = document.getElementById('ocrAttachmentList');
+      if (!data) {
+        box.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(226,232,240,0.3)">暂无该月份OCR数据</div>';
+        return;
+      }
+
+      const leftRows = data.ocrItems.map(it => {
+        const confClass = it.confidence >= 90 ? '' : (it.confidence >= 70 ? 'diff' : 'diff');
+        const confTag = it.confidence >= 90 ? '' : (it.confidence >= 70 ? ' <span style="color:#fbbf24;font-size:11px">(置信度' + it.confidence + '%)</span>' : ' <span style="color:#f87171;font-size:11px">(置信度' + it.confidence + '% ⚠️)</span>');
+        return '<div class="ocr-row"><span>' + it.name + '</span><span class="' + confClass + '">' + it.ocrValue + confTag + '</span></div>';
+      }).join('');
+
+      const rightRows = data.ocrItems.map(it => {
+        const matchClass = it.match ? 'match' : 'diff';
+        const matchTag = it.match ? ' ✓' : ' ⚠️';
+        const noteTag = it.note ? '<div style="font-size:11px;color:#fbbf24;margin-top:2px">' + it.note + '</div>' : '';
+        return '<div class="ocr-row"><span>' + it.name + '</span><span class="' + matchClass + '">' + it.fillValue + matchTag + '</span>' + noteTag + '</div>';
+      }).join('');
+
+      box.innerHTML = `
+        <div class="ocr-compare-col">
+          <div class="ocr-compare-title">📄 OCR 解析结果</div>
+          ${leftRows}
+          <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px">整体置信度：${data.overallConfidence}% | 低置信度项已标黄/红</div>
+        </div>
+        <div class="ocr-compare-col">
+          <div class="ocr-compare-title">✏️ 企业填报数据</div>
+          ${rightRows}
+          <div style="font-size:11px;color:rgba(226,232,240,0.3);margin-top:8px">填报时间：${month}-18 09:15</div>
+        </div>
+      `;
+
+      // 附件列表
+      attachList.innerHTML = data.attachments.map(att => {
+        const progressBar = att.progress ? `<div style="width:100%;height:3px;background:rgba(34,211,238,0.1);border-radius:2px;margin-top:4px"><div style="width:${att.progress}%;height:100%;background:#22d3ee;border-radius:2px"></div></div>` : '';
+        return `<div style="padding:10px 14px;background:rgba(34,211,238,0.03);border:1px solid rgba(34,211,238,0.08);border-radius:6px;min-width:180px">
+          <div style="font-size:13px;font-weight:500">${att.name}</div>
+          <div style="font-size:11px;color:rgba(226,232,240,0.4);margin-top:2px">${att.type} · ${att.size} · <span style="color:${att.status==='已解析'?'#4ade80':'#22d3ee'}">${att.status}</span></div>
+          ${progressBar}
+        </div>`;
+      }).join('');
+    }
+
     function loadEnt() {
       const params = new URLSearchParams(location.search);
       const nameKey = params.get('name') || '蓝天工业涂装';
@@ -441,6 +516,8 @@
 
       // 动态渲染 AI 风险扫描面板
       renderRiskPanel(data);
+      // 渲染 OCR 对照
+      renderOcrCompare();
     }
     loadEnt();
 

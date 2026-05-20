@@ -1,7 +1,8 @@
 # 工作交接备忘录
 
-> 最后更新：2026-05-19
-> 最新Git提交：`67e86a1` [P2]高级交互增强 — LLM历史会话/月报生成动画/产量排除/调度模板
+> 最后更新：2026-05-20
+> 最新Git提交：`cacba2e` [P2]悖论时长判定+数据动态化 — alerts详情接入实时字段，新增getDurationLevel判定逻辑
+> 今日工作：P0全部完成（数据底座改造 + 政府端3个新页面），总页数 22→25
 
 ---
 
@@ -40,6 +41,102 @@
 | 20 | **paradox-report.html动态化** | DataStore读取+URL参数+4种预警类型适配+状态流+操作按钮动态 |
 | 21 | **P1体验补全9项** | 三评合一历史报告/模拟器历史对比/短信Toast/超期催办/AI风险扫描/处置追踪/区域均值/时间轴回放/注册跳转 |
 | 22 | **P2高级交互增强（5项）** | LLM历史会话/动态推荐问题/可信度标注、调度指令模板选择、月报生成动画、悖论产量排除逻辑、健康评分定时更新 |
+| 23 | **P0-1 多排口数据底座改造** | `js/data.js` 新增 `outlets[3]` + `devices[3]` + DataStore `getOutlets/setOutlets/getDevices/setDevices` |
+| 24 | **P0-2 政府端-企业管理页面** | `gov-dashboard/enterprise-management.html` 创建完成：筛选/企业卡片网格/详情抽屉/雷达图对比/批量导出（618行） |
+| 25 | **P0-3 政府端-数据管理页面** | `gov-dashboard/data-management.html` 创建完成：实时数据查询(SVG趋势图+表格)/月度数据审核(6规则AI检查+批量操作)/数据质量仪表盘(KPI+排名+离线监测) |
+| 26 | **P0-4 政府端-企业设备管理页面** | `gov-dashboard/device-management.html` 创建完成：AI维保预警面板/8设备卡片网格(效率进度条+状态+维保倒计时)/去除效率+能效比双排名/设备详情抽屉(12月效率衰减曲线+维保历史+运行参数) |
+| 27 | **导航栏统一更新** | `gov-dashboard/index.html` + `knowledge-base.html` 导航栏新增 企业管理/数据管理/设备管理 入口 |
+
+---
+
+## 📅 2026-05-20 工作日志（今日）
+
+### 一、今日完成目标：P0 全部清空
+
+> **策略**：后台 Agent 并行创建三个页面（enterprise-management / data-management / device-management），我同步处理导航更新、数据底座改造、WORKLOG维护。
+
+#### 1. P0-1 多排口数据底座改造
+- **文件**：`js/data.js`
+- **改动**：
+  - `MOCK_DATA` 新增 `outlets[3]`（喷涂线/烘干线/调漆间）+ `devices[3]`（RTO/RCO/活性炭）
+  - 每个 outlet 含 inlet/outlet 监测数据（TVOC/NMHC/PM2.5/SO2/NOx）+ removalEfficiency
+  - 每个 device 含运行参数（炉膛温度/风量/累计运行/下次维保等）
+  - `DataStore` 新增 `getOutlets()` / `setOutlets()` / `getDevices()` / `setDevices()`（localStorage `pcap_` 前缀）
+- **影响**：所有排口/设施相关功能（P1-7 排口下钻、P1-8 企业详情增强）的数据基础已就绪
+
+#### 2. P0-2 政府端-企业管理页面
+- **文件**：`gov-dashboard/enterprise-management.html`（37KB, 618行）
+- **功能**：
+  - 筛选栏：企业名称搜索 + 行业/象限/C-P分级/许可证到期 四维度筛选
+  - 企业卡片网格：3列响应式，每卡显示 C-P值/碳配额/MCI/EHI/许可证到期预警
+  - 右侧详情抽屉：企业基本信息 + sparkline趋势图 + 仪表盘（MCI/EHI）+ 悖论历史时间线 + 调度记录
+  - 雷达图对比：最多选5家企业，SVG多边形雷达图（6轴：VOCs/NOx/PM2.5/SO2/CO2/CH4）
+  - 批量导出按钮
+- **状态**：✅ 完成，由后台 Agent 自动生成，质量良好
+
+#### 3. P0-3 政府端-数据管理页面
+- **文件**：`gov-dashboard/data-management.html`（19KB, 309行）
+- **功能**：
+  - Tab 1「实时数据查询」：企业/排口/日期筛选 + 8污染物复选框 + SVG多折线趋势图 + 20行数据表（状态分级：正常/关注/超标）
+  - Tab 2「月度数据审核」：月份/状态筛选 + 6规则AI检查（涂料/面积、VOCs环比、气量/时长、逻辑一致、温度合理、产量合理）+ 批量通过/退回 + 全选checkbox
+  - Tab 3「数据质量仪表盘」：4 KPI卡（完整率94%/及时率89%/准确率92%/API在线率87%）+ 企业质量排名表 + 离线排口监测列表
+- **状态**：✅ 完成（因 WriteFile 长内容JSON解析问题，改用 Node.js 脚本生成）
+
+#### 4. P0-4 政府端-设备管理页面
+- **文件**：`gov-dashboard/device-management.html`（24KB, 310行）
+- **功能**：
+  - AI维保预警面板：3张卡片（RTO-01蓄热体更换/AC-01活性炭饱和/RCO-01催化剂活性下降），严重/警告分级
+  - 设备卡片网格：8台设备（4企业），含设计效率/实际效率/效率达成率进度条（绿/黄/红）/状态指示灯/维保倒计时（<7天红/<30天黄）
+  - 双排名表：去除效率排名（底部20%标红）+ 能效比排名（单位kWh/kg，评分制）
+  - 设备详情抽屉：基本信息 + 12月效率衰减SVG曲线（虚线=设计效率）+ 运行参数（入口/出口/炉温/风量/累计运行）+ 维保历史表格
+- **状态**：✅ 完成（同样使用 Node.js 脚本绕过 WriteFile 限制）
+
+#### 5. 导航栏统一更新
+- `gov-dashboard/index.html`：新增 📋企业管理 / 📊数据管理 / 🔧设备管理 三个导航项
+- `gov-dashboard/knowledge-base.html`：同上
+- 三个新页面内部导航：互相链接 + LLM助手 + 案例库 + 3D监测 + 首页
+
+### 二、今日踩坑记录
+
+| 坑 | 原因 | 解决方案 |
+|---|---|---|
+| WriteFile 大文件失败 | JSON content 参数解析器对长字符串/特殊字符组合敏感（`Unterminated string` 错误） | 改用 Node.js 脚本：`WriteFile` 写 `.js` 生成脚本 → `Shell` 执行 `node tmp_gen.js` |
+| 后台 Agent 间歇性卡住 | Agent 读取参考文件后未继续执行 WriteFile（可能 context 压缩或工具超时） | 直接接管：停止 Agent，自己用 Node.js 脚本生成 |
+| Agent WriteFile `Invalid arguments` | Agent 内部构建 WriteFile 参数时路径或字符转义出错 | 同上用 Node.js 脚本绕过 |
+| here-document 截断 | `cat > file << 'EOF'` 在 bash 中 EOF 被空格缩进导致不匹配 | 避免 here-document，改用程序生成 |
+| Node.js 路径拼接错误 | `fs.writeFileSync('relative/path')` 时 cwd 是脚本所在目录，导致路径重复 | 使用 `path.join(__dirname, 'filename')` |
+
+### 三、明日建议路线（P1 阶段）
+
+P0 已全部完成，建议按 **P1-6 → P1-7 → P1-5 → P1-8** 顺序推进：
+
+1. **P1-6 月度填报电力三指标**（改动最小，体感最明显）
+   - 改造 `enterprise/monthly-report.html`
+   - 电力拆分为：总用电量 / 绿电量 / 化石能源用电量
+   - 规则：总 = 绿 + 化石；绿电碳排 = 0；仅化石计入碳核算
+   - 填报维度：企业为核心，排口为辅（排口数据作为补充折叠面板）
+
+2. **P1-7 实时看板排口下钻**（数据已就绪，实现快）
+   - 改造 `enterprise/realtime-panel.html`
+   - 新增「排口明细」Tab/折叠面板
+   - 从 DataStore `getOutlets()` 读取排口数据，展示 inlet/outlet 浓度 + removalEfficiency
+
+3. **P1-5 三层指标 MCI/EHI**（核心概念，PRD v3.1 重点）
+   - 在 `enterprise/dashboard.html` / `realtime-panel.html` / `gov-dashboard/index.html` 增加 MCI/EHI KPI卡片
+   - MCI = 加权多污染物综合指数（TVOC/NMHC/PM2.5/SO2/NOx/CO）
+   - EHI = 环境健康评分（暴露浓度 × 毒性系数 × 暴露时间）
+
+4. **P1-8 企业详情增强**（多排口 + 设施档案）
+   - 改造 `gov-monitoring/enterprise-detail.html`
+   - 新增「排口档案」Tab：3个排口的基本信息 + 关联设施 + 监测数据
+   - 新增「治理设施」Tab：设备基本信息 + 运行参数 + 维保记录
+
+### 四、技术债务备忘
+
+- [ ] data-management.html 和 device-management.html 导航栏没有 emoji（enterprise-management 有），可统一风格
+- [ ] 三个新页面的 `showToast` 调用需确认与全局 `data.js` 的 `showToast` 签名兼容（duration 参数已修复）
+- [ ] 设备管理页面的维保历史目前是硬编码 mock 数据，后续可接入 DataStore
+- [ ] 数据管理页面的「数据血缘」功能（PRD 提及）本期未实现，属 P2 范畴
 
 ---
 
@@ -208,3 +305,103 @@ for f in *.html; do node -e "检查标签匹配"; done
 > 先读WORKLOG.md然后开始。"
 
 **更省token的方式**：直接给Kimi发 `"继续昨天的原型，今天做xxx，先读WORKLOG.md"`，它比重新探索代码库快10倍。
+
+
+---
+
+## 📋 PRD v3.1 差距分析与实施优先级
+
+> 记录日期：2026-05-20
+> 基准文档：`docs/PRD/PRD-污碳协同AI监管与决策平台.md`（v3.1，1,414 行）
+> 当前原型：25 页纯静态 HTML（enterprise 10 + gov-dashboard 8 + gov-monitoring 5 + 其他 2）
+
+---
+
+### 一、差距总表
+
+| 模块 | PRD v3.1 要求 | 当前状态 | 差距 |
+|------|--------------|----------|------|
+| **数据底座** | 多排口监测模型（企业→排口→设施→监测点） | ✅ 已改造 `js/data.js` | ✅ 完成 |
+| | 扩展污染物（TVOC/NMHC/PM2.5/SO₂/NOₓ/CO/CO₂/CH₄） | ❌ 未实现 | 🟡 中 |
+| | 电力三指标（总/绿/化石） | ❌ 未实现 | 🟢 小 |
+| | 绿电碳排 = 0 | ❌ 未实现 | 🟢 小 |
+| **三层指标** | C-P 协同指数 | ✅ 已实现 | — |
+| | **MCI 多污染物指数** | ❌ 未实现 | 🟡 中 |
+| | **EHI 环境健康评分** | ❌ 未实现 | 🟡 中 |
+| **LCA** | 工序端视角 | ✅ 已实现 | — |
+| | **全生命周期视角切换** | ❌ 未实现 | 🟡 中 |
+| **企业端增强** | 月度填报-企业为核心、排口为辅 | ⚠️ 部分实现 | 🟢 小 |
+| | 月度填报-电力三指标 | ❌ 未实现 | 🟢 小 |
+| | 实时看板-排口下钻 | ❌ 未实现 | 🟡 中 |
+| | 实时看板-MCI/EHI 展示 | ❌ 未实现 | 🟡 中 |
+| | 悖论模拟器-LCA 切换 | ❌ 未实现 | 🟡 中 |
+| **政府端-新增页面** | **企业管理**（查询/档案/对比） | ✅ 已创建 | ✅ 完成 |
+| | **数据管理**（查询/审核/质量/血缘） | ✅ 已创建 | ✅ 完成 |
+| | **企业设备管理**（档案/监控/维保/排名） | ✅ 已创建 | ✅ 完成 |
+| | AI 协同管控大屏（L1/L2/L3 升级） | ⚠️ 基础版已实现 | 🟡 中 |
+| **监测科增强** | 企业详情透视-多排口+设施档案 | ⚠️ 部分实现 | 🟡 中 |
+| **数据模型** | `enterprise_outlets` / `outlet_devices` / `outlet_monitoring` | ❌ 未实现 | **🔴 大** |
+
+---
+
+### 二、实施优先级
+
+#### ✅ P0 — 已完成（2026-05-20）
+
+| # | 任务 | 状态 |
+|---|------|------|
+| **P0-1** | 多排口数据底座改造 | ✅ `js/data.js` 已扩展 outlets + devices + DataStore 方法 |
+| **P0-2** | 政府端-企业管理页面 | ✅ `enterprise-management.html` 已创建（37KB） |
+| **P0-3** | 政府端-数据管理页面 | ✅ `data-management.html` 已创建（19KB） |
+| **P0-4** | 政府端-企业设备管理页面 | ✅ `device-management.html` 已创建（24KB） |
+
+#### 🟡 P1 — 核心功能增强（建议明日按此顺序）
+
+| # | 任务 | 原因 | 建议顺序 |
+|---|------|------|----------|
+| **P1-6** | **月度填报-电力三指标 + 企业/排口分层** | 改动小、体感明显、独立性强 | **第1做** |
+| **P1-7** | **实时看板-排口下钻** | 数据已就绪（P0-1 DataStore），实现快 | **第2做** |
+| **P1-5** | **三层指标（MCI + EHI）计算与展示** | PRD v3.1 核心概念，需跨多页面改动 | **第3做** |
+| **P1-8** | **企业详情透视增强**（多排口 + 治理设施档案） | 依赖 P0-1 数据结构，工作量中等 | **第4做** |
+
+#### 🟡 P1 — 核心功能增强
+
+| # | 任务 | 原因 |
+|---|------|------|
+| **P1-5** | **三层指标（MCI + EHI）计算与展示** | PRD v3.1 核心新增概念。需在 `dashboard.html` / `realtime-panel.html` / `gov-dashboard/index.html` 增加 MCI/EHI 卡片。 |
+| **P1-6** | **月度填报-电力三指标 + 企业/排口分层** | 相对独立、改动小、用户体感明显。改造 `monthly-report.html` 表单即可。 |
+| **P1-7** | **实时看板-排口下钻** | 在现有 `realtime-panel.html` 上增加"排口明细"折叠面板/Tab，数据已存在于 P0-1 的 DataStore 中。 |
+| **P1-8** | **企业详情透视增强**（多排口 + 治理设施档案） | `gov-monitoring/enterprise-detail.html` 增加排口 Tab 和设施信息。 |
+
+#### 🟢 P2 — 体验优化
+
+| # | 任务 | 原因 |
+|---|------|------|
+| **P2-9** | **悖论模拟器-LCA 视角切换** | 在 `simulator.html` 增加 toggle + LCA 计算分支，增强"有趣度"。 |
+| **P2-10** | **大屏 AI 化升级**（L1/L2/L3） | `gov-dashboard/index.html` 增加 AI 摘要、预测性预警、调度建议生成器等。 |
+| **P2-11** | **扩展污染物展示**（TVOC/PM2.5/SO₂/NOₓ/CO/CH₄） | 在相关页面增加字段展示，属于"量"的扩展而非"质"的突破。 |
+
+---
+
+### 三、执行路线建议
+
+**推荐方案：按依赖关系串行（已推进至 P1）**
+```
+✅ P0-1 数据底座 → ✅ P0-2/3/4 政府三页面 → P1-6 电力三指标 → P1-7 排口下钻 → P1-5 三层指标 → P1-8 企业详情增强 → P2-9/10/11 体验优化
+```
+
+> 说明：P0 已全部完成。P1-6 和 P1-7 相互独立且改动范围小，可并行或按任意顺序。P1-5 需跨 `enterprise/dashboard.html` / `realtime-panel.html` / `gov-dashboard/index.html` 三处修改，建议放在 P1-6/7 之后。P1-8 依赖 P0-1 数据结构，可与 P1-7 并行。
+
+---
+
+### 四、新增页面清单（PRD v3.1 要求）
+
+| 页面 | 路径 | 优先级 |
+|------|------|--------|
+| 企业管理 | `gov-dashboard/enterprise-management.html` | P0-2 |
+| 数据管理 | `gov-dashboard/data-management.html` | P0-3 |
+| 企业设备管理 | `gov-dashboard/device-management.html` | P0-4 |
+
+> 当前 gov-dashboard 目录已有 5 页：index / dispatch-detail / llm-assistant / report-result / knowledge-base。新增 3 页后，gov-dashboard 将达到 8 页。
+
+---

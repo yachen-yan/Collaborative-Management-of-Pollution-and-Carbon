@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>企业管理 — 辖区企业档案中心</title>
+  <script src="../js/data.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; overflow-x:hidden; min-height:100vh; }
+    .screen-wrap { width:100vw; min-height:100vh; padding:16px 20px 48px; display:flex; flex-direction:column; }
+    
+    /* 头部 */
+    .screen-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(34,211,238,0.15); }
+    .screen-header-left { display:flex; align-items:center; gap:12px; }
+    .screen-header-title { font-size:20px; font-weight:700; letter-spacing:2px; display:flex; align-items:center; gap:10px; }
+    .screen-header-title .pulse-dot { width:8px; height:8px; border-radius:50%; background:#22d3ee; box-shadow:0 0 8px #22d3ee, 0 0 20px rgba(34,211,238,0.4); animation:pulseDot 2s ease-in-out infinite; }
+    @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .screen-header-sub { font-size:12px; color:rgba(226,232,240,0.4); margin-top:4px; }
+    .screen-nav { display:flex; gap:8px; flex-wrap:wrap; }
+    .screen-nav a { padding:5px 14px; border-radius:6px; font-size:12px; color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1); text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05); }
+    .screen-nav a:hover, .screen-nav a.active { color:#22d3ee; border-color:rgba(34,211,238,0.4); background:rgba(34,211,238,0.1); box-shadow:0 0 12px rgba(34,211,238,0.15); }
+
+    /* 搜索栏 */
+    .filter-bar {
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px;
+      background:rgba(34,211,238,0.04); backdrop-filter:blur(12px); border:1px solid rgba(34,211,238,0.1);
+      border-radius:10px; padding:12px 16px;
+    }
+    .filter-bar input, .filter-bar select {
+      padding:7px 12px; border:1px solid rgba(34,211,238,0.15); border-radius:6px;
+      background:rgba(2,6,23,0.6); color:#e2e8f0; font-size:12px; outline:none; transition:all 0.2s;
+    }
+    .filter-bar input:focus, .filter-bar select:focus { border-color:#22d3ee; }
+    .filter-bar input { width:180px; }
+    .filter-bar select { min-width:110px; }
+    .filter-bar .btn-filter {
+      padding:7px 18px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(34,211,238,0.3);
+      background:rgba(34,211,238,0.1); color:#22d3ee; transition:all 0.2s;
+    }
+    .filter-bar .btn-filter:hover { background:rgba(34,211,238,0.2); box-shadow:0 0 12px rgba(34,211,238,0.15); }
+    .filter-bar .btn-export {
+      padding:7px 18px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(74,222,128,0.3);
+      background:rgba(74,222,128,0.08); color:#4ade80; transition:all 0.2s; margin-left:auto;
+    }
+    .filter-bar .btn-export:hover { background:rgba(74,222,128,0.15); }
+    .filter-bar .btn-compare {
+      padding:7px 18px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(167,139,250,0.3);
+      background:rgba(167,139,250,0.08); color:#a78bfa; transition:all 0.2s;
+    }
+    .filter-bar .btn-compare:hover { background:rgba(167,139,250,0.15); }
+
+    /* 企业卡片网格 */
+    .enterprise-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+    @media (max-width:1200px) { .enterprise-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:768px) { .enterprise-grid { grid-template-columns:1fr; } }
+
+    .ent-card {
+      background:rgba(34,211,238,0.04); backdrop-filter:blur(12px); border:1px solid rgba(34,211,238,0.1);
+      border-radius:10px; padding:16px; position:relative; overflow:hidden; transition:all 0.3s; cursor:default;
+    }
+    .ent-card:hover { border-color:rgba(34,211,238,0.3); box-shadow:0 0 24px rgba(34,211,238,0.1); transform:translateY(-2px); }
+    .ent-card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#22d3ee,transparent); opacity:0.6; }
+    .ent-card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+    .ent-card-name { font-size:14px; font-weight:600; color:#f1f5f9; line-height:1.4; }
+    .ent-card-industry {
+      font-size:10px; padding:2px 8px; border-radius:4px; border:1px solid rgba(34,211,238,0.2);
+      background:rgba(34,211,238,0.06); color:#7dd3fc; white-space:nowrap; margin-left:8px; flex-shrink:0;
+    }
+    .ent-card-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0; }
+    .ent-metric { text-align:center; padding:8px 4px; background:rgba(2,6,23,0.4); border-radius:6px; border:1px solid rgba(255,255,255,0.04); }
+    .ent-metric-label { font-size:10px; color:rgba(226,232,240,0.35); margin-bottom:4px; }
+    .ent-metric-value { font-size:18px; font-weight:700; font-family:monospace; }
+    .ent-quadrant {
+      display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:3px 8px; border-radius:4px; margin-bottom:10px;
+    }
+    .quadrant-double { background:rgba(34,197,94,0.1); color:#4ade80; border:1px solid rgba(34,197,94,0.2); }
+    .quadrant-pollution { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+    .quadrant-carbon { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); }
+    .quadrant-data { background:rgba(148,163,184,0.1); color:#94a3b8; border:1px solid rgba(148,163,184,0.2); }
+    .ent-license { font-size:11px; color:rgba(226,232,240,0.4); margin-bottom:10px; display:flex; align-items:center; gap:4px; }
+    .ent-license.urgent { color:#f87171; }
+    .ent-license.warn { color:#fbbf24; }
+    .ent-actions { display:flex; gap:6px; }
+    .ent-actions button {
+      flex:1; padding:6px 0; font-size:11px; border-radius:5px; cursor:pointer; border:1px solid transparent; transition:all 0.2s;
+    }
+    .ent-actions .btn-view { background:rgba(34,211,238,0.08); color:#22d3ee; border-color:rgba(34,211,238,0.18); }
+    .ent-actions .btn-view:hover { background:rgba(34,211,238,0.18); }
+    .ent-actions .btn-dispatch { background:rgba(251,191,36,0.08); color:#fbbf24; border-color:rgba(251,191,36,0.18); }
+    .ent-actions .btn-dispatch:hover { background:rgba(251,191,36,0.18); }
+    .ent-actions .btn-star { background:rgba(74,222,128,0.08); color:#4ade80; border-color:rgba(74,222,128,0.18); }
+    .ent-actions .btn-star:hover { background:rgba(74,222,128,0.18); }
+    .ent-actions .btn-star.starred { background:rgba(74,222,128,0.2); border-color:rgba(74,222,128,0.4); }
+
+    /* 右侧抽屉 */
+    .drawer-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:600; }
+    .drawer-overlay.active { display:block; }
+    .drawer {
+      position:fixed; top:0; right:0; width:520px; max-width:95vw; height:100vh;
+      background:rgba(2,6,23,0.98); border-left:1px solid rgba(34,211,238,0.2);
+      box-shadow:-8px 0 40px rgba(0,0,0,0.5); z-index:610; transform:translateX(100%); transition:transform 0.35s ease;
+      display:flex; flex-direction:column;
+    }
+    .drawer.active { transform:translateX(0); }
+    .drawer-header { padding:16px 20px; border-bottom:1px solid rgba(34,211,238,0.1); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+    .drawer-title { font-size:15px; font-weight:600; color:#22d3ee; }
+    .drawer-close { font-size:20px; color:rgba(226,232,240,0.3); cursor:pointer; transition:all 0.2s; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; }
+    .drawer-close:hover { color:#22d3ee; background:rgba(34,211,238,0.08); }
+    .drawer-body { flex:1; overflow-y:auto; padding:16px 20px; }
+    .drawer-body::-webkit-scrollbar { width:4px; }
+    .drawer-body::-webkit-scrollbar-thumb { background:rgba(34,211,238,0.2); }
+    .drawer-section { margin-bottom:20px; }
+    .drawer-section-title { font-size:13px; font-weight:600; color:#22d3ee; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+    .drawer-section-title::before { content:""; width:3px; height:12px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; }
+    .drawer-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid rgba(34,211,238,0.05); font-size:12px; }
+    .drawer-row span:first-child { color:rgba(226,232,240,0.4); }
+    .drawer-row span:last-child { font-weight:500; }
+
+    /* sparkline */
+    .sparkline-wrap { height:60px; position:relative; margin-top:6px; }
+    .sparkline-svg { width:100%; height:100%; }
+
+    /* gauge */
+    .gauge-wrap { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; }
+    .gauge-box { text-align:center; }
+    .gauge-svg { width:100px; height:60px; }
+    .gauge-label { font-size:10px; color:rgba(226,232,240,0.35); margin-top:4px; }
+    .gauge-value { font-size:16px; font-weight:700; margin-top:2px; }
+
+    /* timeline */
+    .timeline { position:relative; padding-left:16px; }
+    .timeline::before { content:""; position:absolute; left:5px; top:4px; bottom:4px; width:1px; background:rgba(34,211,238,0.15); }
+    .timeline-item { position:relative; padding-bottom:12px; font-size:12px; }
+    .timeline-item::before { content:""; position:absolute; left:-12px; top:5px; width:7px; height:7px; border-radius:50%; background:#22d3ee; box-shadow:0 0 6px rgba(34,211,238,0.4); }
+    .timeline-item.red::before { background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,0.4); }
+    .timeline-item.yellow::before { background:#fbbf24; box-shadow:0 0 6px rgba(251,191,36,0.4); }
+    .timeline-date { color:rgba(226,232,240,0.3); font-size:10px; margin-bottom:2px; }
+    .timeline-text { color:rgba(226,232,240,0.7); }
+
+    /* 对比模式 */
+    .compare-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:700; align-items:center; justify-content:center; }
+    .compare-overlay.active { display:flex; }
+    .compare-box {
+      background:rgba(2,6,23,0.98); border:1px solid rgba(34,211,238,0.2); border-radius:12px;
+      width:640px; max-width:95vw; max-height:85vh; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.5);
+      display:flex; flex-direction:column;
+    }
+    .compare-header { padding:14px 18px; border-bottom:1px solid rgba(34,211,238,0.1); display:flex; justify-content:space-between; align-items:center; }
+    .compare-title { font-size:14px; font-weight:600; color:#22d3ee; }
+    .compare-body { padding:14px 18px; overflow-y:auto; flex:1; }
+    .compare-list { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; max-height:160px; overflow-y:auto; }
+    .compare-list label { display:flex; align-items:center; gap:8px; font-size:12px; padding:6px 8px; border-radius:5px; cursor:pointer; background:rgba(34,211,238,0.03); border:1px solid rgba(34,211,238,0.06); }
+    .compare-list label:hover { background:rgba(34,211,238,0.06); }
+    .compare-list input[type="checkbox"] { accent-color:#22d3ee; }
+    .radar-wrap { display:flex; justify-content:center; margin:10px 0; }
+    .radar-svg { width:320px; height:280px; }
+    .compare-legend { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; font-size:11px; margin-top:8px; }
+    .compare-legend span { display:flex; align-items:center; gap:4px; }
+    .compare-legend .dot { width:8px; height:8px; border-radius:2px; }
+
+    /* dispatch table in drawer */
+    .mini-table { width:100%; border-collapse:collapse; font-size:11px; }
+    .mini-table th { text-align:left; padding:6px 4px; color:#22d3ee; border-bottom:1px solid rgba(34,211,238,0.12); font-weight:600; }
+    .mini-table td { padding:6px 4px; border-bottom:1px solid rgba(255,255,255,0.03); color:rgba(226,232,240,0.6); }
+    .mini-table tr:hover td { background:rgba(34,211,238,0.03); }
+
+    /* 结果为空 */
+    .empty-state { text-align:center; padding:60px 20px; color:rgba(226,232,240,0.25); font-size:13px; grid-column:1 / -1; }
+
+    /* Toast */
+    @keyframes fadeInDown { from { opacity:0; transform:translate(-50%,-20px);} to { opacity:1; transform:translate(-50%,0);} }
+    @keyframes fadeOutUp { from { opacity:1; transform:translate(-50%,0);} to { opacity:0; transform:translate(-50%,-20px);} }
+  </style>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="bg-honeycomb"></div>
+  <div class="page-loader" id="pageLoader" style="z-index:9999"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
+
+  <div class="screen-wrap">
+    <!-- 头部 -->
+    <div class="screen-header">
+      <div class="screen-header-left">
+        <div class="screen-header-title">
+          <span class="pulse-dot"></span>
+          📋 企业管理 — 辖区企业档案中心
+        </div>
+        <div class="screen-header-sub">北京市怀柔区生态环境局 · 工业涂装行业 · 2026-05-18 09:00</div>
+      </div>
+      <div class="screen-nav">
+        <a href="../index.html">🏠 首页</a>
+        <a href="index.html">📊 指挥大屏</a>
+        <a class="active" style="text-decoration:none">📋 企业管理</a>
+        <a href="data-management.html">📊 数据管理</a>
+        <a href="device-management.html">🔧 设备管理</a>
+        <a href="llm-assistant.html">🤖 LLM助手</a>
+        <a href="knowledge-base.html">📚 案例库</a>
+        <a href="../gov-monitoring/index.html">🌐 3D监测</a>
+      </div>
+    </div>
+
+    <!-- 搜索/筛选栏 -->
+    <div class="filter-bar">
+      <input type="text" id="searchName" placeholder="🔍 企业名称模糊搜索">
+      <select id="filterIndustry">
+        <option value="">全部行业</option>
+        <option value="汽车整车">汽车整车</option>
+        <option value="汽车零部件">汽车零部件</option>
+        <option value="家具">家具</option>
+        <option value="金属">金属</option>
+        <option value="汽修">汽修</option>
+      </select>
+      <select id="filterQuadrant">
+        <option value="">全部象限</option>
+        <option value="双减标兵">双减标兵</option>
+        <option value="减污增碳">减污增碳</option>
+        <option value="减碳增污">减碳增污</option>
+        <option value="数据不足">数据不足</option>
+      </select>
+      <select id="filterCP">
+        <option value="">全部C-P</option>
+        <option value="0.8">≥ 0.8</option>
+        <option value="0.6">0.6 - 0.8</option>
+        <option value="0.4">0.4 - 0.6</option>
+        <option value="0">&lt; 0.4</option>
+      </select>
+      <select id="filterLicense">
+        <option value="">许可证到期</option>
+        <option value="30">30天内</option>
+        <option value="60">60天内</option>
+        <option value="90">90天内</option>
+      </select>
+      <button class="btn-filter" onclick="applyFilters()">🔍 查询</button>
+      <button class="btn-compare" onclick="openCompare()">📊 企业对比</button>
+      <button class="btn-export" onclick="exportData()">📥 批量导出</button>
+    </div>
+
+    <!-- 企业卡片列表 -->
+    <div class="enterprise-grid" id="enterpriseGrid"></div>
+  </div>
+
+  <!-- 企业详情抽屉 -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <div class="drawer" id="detailDrawer">
+    <div class="drawer-header">
+      <span class="drawer-title" id="drawerTitle">企业档案</span>
+      <span class="drawer-close" onclick="closeDrawer()">✕</span>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </div>
+
+  <!-- 对比模式弹窗 -->
+  <div class="compare-overlay" id="compareOverlay" onclick="closeCompare(event)">
+    <div class="compare-box">
+      <div class="compare-header">
+        <span class="compare-title">📊 企业多维对比分析</span>
+        <span class="drawer-close" onclick="closeCompareDirect()">✕</span>
+      </div>
+      <div class="compare-body">
+        <div style="font-size:12px;color:rgba(226,232,240,0.4);margin-bottom:8px">请选择 2-5 家企业进行对比：</div>
+        <div class="compare-list" id="compareList"></div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn-filter" style="flex:1" onclick="generateRadar()">生成雷达图</button>
+          <button class="btn-export" style="flex:1;background:rgba(255,255,255,0.05);color:rgba(226,232,240,0.5);border-color:rgba(255,255,255,0.1)" onclick="closeCompareDirect()">关闭</button>
+        </div>
+        <div class="radar-wrap" id="radarWrap"></div>
+        <div class="compare-legend" id="compareLegend"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 企业模拟数据 ==========
+    const ENTERPRISES = [
+      { id:"ENT-001", name:"蓝天工业涂装有限公司", code:"91110108MA0012345", industry:"汽车零部件", address:"怀柔区雁栖经济开发区雁栖大街18号", contact:"张环保 138****5678", permitNo:"XKP-2018-00123", carbonQuota:8500, licenseExpire:"2026-12-31", cp:0.38, mci:0.55, ehi:68, quadrant:"减污增碳", starred:true,
+        cpHistory:[0.72,0.68,0.61,0.55,0.48,0.42,0.38], paradoxHistory:[{date:"05-18",type:"red",text:"减污增碳陷阱 — RTO空烧22%"},{date:"05-14",type:"red",text:"C-P降至0.38，持续12h"}], radar:{vocs:82,nox:65,pm25:78,so2:88,co2:42,ch4:55} },
+      { id:"ENT-002", name:"红星喷涂厂", code:"91110108MA0056789", industry:"汽车整车", address:"怀柔区庙城镇庙城村东200米", contact:"李厂长 139****1234", permitNo:"XKP-2019-00245", carbonQuota:12000, licenseExpire:"2027-03-15", cp:0.35, mci:0.48, ehi:58, quadrant:"减碳增污", starred:false,
+        cpHistory:[0.62,0.58,0.52,0.48,0.42,0.38,0.35], paradoxHistory:[{date:"05-17",type:"red",text:"减碳增污 — 燃烧室温度680°C"},{date:"05-10",type:"yellow",text:"协同失衡预警"}], radar:{vocs:45,nox:38,pm25:52,so2:60,co2:35,ch4:40} },
+      { id:"ENT-003", name:"鑫达汽修服务中心", code:"91110108MA0098765", industry:"汽修", address:"怀柔区杨宋镇凤翔大街5号", contact:"王经理 136****9876", permitNo:"XKP-2020-00321", carbonQuota:3200, licenseExpire:"2026-06-20", cp:0.52, mci:0.72, ehi:75, quadrant:"减污增碳", starred:false,
+        cpHistory:[0.58,0.56,0.55,0.54,0.53,0.52,0.52], paradoxHistory:[{date:"05-12",type:"yellow",text:"协同失衡 — 水性漆增碳"}], radar:{vocs:78,nox:72,pm25:80,so2:85,co2:65,ch4:70} },
+      { id:"ENT-004", name:"金辉涂装科技有限公司", code:"91110108MA0043210", industry:"金属", address:"怀柔区北房镇裕华路10号", contact:"赵总 135****2468", permitNo:"XKP-2017-00198", carbonQuota:15000, licenseExpire:"2026-08-10", cp:0.71, mci:0.78, ehi:82, quadrant:"双减标兵", starred:true,
+        cpHistory:[0.65,0.66,0.68,0.69,0.70,0.70,0.71], paradoxHistory:[], radar:{vocs:92,nox:85,pm25:88,so2:90,co2:82,ch4:80} },
+      { id:"ENT-005", name:"伟达家具制造有限公司", code:"91110108MA0076543", industry:"家具", address:"怀柔区桥梓镇桥梓大街33号", contact:"孙环保 137****1357", permitNo:"XKP-2021-00456", carbonQuota:6800, licenseExpire:"2027-01-25", cp:0.88, mci:0.91, ehi:91, quadrant:"双减标兵", starred:false,
+        cpHistory:[0.82,0.83,0.84,0.85,0.86,0.87,0.88], paradoxHistory:[], radar:{vocs:95,nox:90,pm25:92,so2:94,co2:88,ch4:86} },
+      { id:"ENT-006", name:"永昌喷涂有限责任公司", code:"91110108MA0032156", industry:"汽车零部件", address:"怀柔区怀北镇怀北路88号", contact:"陈主任 138****7890", permitNo:"XKP-2019-00267", carbonQuota:9200, licenseExpire:"2026-07-05", cp:0.39, mci:0.50, ehi:62, quadrant:"数据不足", starred:false,
+        cpHistory:[0.45,0.44,0.42,0.41,0.40,0.39,0.39], paradoxHistory:[{date:"05-16",type:"red",text:"数据缺失 — 天然气读数异常"}], radar:{vocs:55,nox:48,pm25:60,so2:65,co2:45,ch4:50} },
+      { id:"ENT-007", name:"宏图汽车整车涂装厂", code:"91110108MA0067890", industry:"汽车整车", address:"怀柔区龙山街道龙山东路2号", contact:"刘工 139****4567", permitNo:"XKP-2018-00145", carbonQuota:25000, licenseExpire:"2026-09-30", cp:0.65, mci:0.70, ehi:76, quadrant:"双减标兵", starred:false,
+        cpHistory:[0.58,0.60,0.61,0.62,0.63,0.64,0.65], paradoxHistory:[], radar:{vocs:85,nox:78,pm25:82,so2:86,co2:72,ch4:68} },
+      { id:"ENT-008", name:"银海金属表面处理厂", code:"91110108MA0089012", industry:"金属", address:"怀柔区渤海镇渤海所村西", contact:"周经理 136****3210", permitNo:"XKP-2020-00389", carbonQuota:11000, licenseExpire:"2026-11-15", cp:0.28, mci:0.35, ehi:48, quadrant:"减碳增污", starred:false,
+        cpHistory:[0.42,0.40,0.36,0.34,0.32,0.30,0.28], paradoxHistory:[{date:"05-18",type:"red",text:"减碳增污严重 — C-P仅0.28"},{date:"05-08",type:"red",text:"RTO效率下降至78%"}], radar:{vocs:30,nox:25,pm25:35,so2:40,co2:22,ch4:28} },
+      { id:"ENT-009", name:"美家家具涂装作坊", code:"91110108MA0023456", industry:"家具", address:"怀柔区九渡河镇九渡河村", contact:"吴老板 135****6543", permitNo:"XKP-2022-00501", carbonQuota:4500, licenseExpire:"2026-06-01", cp:0.46, mci:0.58, ehi:64, quadrant:"数据不足", starred:false,
+        cpHistory:[0.50,0.49,0.48,0.48,0.47,0.46,0.46], paradoxHistory:[{date:"05-05",type:"yellow",text:"数据上报延迟3天"}], radar:{vocs:60,nox:55,pm25:62,so2:68,co2:50,ch2:52} },
+      { id:"ENT-010", name:"精诚汽修快喷中心", code:"91110108MA0015678", industry:"汽修", address:"怀柔区泉河街道迎宾路18号", contact:"郑技师 138****0987", permitNo:"XKP-2021-00412", carbonQuota:2800, licenseExpire:"2027-02-28", cp:0.82, mci:0.85, ehi:86, quadrant:"双减标兵", starred:false,
+        cpHistory:[0.76,0.77,0.78,0.79,0.80,0.81,0.82], paradoxHistory:[], radar:{vocs:90,nox:88,pm25:85,so2:89,co2:80,ch4:82} }
+    ];
+
+    // 持久化 starred 状态
+    function getStarredSet() {
+      try { return new Set(JSON.parse(localStorage.getItem('pcap_ent_starred')||'[]')); } catch(e) { return new Set(); }
+    }
+    function saveStarredSet(set) { localStorage.setItem('pcap_ent_starred', JSON.stringify([...set])); }
+    let starredSet = getStarredSet();
+    ENTERPRISES.forEach(e => { if(starredSet.has(e.id)) e.starred = true; });
+
+    function getCpColor(cp) {
+      if(cp>=0.8) return '#4ade80';
+      if(cp>=0.6) return '#fbbf24';
+      if(cp>=0.4) return '#fb923c';
+      return '#f87171';
+    }
+    function getMciColor(mci) {
+      if(mci>=0.8) return '#4ade80';
+      if(mci>=0.6) return '#fbbf24';
+      if(mci>=0.4) return '#fb923c';
+      return '#f87171';
+    }
+    function getQuadrantClass(q) {
+      if(q==='双减标兵') return 'quadrant-double';
+      if(q==='减污增碳') return 'quadrant-pollution';
+      if(q==='减碳增污') return 'quadrant-carbon';
+      return 'quadrant-data';
+    }
+    function daysUntil(dateStr) {
+      const now = new Date('2026-05-18');
+      const target = new Date(dateStr);
+      return Math.ceil((target - now) / (1000*60*60*24));
+    }
+    function getLicenseClass(days) {
+      if(days<=30) return 'urgent';
+      if(days<=60) return 'warn';
+      return '';
+    }
+
+    // ========== 渲染列表 ==========
+    function renderEnterprises(list) {
+      const grid = document.getElementById('enterpriseGrid');
+      if(list.length===0) { grid.innerHTML='<div class="empty-state">未找到符合条件的企业</div>'; return; }
+      grid.innerHTML = list.map((e,i) => {
+        const d = daysUntil(e.licenseExpire);
+        const lc = getLicenseClass(d);
+        const starClass = e.starred ? 'starred' : '';
+        const cpColor = getCpColor(e.cp);
+        const mciColor = getMciColor(e.mci);
+        return `
+        <div class="ent-card fade-in" style="animation-delay:${i*0.05}s">
+          <div class="ent-card-header">
+            <div style="display:flex;align-items:flex-start">
+              <div class="ent-card-name">${e.name}</div>
+              <span class="ent-card-industry">${e.industry}</span>
+            </div>
+          </div>
+          <div class="ent-quadrant ${getQuadrantClass(e.quadrant)}">● ${e.quadrant}</div>
+          <div class="ent-card-metrics">
+            <div class="ent-metric">
+              <div class="ent-metric-label">C-P 指数</div>
+              <div class="ent-metric-value" style="color:${cpColor}">${e.cp.toFixed(2)}</div>
+            </div>
+            <div class="ent-metric">
+              <div class="ent-metric-label">MCI 指数</div>
+              <div class="ent-metric-value" style="color:${mciColor}">${(e.mci*100).toFixed(0)}</div>
+            </div>
+            <div class="ent-metric">
+              <div class="ent-metric-label">EHI 评分</div>
+              <div class="ent-metric-value" style="color:${e.ehi>=80?'#4ade80':e.ehi>=60?'#fbbf24':'#f87171'}">${e.ehi}</div>
+            </div>
+          </div>
+          <div class="ent-license ${lc}">
+            📄 许可证到期：${e.licenseExpire}（${d>0?'剩余'+d+'天':'已过期'}）
+          </div>
+          <div class="ent-actions">
+            <button class="btn-view" onclick="openDrawer('${e.id}')">查看档案</button>
+            <button class="btn-dispatch" onclick="dispatchTo('${e.id}')">下发指令</button>
+            <button class="btn-star ${starClass}" id="star-${e.id}" onclick="toggleStar('${e.id}')">${e.starred?'★':'☆'} 标记重点</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ========== 筛选 ==========
+    let currentList = [...ENTERPRISES];
+    function applyFilters() {
+      const name = document.getElementById('searchName').value.trim();
+      const ind = document.getElementById('filterIndustry').value;
+      const quad = document.getElementById('filterQuadrant').value;
+      const cp = document.getElementById('filterCP').value;
+      const lic = document.getElementById('filterLicense').value;
+      currentList = ENTERPRISES.filter(e => {
+        if(name && !e.name.includes(name)) return false;
+        if(ind && e.industry!==ind) return false;
+        if(quad && e.quadrant!==quad) return false;
+        if(cp) {
+          if(cp==='0.8' && e.cp<0.8) return false;
+          if(cp==='0.6' && (e.cp<0.6||e.cp>=0.8)) return false;
+          if(cp==='0.4' && (e.cp<0.4||e.cp>=0.6)) return false;
+          if(cp==='0' && e.cp>=0.4) return false;
+        }
+        if(lic) {
+          const d = daysUntil(e.licenseExpire);
+          if(d>parseInt(lic) || d<0) return false;
+        }
+        return true;
+      });
+      renderEnterprises(currentList);
+      showToast(`查询完成，共 ${currentList.length} 家企业`, 'info');
+    }
+
+    function exportData() {
+      const csv = '\uFEFF企业名称,统一社会信用代码,行业,C-P指数,MCI指数,EHI评分,象限,许可证到期,地址,联系人\n' +
+        currentList.map(e => `${e.name},${e.code},${e.industry},${e.cp},${e.mci},${e.ehi},${e.quadrant},${e.licenseExpire},${e.address},${e.contact}`).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `企业档案_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      showToast('📥 导出成功', 'success');
+    }
+
+    function toggleStar(id) {
+      const ent = ENTERPRISES.find(e=>e.id===id);
+      if(!ent) return;
+      ent.starred = !ent.starred;
+      if(ent.starred) starredSet.add(id); else starredSet.delete(id);
+      saveStarredSet(starredSet);
+      const btn = document.getElementById('star-'+id);
+      if(btn) { btn.classList.toggle('starred', ent.starred); btn.innerHTML = (ent.starred?'★':'☆')+' 标记重点'; }
+      showToast(ent.starred ? '已标记为重点企业' : '已取消重点企业标记', 'success');
+    }
+
+    function dispatchTo(id) {
+      const ent = ENTERPRISES.find(e=>e.id===id);
+      showToast(`已向 ${ent.name} 下发调度指令（模拟）`, 'warn');
+    }
+
+    // ========== 详情抽屉 ==========
+    function openDrawer(id) {
+      const e = ENTERPRISES.find(x=>x.id===id);
+      if(!e) return;
+      document.getElementById('drawerTitle').textContent = e.name;
+      const cpColor = getCpColor(e.cp);
+      const mciColor = getMciColor(e.mci);
+
+      // sparkline path
+      const sparkW=400, sparkH=60;
+      const minCp = Math.min(...e.cpHistory), maxCp = Math.max(...e.cpHistory);
+      const points = e.cpHistory.map((v,i)=>{
+        const x = (i/(e.cpHistory.length-1))*sparkW;
+        const y = sparkH - ((v-minCp)/(maxCp-minCp||1))*sparkH*0.8 - 6;
+        return `${x},${y}`;
+      }).join(' ');
+
+      // gauge arc
+      const gaugeArc = (val, color) => {
+        const r=40, cx=50, cy=50;
+        const angle = Math.PI + val * Math.PI; // 0-1 maps to PI-2PI
+        const x = cx + r*Math.cos(angle);
+        const y = cy + r*Math.sin(angle);
+        const large = val>0.5?1:0;
+        return `<svg class="gauge-svg" viewBox="0 0 100 60"><path d="M10,50 A40,40 0 1,1 90,50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/><path d="M10,50 A40,40 0 ${large},1 ${x},${y}" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round"/></svg>`;
+      };
+
+      // ring chart
+      const ringChart = (val, color, max) => {
+        const r=36, c=2*Math.PI*r;
+        const dash = (val/max)*c;
+        return `<svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/><circle cx="40" cy="40" r="${r}" fill="none" stroke="${color}" stroke-width="6" stroke-dasharray="${dash} ${c-dash}" stroke-linecap="round" transform="rotate(-90 40 40)"/></svg>`;
+      };
+
+      document.getElementById('drawerBody').innerHTML = `
+        <div class="drawer-section">
+          <div class="drawer-section-title">🏢 基本信息</div>
+          <div class="drawer-row"><span>企业名称</span><span>${e.name}</span></div>
+          <div class="drawer-row"><span>统一社会信用代码</span><span>${e.code}</span></div>
+          <div class="drawer-row"><span>所属行业</span><span>${e.industry}</span></div>
+          <div class="drawer-row"><span>注册地址</span><span>${e.address}</span></div>
+          <div class="drawer-row"><span>环保联系人</span><span>${e.contact}</span></div>
+          <div class="drawer-row"><span>排污许可证号</span><span>${e.permitNo}</span></div>
+          <div class="drawer-row"><span>碳排放配额</span><span>${e.carbonQuota.toLocaleString()} tCO₂/年</span></div>
+        </div>
+
+        <div class="drawer-section">
+          <div class="drawer-section-title">📊 三层指标面板</div>
+          <div class="sparkline-wrap">
+            <svg class="sparkline-svg" viewBox="0 0 400 60" preserveAspectRatio="none">
+              <polyline points="${points}" fill="none" stroke="${cpColor}" stroke-width="2"/>
+              ${e.cpHistory.map((v,i)=>{
+                const x=(i/(e.cpHistory.length-1))*400;
+                const y=60-((v-minCp)/(maxCp-minCp||1))*60*0.8-6;
+                return `<circle cx="${x}" cy="${y}" r="3" fill="${cpColor}"/>`;
+              }).join('')}
+            </svg>
+          </div>
+          <div style="text-align:center;font-size:10px;color:rgba(226,232,240,0.3);margin-bottom:10px">C-P 协同指数近7日走势</div>
+          <div class="gauge-wrap">
+            <div class="gauge-box">
+              ${gaugeArc(e.mci, mciColor)}
+              <div class="gauge-label">MCI 指数</div>
+              <div class="gauge-value" style="color:${mciColor}">${(e.mci*100).toFixed(0)}</div>
+            </div>
+            <div class="gauge-box">
+              ${ringChart(e.ehi, e.ehi>=80?'#4ade80':e.ehi>=60?'#fbbf24':'#f87171', 100)}
+              <div class="gauge-label">EHI 评分</div>
+              <div class="gauge-value" style="color:${e.ehi>=80?'#4ade80':e.ehi>=60?'#fbbf24':'#f87171'}">${e.ehi}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <div class="drawer-section-title">⚠️ 悖论历史</div>
+          <div class="timeline">
+            ${e.paradoxHistory.length?e.paradoxHistory.map(p=>`
+              <div class="timeline-item ${p.type}">
+                <div class="timeline-date">${p.date}</div>
+                <div class="timeline-text">${p.text}</div>
+              </div>
+            `).join(''):'<div style="font-size:12px;color:rgba(226,232,240,0.3)">近30天无悖论记录</div>'}
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <div class="drawer-section-title">📋 调度记录</div>
+          <table class="mini-table">
+            <thead><tr><th>时间</th><th>类型</th><th>状态</th></tr></thead>
+            <tbody>
+              ${e.paradoxHistory.length?e.paradoxHistory.map((p,i)=>`
+                <tr><td>2026-${p.date}</td><td>调度指令</td><td style="color:${p.type==='red'?'#f87171':'#fbbf24'}">${p.type==='red'?'待整改':'关注'}</td></tr>
+              `).join(''):'<tr><td colspan="3" style="text-align:center;color:rgba(226,232,240,0.25)">暂无调度记录</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      `;
+      document.getElementById('drawerOverlay').classList.add('active');
+      document.getElementById('detailDrawer').classList.add('active');
+    }
+    function closeDrawer() {
+      document.getElementById('drawerOverlay').classList.remove('active');
+      document.getElementById('detailDrawer').classList.remove('active');
+    }
+
+    // ========== 对比模式 ==========
+    function openCompare() {
+      const list = document.getElementById('compareList');
+      list.innerHTML = ENTERPRISES.map(e=>`
+        <label><input type="checkbox" value="${e.id}" onchange="limitCompare(this)"><span>${e.name}</span><span style="margin-left:auto;font-size:10px;color:rgba(226,232,240,0.3)">${e.industry} · C-P ${e.cp}</span></label>
+      `).join('');
+      document.getElementById('compareOverlay').classList.add('active');
+      document.getElementById('radarWrap').innerHTML='';
+      document.getElementById('compareLegend').innerHTML='';
+    }
+    function limitCompare(el) {
+      const checked = document.querySelectorAll('#compareList input[type="checkbox"]:checked');
+      if(checked.length>5) { el.checked=false; showToast('最多选择5家企业','warn'); }
+    }
+    function closeCompare(e) { if(e.target.classList.contains('compare-overlay')) closeCompareDirect(); }
+    function closeCompareDirect() { document.getElementById('compareOverlay').classList.remove('active'); }
+
+    function generateRadar() {
+      const checked = [...document.querySelectorAll('#compareList input[type="checkbox"]:checked')].map(c=>c.value);
+      if(checked.length<2) { showToast('请至少选择2家企业','warn'); return; }
+      const selected = checked.map(id=>ENTERPRISES.find(e=>e.id===id));
+      const colors = ['#22d3ee','#f87171','#4ade80','#fbbf24','#a78bfa'];
+      const axes = ['VOCs','NOx','PM2.5','SO2','CO2','CH4'];
+      const axisKey = ['vocs','nox','pm25','so2','co2','ch4'];
+      const W=320, H=280, CX=W/2, CY=H/2+10, R=90;
+      const angle = i => (Math.PI*2*i/axes.length) - Math.PI/2;
+
+      // grid polygons
+      let grid = '';
+      for(let lvl=1; lvl<=5; lvl++) {
+        const r = (R/5)*lvl;
+        const pts = axes.map((_,i)=>{ const a=angle(i); return `${CX+r*Math.cos(a)},${CY+r*Math.sin(a)}`; }).join(' ');
+        grid += `<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+      }
+      // axis lines
+      let axisLines = '';
+      axes.forEach((_,i)=>{ const a=angle(i); axisLines+=`<line x1="${CX}" y1="${CY}" x2="${CX+R*Math.cos(a)}" y2="${CY+R*Math.sin(a)}" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`; });
+      // labels
+      let labels = '';
+      axes.forEach((lab,i)=>{ const a=angle(i); const x=CX+(R+18)*Math.cos(a); const y=CY+(R+18)*Math.sin(a); labels+=`<text x="${x}" y="${y+4}" text-anchor="middle" fill="rgba(226,232,240,0.5)" font-size="10">${lab}</text>`; });
+      // data polygons
+      let dataPolys = '';
+      selected.forEach((ent,idx)=>{
+        const pts = axisKey.map((k,i)=>{
+          const v = ent.radar[k] || 0;
+          const r = (v/100)*R;
+          const a = angle(i);
+          return `${CX+r*Math.cos(a)},${CY+r*Math.sin(a)}`;
+        }).join(' ');
+        dataPolys += `<polygon points="${pts}" fill="${colors[idx]}18" stroke="${colors[idx]}" stroke-width="2" stroke-linejoin="round"/>`;
+        // dots
+        axisKey.forEach((k,i)=>{
+          const v = ent.radar[k] || 0;
+          const r = (v/100)*R;
+          const a = angle(i);
+          dataPolys += `<circle cx="${CX+r*Math.cos(a)}" cy="${CY+r*Math.sin(a)}" r="3" fill="${colors[idx]}"/>`;
+        });
+      });
+
+      document.getElementById('radarWrap').innerHTML = `
+        <svg class="radar-svg" viewBox="0 0 ${W} ${H}">${grid}${axisLines}${labels}${dataPolys}</svg>
+      `;
+      document.getElementById('compareLegend').innerHTML = selected.map((ent,idx)=>`
+        <span><span class="dot" style="background:${colors[idx]}"></span>${ent.name}</span>
+      `).join('');
+    }
+
+    // ========== 初始化 ==========
+    renderEnterprises(ENTERPRISES);
+
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var el = document.getElementById('pageLoader');
+        if(el) el.classList.add('done');
+      }, 500);
+    });
+  </script>
+</body>
+</html>

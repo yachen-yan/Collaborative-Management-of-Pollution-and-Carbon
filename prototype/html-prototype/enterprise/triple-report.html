@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>三评合一报告 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
@@ -12,7 +13,7 @@
     .page-sub { font-size: 13px; color: rgba(226,232,240,0.4); margin-bottom: 20px; }
     
     .report-header {
-      background: linear-gradient(135deg, #1677ff 0%, #36cfc9 100%);
+      background: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
       color: #fff; padding: 28px; border-radius: 8px; margin-bottom: 20px;
     }
     .report-header-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
@@ -39,9 +40,9 @@
       background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 8px;
       padding: 16px 20px; margin-bottom: 20px;
     }
-    .ai-summary-title { font-weight: 600; color: #52c41a; margin-bottom: 8px; }
+    .ai-summary-title { font-weight: 600; color: #4ade80; margin-bottom: 8px; }
     .ai-summary-text { font-size: 14px; line-height: 1.8; color: rgba(0,0,0,0.75); }
-    .ai-summary-text strong { color: #f5222d; }
+    .ai-summary-text strong { color: #f87171; }
     
     .detail-section { margin-bottom: 20px; }
     .detail-section-title {
@@ -66,9 +67,9 @@
       align-items: center; justify-content: center; font-size: 12px;
       font-weight: 600; color: #fff; flex-shrink: 0;
     }
-    .priority-rank.p1 { background: #f5222d; }
-    .priority-rank.p2 { background: #fa8c16; }
-    .priority-rank.p3 { background: #faad14; }
+    .priority-rank.p1 { background: #f87171; }
+    .priority-rank.p2 { background: #fbbf24; }
+    .priority-rank.p3 { background: #fbbf24; }
     .priority-text { flex: 1; font-size: 13px; }
     .priority-score { font-size: 12px; color: rgba(226,232,240,0.4); }
     
@@ -138,7 +139,7 @@
 
     <div class="report-actions">
       <button class="btn btn-default btn-lg" onclick="showToast('历史报告功能开发中...','info')">📊 查看历史报告</button>
-      <button class="btn btn-primary btn-lg" onclick="window.print()">📥 导出 PDF 报告</button>
+      <button class="btn btn-primary btn-lg" onclick="window.open('report-preview.html?id=' + (currentReportId || ''), '_blank')">📥 导出 PDF 报告</button>
     </div>
 
     <div style="height:40px"></div>
@@ -183,10 +184,10 @@
       // 四大评分
       const scores = report.scores || { p: 82, e: 65, c: 58, cp: 0.52 };
       const scoreItems = [
-        { key: 'p', label: '污染评价（P）', color: '#52c41a', grade: '良', emoji: '🟢' },
-        { key: 'e', label: '能效评价（E）', color: '#faad14', grade: '一般', emoji: '🟡' },
-        { key: 'c', label: '碳排评价（C）', color: '#fa8c16', grade: '较差', emoji: '🟠' },
-        { key: 'cp', label: 'C-P 协同指数', color: '#f5222d', grade: '差', emoji: '🔴' },
+        { key: 'p', label: '污染评价（P）', color: '#4ade80', grade: '良', emoji: '🟢' },
+        { key: 'e', label: '能效评价（E）', color: '#fbbf24', grade: '一般', emoji: '🟡' },
+        { key: 'c', label: '碳排评价（C）', color: '#fbbf24', grade: '较差', emoji: '🟠' },
+        { key: 'cp', label: 'C-P 协同指数', color: '#f87171', grade: '差', emoji: '🔴' },
       ];
       const circumference = 239;
       document.getElementById('scoreOverview').innerHTML = scoreItems.map(s => {

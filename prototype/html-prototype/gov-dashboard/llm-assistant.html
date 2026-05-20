@@ -2,11 +2,13 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LLM 智能政务助手 — 污碳协同AI监管平台</title>
+  <script src="../js/data.js"></script>
 
   <style>
     body { background: #020617; color: #e2e8f0; }
-    .topbar { background: linear-gradient(90deg, #1677ff 0%, #36cfc9 100%); }
+    .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); }
     .main { margin-left: 220px; margin-top: 64px; padding: 24px; min-height: calc(100vh - 64px); }
 
     /* 侧边栏 */
@@ -195,7 +197,6 @@
     </div>
   </div>
 
-  <script src="../js/data.js"></script>
   <script>
     // ========== 会话管理 ==========
     const SESSIONS_KEY = 'pcap_llm_sessions';
@@ -396,7 +397,7 @@
 
       let dynamicAdded = false;
       try {
-        const cpTrend = DataStore.get('healthScore', {}).cpTrend;
+        const cpTrend = DataStore.get('cpTrend', {});
         const alerts = DataStore.getAlerts();
         const realtime = DataStore.getRealtime();
         const unreadAlerts = alerts.filter(a => !a.read).length;

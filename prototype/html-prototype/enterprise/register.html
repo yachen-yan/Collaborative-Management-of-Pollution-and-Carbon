@@ -2,7 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>企业注册 — 污碳协同AI监管平台</title>
+  <script src="../js/data.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; background:#020617; color:#e2e8f0; min-height:100vh; overflow-x:hidden; }
@@ -129,8 +131,22 @@
         else{circle.textContent=i;}
         if(i>=n&&line)line.classList.remove('done');
       }
-      // 注册成功自动跳转登录页
+      // 注册成功：保存企业信息到 DataStore
       if (n === 3) {
+        try {
+          const entName = document.querySelector('input[placeholder="请输入企业全称"]').value || '蓝天工业涂装有限公司';
+          const entIndustry = document.querySelector('select').value || '汽车零部件涂装';
+          DataStore.set('enterprise', {
+            name: entName,
+            industry: entIndustry,
+            code: document.querySelector('input[placeholder="18位统一社会信用代码"]').value || '91110108MA0012345',
+            address: document.querySelector('input[placeholder="请输入企业注册地址"]').value || '北京市怀柔区张镇工业园A区3号',
+            permit: document.querySelector('input[placeholder="请输入许可证编号"]').value || '91110108MA0012345001P',
+            contact: document.querySelector('input[placeholder="请输入联系人姓名"]').value || '张环保',
+            phone: document.querySelector('input[placeholder="请输入手机号"]').value || '138****5678'
+          });
+          DataStore.set('registeredAt', new Date().toISOString());
+        } catch(e) { console.log('DataStore save skipped:', e); }
         setTimeout(function() { showToast('⏳ 3秒后自动跳转至登录页...', 'info'); }, 800);
         setTimeout(function() { window.location.href = 'login.html'; }, 3500);
       }

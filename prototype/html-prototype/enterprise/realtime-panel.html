@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>实时双算看板 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
@@ -16,8 +17,8 @@
     .rt-big-label { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 8px; }
     .rt-big-unit { font-size: 12px; color: rgba(226,232,240,0.3); margin-top: 2px; }
     .rt-big-trend { font-size: 12px; margin-top: 6px; }
-    .rt-big-trend.up { color: #f5222d; }
-    .rt-big-trend.down { color: #52c41a; }
+    .rt-big-trend.up { color: #f87171; }
+    .rt-big-trend.down { color: #4ade80; }
     .rt-big-trend::before { content: "↑ "; }
     .rt-big-trend.down::before { content: "↓ "; }
     
@@ -46,11 +47,11 @@
     .compare-value { width: 50px; text-align: right; font-size: 13px; font-weight: 500; }
     .compare-marker {
       position: absolute; top: -4px; width: 2px; height: 28px;
-      background: #f5222d; border-radius: 1px;
+      background: #f87171; border-radius: 1px;
     }
     .compare-marker::after {
       content: attr(data-label); position: absolute; top: -16px; left: -12px;
-      font-size: 10px; color: #f5222d; white-space: nowrap;
+      font-size: 10px; color: #f87171; white-space: nowrap;
     }
     
     .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -93,24 +94,24 @@
     <!-- 核心指标大卡 -->
     <div class="rt-big-grid">
       <div class="card rt-big-card">
-        <div class="rt-big-value" style="color:#1677ff">12.5</div>
+        <div class="rt-big-value" style="color:#0ea5e9">12.5</div>
         <div class="rt-big-unit">kg/h</div>
         <div class="rt-big-label">VOCs 排放速率</div>
         <div class="rt-big-trend down">环比 -8.2%</div>
       </div>
       <div class="card rt-big-card">
-        <div class="rt-big-value" style="color:#52c41a">94.2%</div>
+        <div class="rt-big-value" style="color:#4ade80">94.2%</div>
         <div class="rt-big-label">VOCs 去除效率</div>
         <div class="rt-big-trend up">环比 +1.5%</div>
       </div>
       <div class="card rt-big-card">
-        <div class="rt-big-value" style="color:#fa8c16">0.42</div>
+        <div class="rt-big-value" style="color:#fbbf24">0.42</div>
         <div class="rt-big-unit">tCO₂/h</div>
         <div class="rt-big-label">总碳排放</div>
         <div class="rt-big-trend up">环比 +18.6%</div>
       </div>
       <div class="card rt-big-card">
-        <div class="rt-big-value" style="color:#f5222d">0.38</div>
+        <div class="rt-big-value" style="color:#f87171">0.38</div>
         <div class="rt-big-label">C-P 协同指数</div>
         <div class="rt-big-trend up">环比 -15.6%</div>
       </div>
@@ -123,33 +124,11 @@
           <div class="chart-header">
             <span class="chart-title">📈 VOCs 排放速率（近24h）</span>
             <div class="chart-legend">
-              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#1677ff"></div>本企业</div>
+              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#0ea5e9"></div>本企业</div>
               <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#d9d9d9"></div>区域均值</div>
             </div>
           </div>
-          <div class="mini-chart">
-            <svg viewBox="0 0 400 160">
-              <line x1="40" y1="20" x2="40" y2="140" class="mini-axis"/>
-              <line x1="40" y1="140" x2="380" y2="140" class="mini-axis"/>
-              <!-- 区域均值虚线 -->
-              <polyline points="40,85 90,82 140,88 190,80 240,86 290,83 340,87 380,84" fill="none" stroke="#d9d9d9" stroke-width="1.5" stroke-dasharray="4,3"/>
-              <!-- 本企业 -->
-              <polygon points="40,100 90,95 140,105 190,90 240,85 290,80 340,75 380,70" class="mini-area" style="fill:rgba(22,119,255,0.08)"/>
-              <polyline points="40,100 90,95 140,105 190,90 240,85 290,80 340,75 380,70" class="mini-line" style="stroke:#1677ff"/>
-              <circle cx="40" cy="100" class="mini-dot" style="stroke:#1677ff"/>
-              <circle cx="90" cy="95" class="mini-dot" style="stroke:#1677ff"/>
-              <circle cx="140" cy="105" class="mini-dot" style="stroke:#1677ff"/>
-              <circle cx="190" cy="90" class="mini-dot" style="stroke:#1677ff"/>
-              <circle cx="240" cy="85" class="mini-dot" style="stroke:#1677ff"/>
-              <circle cx="290" cy="80" class="mini-dot" style="stroke:#1677ff"/>
-              <circle cx="340" cy="75" class="mini-dot" style="stroke:#1677ff"/>
-              <circle cx="380" cy="70" class="mini-dot" style="stroke:#1677ff;r:5"/>
-              <text x="40" y="156" class="mini-label" text-anchor="middle">00:00</text>
-              <text x="140" y="156" class="mini-label" text-anchor="middle">08:00</text>
-              <text x="240" y="156" class="mini-label" text-anchor="middle">16:00</text>
-              <text x="340" y="156" class="mini-label" text-anchor="middle" fill="#1677ff" font-weight="bold">现在</text>
-            </svg>
-          </div>
+          <div class="mini-chart" id="vocsChart"></div>
         </div>
       </div>
       <div class="col-6">
@@ -157,18 +136,24 @@
           <div class="chart-header">
             <span class="chart-title">🔥 天然气消耗量（近24h）</span>
           </div>
-          <div class="mini-chart">
-            <svg viewBox="0 0 400 160">
-              <line x1="40" y1="20" x2="40" y2="140" class="mini-axis"/>
-              <line x1="40" y1="140" x2="380" y2="140" class="mini-axis"/>
-              <polyline points="40,110 90,108 140,112 190,100 240,95 290,88 340,82 380,75" class="mini-line" style="stroke:#fa8c16"/>
-              <circle cx="380" cy="75" class="mini-dot" style="stroke:#fa8c16;r:5"/>
-              <text x="40" y="156" class="mini-label" text-anchor="middle">00:00</text>
-              <text x="140" y="156" class="mini-label" text-anchor="middle">08:00</text>
-              <text x="240" y="156" class="mini-label" text-anchor="middle">16:00</text>
-              <text x="380" y="156" class="mini-label" text-anchor="middle" fill="#fa8c16" font-weight="bold">现在</text>
-            </svg>
+          <div class="mini-chart" id="gasChart"></div>
+        </div>
+      </div>
+    </div>
+    <!-- C-P协同指数趋势图（新增） -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card chart-card">
+          <div class="chart-header">
+            <span class="chart-title">🔄 C-P 协同指数趋势（近7天）+ 同区域同行业脱敏均值参考线</span>
+            <div class="chart-legend">
+              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#f87171"></div>本企业</div>
+              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#d9d9d9"></div>区域均值</div>
+              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#fbbf24"></div>警戒线 0.6</div>
+              <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#f87171"></div>危险线 0.4</div>
+            </div>
           </div>
+          <div class="mini-chart" id="cpChart" style="height:200px"></div>
         </div>
       </div>
     </div>
@@ -182,7 +167,7 @@
             <div class="compare-bar">
               <span class="compare-label">VOCs排放强度</span>
               <div class="compare-track">
-                <div class="compare-fill" style="width:65%;background:#1677ff"></div>
+                <div class="compare-fill" style="width:65%;background:#0ea5e9"></div>
                 <div class="compare-marker" style="left:50%" data-label="均值"></div>
               </div>
               <span class="compare-value">8.3</span>
@@ -190,7 +175,7 @@
             <div class="compare-bar">
               <span class="compare-label">碳排强度</span>
               <div class="compare-track">
-                <div class="compare-fill" style="width:85%;background:#fa8c16"></div>
+                <div class="compare-fill" style="width:85%;background:#fbbf24"></div>
                 <div class="compare-marker" style="left:55%" data-label="均值"></div>
               </div>
               <span class="compare-value">0.28</span>
@@ -198,7 +183,7 @@
             <div class="compare-bar">
               <span class="compare-label">C-P 协同指数</span>
               <div class="compare-track">
-                <div class="compare-fill" style="width:38%;background:#f5222d"></div>
+                <div class="compare-fill" style="width:38%;background:#f87171"></div>
                 <div class="compare-marker" style="left:62%" data-label="均值"></div>
               </div>
               <span class="compare-value">0.38</span>
@@ -206,7 +191,7 @@
             <div class="compare-bar">
               <span class="compare-label">RTO能效</span>
               <div class="compare-track">
-                <div class="compare-fill" style="width:78%;background:#52c41a"></div>
+                <div class="compare-fill" style="width:78%;background:#4ade80"></div>
                 <div class="compare-marker" style="left:70%" data-label="均值"></div>
               </div>
               <span class="compare-value">92%</span>
@@ -224,32 +209,32 @@
             <div class="status-item normal">
               <div class="status-icon">🌡️</div>
               <div class="status-name">燃烧室温度</div>
-              <div class="status-value" style="color:#52c41a">785°C</div>
+              <div class="status-value" style="color:#4ade80">785°C</div>
             </div>
             <div class="status-item normal">
               <div class="status-icon">💨</div>
               <div class="status-name">废气风量</div>
-              <div class="status-value" style="color:#52c41a">4200 m³/h</div>
+              <div class="status-value" style="color:#4ade80">4200 m³/h</div>
             </div>
             <div class="status-item warn">
               <div class="status-icon">⛽</div>
               <div class="status-name">天然气流量</div>
-              <div class="status-value" style="color:#faad14">1200 Nm³/h</div>
+              <div class="status-value" style="color:#fbbf24">1200 Nm³/h</div>
             </div>
             <div class="status-item danger">
               <div class="status-icon">🔥</div>
               <div class="status-name">热回收效率</div>
-              <div class="status-value" style="color:#f5222d">87%</div>
+              <div class="status-value" style="color:#f87171">87%</div>
             </div>
             <div class="status-item normal">
               <div class="status-icon">⚡</div>
               <div class="status-name">电表功率</div>
-              <div class="status-value" style="color:#52c41a">45 kW</div>
+              <div class="status-value" style="color:#4ade80">45 kW</div>
             </div>
             <div class="status-item danger">
               <div class="status-icon">⚠️</div>
               <div class="status-name">空烧判定</div>
-              <div class="status-value" style="color:#f5222d">是</div>
+              <div class="status-value" style="color:#f87171">是</div>
             </div>
           </div>
           <div style="margin-top:12px;padding:10px;background:#fff1f0;border-radius:6px;font-size:12px;color:#f87171">
@@ -286,10 +271,10 @@ window.addEventListener("load",function(){
 
     // 核心指标大卡
     const metrics = [
-      { selector: '.rt-big-grid .rt-big-card:nth-child(1) .rt-big-value', value: rt.vocsRate, suffix: '', color: '#1677ff', unit: 'kg/h', trend: '环比 -8.2%', trendCls: 'down' },
-      { selector: '.rt-big-grid .rt-big-card:nth-child(2) .rt-big-value', value: rt.vocsEfficiency, suffix: '%', color: '#52c41a', unit: '', trend: '环比 +1.5%', trendCls: 'up' },
-      { selector: '.rt-big-grid .rt-big-card:nth-child(3) .rt-big-value', value: rt.carbonTotal, suffix: '', color: '#fa8c16', unit: 'tCO₂/h', trend: '环比 +18.6%', trendCls: 'up' },
-      { selector: '.rt-big-grid .rt-big-card:nth-child(4) .rt-big-value', value: rt.cpIndex, suffix: '', color: '#f5222d', unit: '', trend: '环比 -15.6%', trendCls: 'up' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(1) .rt-big-value', value: rt.vocsRate, suffix: '', color: '#0ea5e9', unit: 'kg/h', trend: '环比 -8.2%', trendCls: 'down' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(2) .rt-big-value', value: rt.vocsEfficiency, suffix: '%', color: '#4ade80', unit: '', trend: '环比 +1.5%', trendCls: 'up' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(3) .rt-big-value', value: rt.carbonTotal, suffix: '', color: '#fbbf24', unit: 'tCO₂/h', trend: '环比 +18.6%', trendCls: 'up' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(4) .rt-big-value', value: rt.cpIndex, suffix: '', color: '#f87171', unit: '', trend: '环比 -15.6%', trendCls: 'up' },
     ];
     metrics.forEach(m => {
       const el = document.querySelector(m.selector);
@@ -298,10 +283,10 @@ window.addEventListener("load",function(){
 
     // 同区域对比数据动态化（含均值参考线）
     const compareData = [
-      { label: 'VOCs排放强度', value: rt.vocsIntensity, avg: regionAvg.vocsIntensity, max: 12, color: '#1677ff', unit: 'kg/万m2' },
-      { label: '碳排强度', value: rt.carbonIntensity, avg: regionAvg.carbonIntensity, max: 0.5, color: '#fa8c16', unit: 'tCO2/万m2' },
-      { label: 'C-P 协同指数', value: rt.cpIndex, avg: regionAvg.cpIndex, max: 1.0, color: '#f5222d', unit: '' },
-      { label: 'RTO能效', value: 92, avg: regionAvg.rtoEfficiency, max: 100, color: '#52c41a', unit: '%' },
+      { label: 'VOCs排放强度', value: rt.vocsIntensity, avg: regionAvg.vocsIntensity, max: 12, color: '#0ea5e9', unit: 'kg/万m2' },
+      { label: '碳排强度', value: rt.carbonIntensity, avg: regionAvg.carbonIntensity, max: 0.5, color: '#fbbf24', unit: 'tCO2/万m2' },
+      { label: 'C-P 协同指数', value: rt.cpIndex, avg: regionAvg.cpIndex, max: 1.0, color: '#f87171', unit: '' },
+      { label: 'RTO能效', value: 92, avg: regionAvg.rtoEfficiency, max: 100, color: '#4ade80', unit: '%' },
     ];
     const compareBars = document.querySelectorAll('.compare-bar');
     compareBars.forEach((bar, idx) => {
@@ -329,12 +314,12 @@ window.addEventListener("load",function(){
 
     // 设备状态动态化
     const deviceData = {
-      '燃烧室温度': { value: rt.chamberTemp + '°C', color: '#52c41a', cls: 'normal' },
-      '废气风量': { value: '4200 m³/h', color: '#52c41a', cls: 'normal' },
-      '天然气流量': { value: rt.gasFlow + ' Nm³/h', color: '#faad14', cls: 'warn' },
-      '热回收效率': { value: '87%', color: '#f5222d', cls: 'danger' },
-      '电表功率': { value: '45 kW', color: '#52c41a', cls: 'normal' },
-      '空烧判定': { value: rt.cpIndex < 0.4 ? '是' : '否', color: rt.cpIndex < 0.4 ? '#f5222d' : '#52c41a', cls: rt.cpIndex < 0.4 ? 'danger' : 'normal' },
+      '燃烧室温度': { value: rt.chamberTemp + '°C', color: '#4ade80', cls: 'normal' },
+      '废气风量': { value: '4200 m³/h', color: '#4ade80', cls: 'normal' },
+      '天然气流量': { value: rt.gasFlow + ' Nm³/h', color: '#fbbf24', cls: 'warn' },
+      '热回收效率': { value: '87%', color: '#f87171', cls: 'danger' },
+      '电表功率': { value: '45 kW', color: '#4ade80', cls: 'normal' },
+      '空烧判定': { value: rt.cpIndex < 0.4 ? '是' : '否', color: rt.cpIndex < 0.4 ? '#f87171' : '#4ade80', cls: rt.cpIndex < 0.4 ? 'danger' : 'normal' },
     };
     document.querySelectorAll('.status-item').forEach(item => {
       const name = item.querySelector('.status-name').textContent.trim();
@@ -347,8 +332,8 @@ window.addEventListener("load",function(){
     });
 
     // 告警提示动态化
-    const alertBox = document.querySelector('.status-grid').parentNode.querySelector('div:last-child');
-    if (alertBox && rt.cpIndex < 0.4) {
+    const deviceAlertBox = document.querySelector('.status-grid').parentNode.querySelector('div:last-child');
+    if (deviceAlertBox && rt.cpIndex < 0.4) {
       alertBox.innerHTML = '🚨 检测到 RTO 空烧：入口 VOCs 浓度 ' + Math.round(rt.vocsRate * 40) + ' mg/m³，天然气流量 ' + rt.gasFlow + ' Nm³/h，空烧时长占比 22%';
     }
   }
@@ -372,7 +357,74 @@ window.addEventListener("load",function(){
     });
   }
 
+
+  // ========== 动态趋势图渲染（含同区域均值参考线） ==========
+  function renderTrendCharts() {
+    const rt = DataStore.getRealtime();
+    const cpTrend = DataStore.get('cpTrend', MOCK_DATA.cpTrend);
+    const regionAvg = { vocsRate: 9.8, gasFlow: 950, cpIndex: 0.62 };
+
+    const hours = ['00:00','03:00','06:00','09:00','12:00','15:00','18:00','21:00'];
+    const vocsSelf = [14.2, 13.8, 15.5, 12.8, 11.5, 10.2, 11.8, rt.vocsRate];
+    const vocsAvg  = [10.5, 10.2, 10.8, 10.0,  9.8,  9.5, 10.1, regionAvg.vocsRate];
+    const gasSelf  = [1100, 1080, 1150, 1020,  980,  920, 1050, rt.gasFlow];
+    const gasAvg   = [ 920,  910,  950,  940,  930,  920,  940, regionAvg.gasFlow];
+
+    function svgLine(dataSelf, dataAvg, colorSelf, maxVal) {
+      const w = 400, h = 160, padL = 40, padR = 20, padT = 20, padB = 20;
+      const xStep = (w - padL - padR) / (dataSelf.length - 1);
+      const yScale = (h - padT - padB) / maxVal;
+      const toY = v => padT + (maxVal - v) * yScale;
+      const ptsSelf = dataSelf.map((v,i) => (padL + i*xStep) + ',' + toY(v)).join(' ');
+      const ptsAvg  = dataAvg.map((v,i) => (padL + i*xStep) + ',' + toY(v)).join(' ');
+      const areaPts = padL + ',' + (h-padB) + ' ' + ptsSelf + ' ' + (padL+(dataSelf.length-1)*xStep) + ',' + (h-padB);
+      return '<svg viewBox="0 0 ' + w + ' ' + h + '">' +
+        '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (h-padB) + '" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>' +
+        '<line x1="' + padL + '" y1="' + (h-padB) + '" x2="' + (w-padR) + '" y2="' + (h-padB) + '" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>' +
+        '<polygon points="' + areaPts + '" fill="' + colorSelf + '" fill-opacity="0.08"/>' +
+        '<polyline points="' + ptsAvg + '" fill="none" stroke="#d9d9d9" stroke-width="1.5" stroke-dasharray="4,3"/>' +
+        '<polyline points="' + ptsSelf + '" fill="none" stroke="' + colorSelf + '" stroke-width="2" stroke-linecap="round"/>' +
+        dataSelf.map((v,i) => '<circle cx="' + (padL + i*xStep) + '" cy="' + toY(v) + '" r="' + (i===dataSelf.length-1?5:3) + '" fill="#fff" stroke="' + colorSelf + '" stroke-width="2"/>').join('') +
+        hours.map((t,i) => '<text x="' + (padL + i*xStep) + '" y="' + (h-4) + '" font-size="10" fill="rgba(226,232,240,0.3)" text-anchor="middle">' + t + '</text>').join('') +
+      '</svg>';
+    }
+
+    const vocsEl = document.getElementById('vocsChart');
+    if (vocsEl) vocsEl.innerHTML = svgLine(vocsSelf, vocsAvg, '#0ea5e9', 18);
+
+    const gasEl = document.getElementById('gasChart');
+    if (gasEl) gasEl.innerHTML = svgLine(gasSelf, gasAvg, '#fbbf24', 1400);
+
+    const cpEl = document.getElementById('cpChart');
+    if (cpEl && cpTrend) {
+      const dates = cpTrend.dates || ['05-12','05-13','05-14','05-15','05-16','05-17','05-18'];
+      const vals  = cpTrend.values || [0.72,0.68,0.61,0.55,0.48,0.42,0.38];
+      const avgLine = vals.map(() => regionAvg.cpIndex);
+      const w = 900, h = 200, padL = 50, padR = 30, padT = 30, padB = 30;
+      const xStep = (w - padL - padR) / (dates.length - 1);
+      const yScale = (h - padT - padB) / 1.0;
+      const toY = v => padT + (1.0 - v) * yScale;
+      const pts = vals.map((v,i) => (padL + i*xStep) + ',' + toY(v)).join(' ');
+      const ptsAvg = avgLine.map((v,i) => (padL + i*xStep) + ',' + toY(v)).join(' ');
+      const y60 = toY(0.6), y40 = toY(0.4);
+      cpEl.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '">' +
+        '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (h-padB) + '" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>' +
+        '<line x1="' + padL + '" y1="' + (h-padB) + '" x2="' + (w-padR) + '" y2="' + (h-padB) + '" stroke="rgba(34,211,238,0.1)" stroke-width="1"/>' +
+        '<line x1="' + padL + '" y1="' + y60 + '" x2="' + (w-padR) + '" y2="' + y60 + '" stroke="#fbbf24" stroke-width="1" stroke-dasharray="6,4"/>' +
+        '<text x="' + (w-padR+4) + '" y="' + (y60+4) + '" font-size="10" fill="#fbbf24">警戒 0.6</text>' +
+        '<line x1="' + padL + '" y1="' + y40 + '" x2="' + (w-padR) + '" y2="' + y40 + '" stroke="#f87171" stroke-width="1" stroke-dasharray="6,4"/>' +
+        '<text x="' + (w-padR+4) + '" y="' + (y40+4) + '" font-size="10" fill="#f87171">危险 0.4</text>' +
+        '<polyline points="' + ptsAvg + '" fill="none" stroke="#d9d9d9" stroke-width="1.5" stroke-dasharray="4,3"/>' +
+        '<text x="' + (w-padR+4) + '" y="' + (toY(regionAvg.cpIndex)+4) + '" font-size="10" fill="#d9d9d9">均值 ' + regionAvg.cpIndex + '</text>' +
+        '<polyline points="' + pts + '" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linecap="round"/>' +
+        vals.map((v,i) => '<circle cx="' + (padL + i*xStep) + '" cy="' + toY(v) + '" r="' + (i===vals.length-1?6:4) + '" fill="#fff" stroke="#f87171" stroke-width="2.5"/><text x="' + (padL + i*xStep) + '" y="' + (toY(v)-10) + '" font-size="11" fill="#f87171" text-anchor="middle" font-weight="600">' + v + '</text>').join('') +
+        dates.map((t,i) => '<text x="' + (padL + i*xStep) + '" y="' + (h-6) + '" font-size="11" fill="rgba(226,232,240,0.4)" text-anchor="middle">' + t + '</text>').join('') +
+      '</svg>';
+    }
+  }
+
   initRealtimeData();
+  renderTrendCharts();
   setTimeout(animateNumbers, 300);
 });
 </script>

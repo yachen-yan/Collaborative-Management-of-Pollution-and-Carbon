@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>预警中心 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
@@ -210,7 +211,7 @@
       }
       
       list.innerHTML = filtered.map(a => {
-        const icons = { 减污增碳/减碳增污悖论: '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
+        const icons = { "减污增碳/减碳增污悖论": '⚠️', imbalance: '🔶', data: '📋', permit: '📄' };
         const typeNames = { "减污增碳/减碳增污悖论": '减污增碳/减碳增污悖论 风险预警', imbalance: '协同失衡预警', data: '数据异常预警', permit: '证件到期提醒' };
         const readClass = a.read ? 'read' : 'unread';
         const dot = !a.read ? '<span class="dot"></span>' : '';

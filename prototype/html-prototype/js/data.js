@@ -145,6 +145,29 @@ const MOCK_DATA = {
       ],
     },
   ],
+
+  // ========== 多排口监测数据（v3.1 新增）==========
+  outlets: [
+    { id: "OUT-001", enterpriseId: "ENT-001", outletCode: "P-01", outletName: "喷涂线废气排口", outletType: "organized", stackHeight: 15, stackDiameter: 0.8, designFlowRate: 25000, status: "online" },
+    { id: "OUT-002", enterpriseId: "ENT-001", outletCode: "P-02", outletName: "烘干线废气排口", outletType: "organized", stackHeight: 12, stackDiameter: 0.6, designFlowRate: 18000, status: "online" },
+    { id: "OUT-003", enterpriseId: "ENT-001", outletCode: "P-03", outletName: "调漆间排口", outletType: "organized", stackHeight: 10, stackDiameter: 0.4, designFlowRate: 8000, status: "online" }
+  ],
+
+  devices: [
+    { id: "DEV-001", outletId: "OUT-001", enterpriseId: "ENT-001", deviceCode: "RTO-01", deviceType: "RTO", manufacturer: "某环保科技", model: "RTO-25000", designCapacity: 25000, designEfficiency: 95, commissioningDate: "2023-06-15", warrantyExpire: "2026-06-15", status: "online", lastMaintenance: "2026-03-10", nextMaintenance: "2026-06-10" },
+    { id: "DEV-002", outletId: "OUT-002", enterpriseId: "ENT-001", deviceCode: "RCO-01", deviceType: "RCO", manufacturer: "某节能设备", model: "RCO-18000", designCapacity: 18000, designEfficiency: 92, commissioningDate: "2024-01-20", warrantyExpire: "2027-01-20", status: "online", lastMaintenance: "2026-04-05", nextMaintenance: "2026-07-05" },
+    { id: "DEV-003", outletId: "OUT-003", enterpriseId: "ENT-001", deviceCode: "AC-01", deviceType: "activated_carbon", manufacturer: "某净化设备", model: "AC-8000", designCapacity: 8000, designEfficiency: 85, commissioningDate: "2022-09-01", warrantyExpire: "2025-09-01", status: "online", lastMaintenance: "2026-02-20", nextMaintenance: "2026-05-20" }
+  ],
+
+  outletMonitoring: {
+    "OUT-001": { inletTVOC: 485, outletTVOC: 28, inletNMHC: 420, outletNMHC: 25, outletPM25: 15, outletSO2: 3.1, outletNOx: 28, outletCO: 12, outletCO2: 420, outletCH4: 0.4, flowRate: 24800, removalEfficiency: 94.2, devicePowerKw: 45, deviceGasNm3h: 1200, chamberTemp: 785, heatRecoveryEff: 87, isEmptyBurn: true },
+    "OUT-002": { inletTVOC: 320, outletTVOC: 22, inletNMHC: 280, outletNMHC: 18, outletPM25: 8, outletSO2: 1.8, outletNOx: 18, outletCO: 8, outletCO2: 310, outletCH4: 0.2, flowRate: 17500, removalEfficiency: 93.5, devicePowerKw: 32, deviceGasNm3h: 800, chamberTemp: 760, heatRecoveryEff: 91, isEmptyBurn: false },
+    "OUT-003": { inletTVOC: 180, outletTVOC: 35, inletNMHC: 150, outletNMHC: 30, outletPM25: 22, outletSO2: 4.2, outletNOx: 15, outletCO: 6, outletCO2: 180, outletCH4: 0.6, flowRate: 7500, removalEfficiency: 80.0, devicePowerKw: 18, deviceGasNm3h: 0, chamberTemp: 0, heatRecoveryEff: 0, isEmptyBurn: false }
+  },
+
+  electricity: { totalKwh: 125000, greenKwh: 25000, fossilKwh: 100000, greenPct: 20 },
+
+  layeredIndices: { cpIndex: 0.38, mciIndex: 0.55, ehiScore: 68 },
 };
 
 // ========== DataStore 持久化层 ==========
@@ -280,6 +303,58 @@ const DataStore = {
       this.set(k, MOCK_DATA[k]);
     }
     this.set('_inited', true);
+  },
+
+  // === Outlets / Devices / Monitoring (v3.1 新增) ===
+  getOutlets() { return this.get('outlets', []); },
+  setOutlets(list) { this.set('outlets', list); },
+  getOutletById(id) { return this.getOutlets().find(o => o.id === id); },
+  getOutletsByEnterprise(eid) { return this.getOutlets().filter(o => o.enterpriseId === eid); },
+
+  getDevices() { return this.get('devices', []); },
+  setDevices(list) { this.set('devices', list); },
+  getDeviceById(id) { return this.getDevices().find(d => d.id === id); },
+  getDevicesByOutlet(oid) { return this.getDevices().filter(d => d.outletId === oid); },
+  getDevicesByEnterprise(eid) { return this.getDevices().filter(d => d.enterpriseId === eid); },
+
+  getOutletMonitoring() { return this.get('outletMonitoring', {}); },
+  setOutletMonitoring(data) { this.set('outletMonitoring', data); },
+  getOutletData(outletId) { return this.getOutletMonitoring()[outletId] || null; },
+
+  getElectricity() { return this.get('electricity', MOCK_DATA.electricity); },
+  setElectricity(data) { this.set('electricity', { ...this.getElectricity(), ...data }); },
+
+  getLayeredIndices() { return this.get('layeredIndices', MOCK_DATA.layeredIndices); },
+  setLayeredIndices(data) { this.set('layeredIndices', { ...this.getLayeredIndices(), ...data }); },
+
+  // === MCI / EHI 计算（v3.1 新增）===
+  calcMCI(outletData) {
+    // 简化版 MCI：基于各污染物达标率加权
+    const weights = { tvoc: 0.40, nox: 0.25, pm25: 0.20, so2: 0.15 };
+    const limits = { tvoc: 120, nox: 150, pm25: 30, so2: 50 }; // mg/m3 或 ug/m3
+    let score = 0;
+    if (outletData.outletTVOC !== undefined) score += weights.tvoc * Math.max(0, 1 - outletData.outletTVOC / limits.tvoc);
+    if (outletData.outletNOx !== undefined) score += weights.nox * Math.max(0, 1 - outletData.outletNOx / limits.nox);
+    if (outletData.outletPM25 !== undefined) score += weights.pm25 * Math.max(0, 1 - outletData.outletPM25 / limits.pm25);
+    if (outletData.outletSO2 !== undefined) score += weights.so2 * Math.max(0, 1 - outletData.outletSO2 / limits.so2);
+    // NOx 惩罚项
+    const noxPenalty = Math.max(0, (outletData.outletNOx || 0) / limits.nox - 0.8) * 0.5;
+    return Math.max(0, Math.min(1, score * (1 - noxPenalty)));
+  },
+
+  calcEHI(outletData) {
+    // 简化版 EHI：0-100 环境健康评分
+    const limits = { tvoc: 120, nmhc: 100, pm25: 30, so2: 50, nox: 150, co2: 500 };
+    const weights = { tvoc: 0.30, nox: 0.20, pm25: 0.15, so2: 0.10, co2: 0.20, ch4: 0.05 };
+    let score = 0;
+    if (outletData.outletTVOC !== undefined) score += weights.tvoc * Math.max(0, 100 - 100 * outletData.outletTVOC / limits.tvoc);
+    if (outletData.outletNMHC !== undefined) score += weights.nox * Math.max(0, 100 - 100 * outletData.outletNMHC / limits.nmhc);
+    if (outletData.outletPM25 !== undefined) score += weights.pm25 * Math.max(0, 100 - 100 * outletData.outletPM25 / limits.pm25);
+    if (outletData.outletSO2 !== undefined) score += weights.so2 * Math.max(0, 100 - 100 * outletData.outletSO2 / limits.so2);
+    if (outletData.outletNOx !== undefined) score += weights.nox * Math.max(0, 100 - 100 * outletData.outletNOx / limits.nox);
+    if (outletData.outletCO2 !== undefined) score += weights.co2 * Math.max(0, 100 - 100 * outletData.outletCO2 / limits.co2);
+    if (outletData.outletCH4 !== undefined) score += weights.ch4 * Math.max(0, 100 - 100 * outletData.outletCH4 / 2.0);
+    return Math.round(Math.max(0, Math.min(100, score)));
   }
 };
 
@@ -308,7 +383,7 @@ function fmtDate(d) {
 }
 
 // 全局 Toast 提示
-function showToast(msg, type) {
+function showToast(msg, type, duration) {
   const toast = document.createElement('div');
   const colors = { success: '#4ade80', error: '#f87171', warn: '#fbbf24', info: '#22d3ee' };
   toast.style.cssText = `
@@ -324,7 +399,7 @@ function showToast(msg, type) {
   setTimeout(() => {
     toast.style.animation = 'fadeOutUp 0.3s ease';
     setTimeout(() => toast.remove(), 300);
-  }, 2500);
+  }, duration || 2500);
 }
 
 // 添加 fadeInDown / fadeOutUp 动画到全局样式（如果页面有 style 标签则插入）

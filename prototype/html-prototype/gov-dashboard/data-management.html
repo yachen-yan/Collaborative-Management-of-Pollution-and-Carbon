@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据管理 — 全域数据资产中心</title>
+<script src="../js/data.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; min-height:100vh; }
+.screen-wrap { width:100vw; min-height:100vh; padding:16px 20px 48px; display:flex; flex-direction:column; }
+.screen-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(34,211,238,0.15); }
+.screen-header-title { font-size:20px; font-weight:700; letter-spacing:2px; display:flex; align-items:center; gap:10px; }
+.pulse-dot { width:8px; height:8px; border-radius:50%; background:#22d3ee; box-shadow:0 0 8px #22d3ee; animation:pulseDot 2s ease-in-out infinite; }
+@keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.screen-header-sub { font-size:12px; color:rgba(226,232,240,0.4); margin-top:4px; }
+.screen-nav { display:flex; gap:8px; flex-wrap:wrap; }
+.screen-nav a { padding:5px 14px; border-radius:6px; font-size:12px; color:rgba(226,232,240,0.5); border:1px solid rgba(34,211,238,0.1); text-decoration:none; transition:all 0.3s; background:rgba(34,211,238,0.05); }
+.screen-nav a:hover, .screen-nav a.active { color:#22d3ee; border-color:rgba(34,211,238,0.4); background:rgba(34,211,238,0.1); }
+
+.tab-bar { display:flex; gap:4px; margin-bottom:16px; background:rgba(34,211,238,0.05); padding:4px; border-radius:8px; width:fit-content; border:1px solid rgba(34,211,238,0.1); }
+.tab-btn { padding:8px 20px; border-radius:6px; font-size:13px; cursor:pointer; color:rgba(226,232,240,0.4); transition:all 0.2s; border:none; background:transparent; }
+.tab-btn.active { background:rgba(34,211,238,0.15); color:#22d3ee; font-weight:500; }
+.tab-btn:hover:not(.active) { color:rgba(226,232,240,0.6); }
+.tab-content { display:none; }
+.tab-content.active { display:block; animation:fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+.filter-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:12px 16px; }
+.filter-bar input, .filter-bar select { padding:7px 12px; border:1px solid rgba(34,211,238,0.15); border-radius:6px; background:rgba(2,6,23,0.6); color:#e2e8f0; font-size:12px; outline:none; }
+.filter-bar input:focus, .filter-bar select:focus { border-color:#22d3ee; }
+.filter-bar input { width:160px; }
+.filter-bar select { min-width:120px; }
+.filter-bar .btn-filter { padding:7px 18px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(34,211,238,0.3); background:rgba(34,211,238,0.1); color:#22d3ee; transition:all 0.2s; }
+.filter-bar .btn-filter:hover { background:rgba(34,211,238,0.2); }
+.filter-bar .btn-export { padding:7px 18px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(74,222,128,0.3); background:rgba(74,222,128,0.08); color:#4ade80; transition:all 0.2s; margin-left:auto; }
+.filter-bar .btn-export:hover { background:rgba(74,222,128,0.15); }
+.checkbox-group { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.checkbox-group label { display:flex; align-items:center; gap:4px; font-size:11px; color:rgba(226,232,240,0.5); cursor:pointer; }
+
+.chart-card { background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:16px; margin-bottom:16px; }
+.chart-title { font-size:13px; font-weight:600; color:#22d3ee; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.chart-title::before { content:""; width:3px; height:12px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; }
+.chart-svg { width:100%; height:220px; }
+
+.data-table { width:100%; border-collapse:collapse; font-size:12px; }
+.data-table th { text-align:left; padding:10px 8px; color:#22d3ee; border-bottom:1px solid rgba(34,211,238,0.15); font-weight:600; background:rgba(34,211,238,0.03); }
+.data-table td { padding:9px 8px; border-bottom:1px solid rgba(255,255,255,0.03); color:rgba(226,232,240,0.7); }
+.data-table tr:hover td { background:rgba(34,211,238,0.03); }
+.data-table .status-pass { color:#4ade80; }
+.data-table .status-warn { color:#fbbf24; }
+.data-table .status-fail { color:#f87171; }
+
+.kpi-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px; }
+.kpi-card { background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1); border-radius:10px; padding:18px; text-align:center; transition:all 0.3s; }
+.kpi-card:hover { border-color:rgba(34,211,238,0.25); box-shadow:0 0 20px rgba(34,211,238,0.08); transform:translateY(-2px); }
+.kpi-label { font-size:11px; color:rgba(226,232,240,0.4); margin-bottom:8px; }
+.kpi-value { font-size:32px; font-weight:700; line-height:1; }
+.kpi-value .unit { font-size:12px; font-weight:400; margin-left:2px; color:rgba(226,232,240,0.4); }
+
+.badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:500; }
+.badge-pass { background:rgba(74,222,128,0.1); color:#4ade80; border:1px solid rgba(74,222,128,0.2); }
+.badge-fail { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+.badge-warn { background:rgba(251,191,36,0.1); color:#fbbf24; border:1px solid rgba(251,191,36,0.2); }
+
+.batch-bar { display:flex; gap:8px; margin-bottom:12px; }
+.batch-bar button { padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid transparent; transition:all 0.2s; }
+.batch-btn-pass { background:rgba(74,222,128,0.08); color:#4ade80; border-color:rgba(74,222,128,0.2); }
+.batch-btn-reject { background:rgba(239,68,68,0.08); color:#f87171; border-color:rgba(239,68,68,0.2); }
+
+.empty-state { text-align:center; padding:60px 20px; color:rgba(226,232,240,0.25); font-size:13px; }
+</style>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="bg-honeycomb"></div>
+<div class="page-loader" id="pageLoader" style="z-index:9999"><div class="loader-ring"></div><div class="loader-text">INITIALIZING SYSTEM</div></div>
+
+<div class="screen-wrap">
+<div class="screen-header">
+  <div class="screen-header-left">
+    <div class="screen-header-title"><span class="pulse-dot"></span>数据管理 — 全域数据资产中心</div>
+    <div class="screen-header-sub">北京市怀柔区生态环境局 · 工业涂装行业 · 2026-05-18 09:00</div>
+  </div>
+  <div class="screen-nav">
+    <a href="../index.html">首页</a>
+    <a href="index.html">指挥大屏</a>
+    <a href="enterprise-management.html">企业管理</a>
+    <a class="active" style="text-decoration:none">数据管理</a>
+    <a href="device-management.html">设备管理</a>
+    <a href="llm-assistant.html">LLM助手</a>
+    <a href="knowledge-base.html">案例库</a>
+    <a href="../gov-monitoring/index.html">3D监测</a>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab(0)">实时数据查询</button>
+  <button class="tab-btn" onclick="switchTab(1)">月度数据审核</button>
+  <button class="tab-btn" onclick="switchTab(2)">数据质量仪表盘</button>
+</div>
+
+<!-- Tab 0 -->
+<div class="tab-content active" id="tab0">
+  <div class="filter-bar">
+    <select id="rtEnt"><option value="">全部企业</option><option>华瑞汽车涂装</option><option>绿源家具制造</option><option>东升金属喷涂</option><option>盛世汽修中心</option><option>华美塑料制品</option><option>北辰汽车部件</option></select>
+    <select id="rtOut"><option value="">全部排口</option><option>喷涂线废气排口</option><option>烘干线废气排口</option><option>调漆间无组织排放</option></select>
+    <input type="date" id="rtFrom" value="2026-05-10" style="width:130px">
+    <input type="date" id="rtTo" value="2026-05-18" style="width:130px">
+    <div class="checkbox-group">
+      <label><input type="checkbox" checked> TVOC</label>
+      <label><input type="checkbox" checked> NMHC</label>
+      <label><input type="checkbox"> PM2.5</label>
+      <label><input type="checkbox"> SO2</label>
+      <label><input type="checkbox"> NOx</label>
+      <label><input type="checkbox"> CO</label>
+      <label><input type="checkbox"> CO2</label>
+      <label><input type="checkbox"> CH4</label>
+    </div>
+    <button class="btn-filter" onclick="refreshChart()">查询</button>
+    <button class="btn-export" onclick="exportData()">导出</button>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">污染物浓度趋势</div>
+    <svg class="chart-svg" id="trendChart" viewBox="0 0 900 220"></svg>
+  </div>
+  <div class="chart-card" style="padding:0; overflow:hidden;">
+    <table class="data-table" id="rtTable"><thead><tr><th>时间</th><th>企业</th><th>排口</th><th>污染物</th><th>浓度</th><th>限值</th><th>状态</th></tr></thead><tbody id="rtBody"></tbody></table>
+  </div>
+</div>
+
+<!-- Tab 1 -->
+<div class="tab-content" id="tab1">
+  <div class="filter-bar">
+    <select id="auditMonth"><option>2026-04</option><option selected>2026-05</option></select>
+    <select id="auditStatus"><option value="">全部状态</option><option>待审核</option><option>已通过</option><option>已退回</option></select>
+    <button class="btn-filter" onclick="filterAudit()">筛选</button>
+    <div class="batch-bar" style="margin-left:auto;">
+      <button class="batch-btn-pass" onclick="batchAction('pass')">批量通过</button>
+      <button class="batch-btn-reject" onclick="batchAction('reject')">批量退回</button>
+    </div>
+  </div>
+  <div class="chart-card" style="padding:0; overflow:hidden;">
+    <table class="data-table" id="auditTable">
+      <thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th>企业</th><th>月份</th><th>提交日期</th><th>状态</th><th>涂料/面积</th><th>VOCs环比</th><th>气量/时长</th><th>逻辑一致</th><th>温度合理</th><th>产量合理</th><th>操作</th></tr></thead>
+      <tbody id="auditBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Tab 2 -->
+<div class="tab-content" id="tab2">
+  <div class="kpi-bar">
+    <div class="kpi-card"><div class="kpi-label">数据完整率</div><div class="kpi-value" style="color:#22d3ee">94<span class="unit">%</span></div></div>
+    <div class="kpi-card"><div class="kpi-label">上报及时率</div><div class="kpi-value" style="color:#4ade80">89<span class="unit">%</span></div></div>
+    <div class="kpi-card"><div class="kpi-label">数据准确率</div><div class="kpi-value" style="color:#fbbf24">92<span class="unit">%</span></div></div>
+    <div class="kpi-card"><div class="kpi-label">API 在线率</div><div class="kpi-value" style="color:#a78bfa">87<span class="unit">%</span></div></div>
+  </div>
+  <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
+    <div class="chart-card">
+      <div class="chart-title">企业数据质量排名</div>
+      <table class="data-table" id="qualityTable"><thead><tr><th>排名</th><th>企业</th><th>完整率</th><th>及时率</th><th>准确率</th><th>API在线</th><th>综合评分</th></tr></thead><tbody id="qualityBody"></tbody></table>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">离线排口监测</div>
+      <div id="offlineList" style="font-size:12px;"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function switchTab(idx) {
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===idx));
+  if(idx===0) { renderRealtimeTable(); refreshChart(); }
+  if(idx===1) renderAuditTable();
+  if(idx===2) renderQualityDashboard();
+}
+
+const POLLUTANTS = [
+  {name:'TVOC',limit:120,color:'#22d3ee'},
+  {name:'NMHC',limit:80,color:'#4ade80'},
+  {name:'PM2.5',limit:35,color:'#fbbf24'},
+  {name:'SO2',limit:50,color:'#f87171'}
+];
+const RT_DATA = [];
+for(let d=10; d<=18; d++) {
+  ['华瑞汽车涂装','绿源家具制造','东升金属喷涂'].forEach((ent,ei)=>{
+    ['喷涂线废气排口','烘干线废气排口'].forEach((outlet,oi)=>{
+      POLLUTANTS.forEach(p=>{
+        const base = 30 + ei*15 + oi*10;
+        const val = Math.round((base + Math.random()*40 + (d-10)*2)*10)/10;
+        RT_DATA.push({date:'05-'+String(d).padStart(2,'0'),ent,outlet,pollutant:p.name,val,limit:p.limit,color:p.color});
+      });
+    });
+  });
+}
+function renderRealtimeTable() {
+  document.getElementById('rtBody').innerHTML = RT_DATA.slice(0,20).map(r=>{
+    const ratio = r.val/r.limit;
+    const status = ratio<0.5?'<span class="status-pass">正常</span>':ratio<0.8?'<span class="status-warn">关注</span>':'<span class="status-fail">超标</span>';
+    return '<tr><td>2026-'+r.date+' 10:00</td><td>'+r.ent+'</td><td>'+r.outlet+'</td><td style="color:'+r.color+'">'+r.pollutant+'</td><td>'+r.val+'</td><td>'+r.limit+'</td><td>'+status+'</td></tr>';
+  }).join('');
+}
+function refreshChart() {
+  const svg = document.getElementById('trendChart');
+  const W=900, H=220, PAD=40;
+  const days = ['05-10','05-11','05-12','05-13','05-14','05-15','05-16','05-17','05-18'];
+  let grid='', axis='', lines='', labels='';
+  for(let i=0;i<=5;i++){
+    const y=PAD+(H-PAD*2)*i/5;
+    grid+='<line x1="'+PAD+'" y1="'+y+'" x2="'+(W-PAD)+'" y2="'+y+'" stroke="rgba(255,255,255,0.05)"/>';
+    labels+='<text x="'+(PAD-8)+'" y="'+(y+3)+'" text-anchor="end" fill="rgba(226,232,240,0.3)" font-size="10">'+Math.round(150*(5-i)/5)+'</text>';
+  }
+  days.forEach((d,i)=>{
+    const x=PAD+(W-PAD*2)*i/(days.length-1);
+    axis+='<line x1="'+x+'" y1="'+PAD+'" x2="'+x+'" y2="'+(H-PAD)+'" stroke="rgba(255,255,255,0.03)"/>';
+    labels+='<text x="'+x+'" y="'+(H-PAD+16)+'" text-anchor="middle" fill="rgba(226,232,240,0.3)" font-size="10">'+d+'</text>';
+  });
+  ['TVOC','NMHC'].forEach((name,idx)=>{
+    const color = idx===0?'#22d3ee':'#4ade80';
+    const pts = days.map((d,i)=>{
+      const x=PAD+(W-PAD*2)*i/(days.length-1);
+      const vals = RT_DATA.filter(r=>r.date===d && r.pollutant===name);
+      const avg = vals.length? vals.reduce((s,v)=>s+v.val,0)/vals.length : 50;
+      const y=PAD+(H-PAD*2)*(1-avg/150);
+      return x+','+y;
+    }).join(' ');
+    lines+='<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+  });
+  svg.innerHTML = grid+axis+lines+labels;
+}
+function exportData() { showToast('数据导出成功','success'); }
+
+const AUDIT_DATA = [
+  {id:1,name:'华瑞汽车涂装',month:'2026-05',submit:'2026-05-15',status:'待审核',rules:[1,1,1,0,1,1]},
+  {id:2,name:'绿源家具制造',month:'2026-05',submit:'2026-05-14',status:'待审核',rules:[1,1,1,1,1,1]},
+  {id:3,name:'东升金属喷涂',month:'2026-05',submit:'2026-05-16',status:'待审核',rules:[1,0,1,1,1,0]},
+  {id:4,name:'盛世汽修中心',month:'2026-05',submit:'2026-05-13',status:'已通过',rules:[1,1,1,1,1,1]},
+  {id:5,name:'华美塑料制品',month:'2026-05',submit:'2026-05-12',status:'已退回',rules:[0,1,0,1,0,1]},
+  {id:6,name:'北辰汽车部件',month:'2026-05',submit:'2026-05-17',status:'待审核',rules:[1,1,1,1,0,1]}
+];
+function renderAuditTable() {
+  const tbody = document.getElementById('auditBody');
+  const statusFilter = document.getElementById('auditStatus').value;
+  const filtered = statusFilter ? AUDIT_DATA.filter(a=>a.status===statusFilter) : AUDIT_DATA;
+  tbody.innerHTML = filtered.map(a=>{
+    const ruleCells = a.rules.map(r=>r?'<span class="badge badge-pass">通过</span>':'<span class="badge badge-fail">异常</span>').join('');
+    let actions = '';
+    if(a.status==='待审核') actions = '<button class="badge badge-pass" onclick="auditAction('+a.id+','pass')">通过</button> <button class="badge badge-fail" onclick="auditAction('+a.id+','reject')">退回</button>';
+    return '<tr><td><input type="checkbox" class="audit-check" value="'+a.id+'"></td><td>'+a.name+'</td><td>'+a.month+'</td><td>'+a.submit+'</td><td>'+a.status+'</td>'+ruleCells+'<td>'+actions+'</td></tr>';
+  }).join('');
+}
+function filterAudit() { renderAuditTable(); }
+function toggleSelectAll() {
+  const checked = document.getElementById('selectAll').checked;
+  document.querySelectorAll('.audit-check').forEach(c=>c.checked=checked);
+}
+function auditAction(id, action) {
+  const a = AUDIT_DATA.find(x=>x.id===id);
+  if(a) { a.status = action==='pass'?'已通过':'已退回'; renderAuditTable(); showToast(a.name+' 已'+a.status,'success'); }
+}
+function batchAction(action) {
+  const checked = [...document.querySelectorAll('.audit-check:checked')];
+  if(!checked.length) { showToast('请先选择企业','warn'); return; }
+  checked.forEach(c=>{
+    const id = parseInt(c.value);
+    const a = AUDIT_DATA.find(x=>x.id===id);
+    if(a && a.status==='待审核') a.status = action==='pass'?'已通过':'已退回';
+  });
+  renderAuditTable();
+  showToast('批量操作完成','success');
+}
+
+function renderQualityDashboard() {
+  const QUALITY = [
+    {name:'华瑞汽车涂装',complete:98,onTime:95,accurate:97,api:99,score:97},
+    {name:'绿源家具制造',complete:96,onTime:92,accurate:94,api:91,score:93},
+    {name:'东升金属喷涂',complete:93,onTime:88,accurate:90,api:85,score:89},
+    {name:'盛世汽修中心',complete:95,onTime:90,accurate:93,api:88,score:91},
+    {name:'华美塑料制品',complete:87,onTime:82,accurate:85,api:78,score:83},
+    {name:'北辰汽车部件',complete:91,onTime:87,accurate:89,api:82,score:87}
+  ];
+  QUALITY.sort((a,b)=>b.score-a.score);
+  document.getElementById('qualityBody').innerHTML = QUALITY.map((q,i)=>{
+    return '<tr><td>'+(i+1)+'</td><td>'+q.name+'</td><td>'+q.complete+'%</td><td>'+q.onTime+'%</td><td>'+q.accurate+'%</td><td>'+q.api+'%</td><td style="color:#22d3ee;font-weight:700">'+q.score+'</td></tr>';
+  }).join('');
+
+  const OFFLINE = [
+    {ent:'华美塑料制品',outlet:'调漆间无组织排放',since:'2026-05-16 14:30'},
+    {ent:'东升金属喷涂',outlet:'烘干线废气排口',since:'2026-05-17 08:15'}
+  ];
+  document.getElementById('offlineList').innerHTML = OFFLINE.map(o=>{
+    return '<div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.03);"><div style="color:#f87171;font-weight:600">'+o.ent+'</div><div style="color:rgba(226,232,240,0.5);margin-top:2px">'+o.outlet+' · 离线 '+o.since+'</div></div>';
+  }).join('');
+}
+
+renderRealtimeTable();
+refreshChart();
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var el = document.getElementById('pageLoader');
+    if(el) el.classList.add('done');
+  }, 500);
+});
+</script>
+</body>
+</html>
