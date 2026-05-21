@@ -134,6 +134,9 @@
     <!-- 碳排评价详情 -->
     <div class="card detail-section" id="carbonSection"></div>
 
+    <!-- 扩展污染物监测 -->
+    <div class="card detail-section" id="pollutantSection"></div>
+
     <!-- 改进优先级 -->
     <div class="card detail-section" id="prioritySection"></div>
 
@@ -229,6 +232,32 @@
       renderDetailSection('pollutionSection', '污染评价详情（P = ' + scores.p + '分）', '🌫️', details.pollution);
       renderDetailSection('energySection', '能效评价详情（E = ' + scores.e + '分）', '⚡', details.energy);
       renderDetailSection('carbonSection', '碳排评价详情（C = ' + scores.c + '分）', '🌱', details.carbon);
+
+      // 扩展污染物监测（P2-11 新增）
+      const outletData = DataStore.getOutletMonitoring();
+      const outletKeys = Object.keys(outletData);
+      const pollutantItems = [];
+      const limits = { outletTVOC: 120, outletNMHC: 100, outletPM25: 30, outletSO2: 50, outletNOx: 150, outletCO: 50, outletCO2: 500, outletCH4: 2.0 };
+      const pollutantNames = { outletTVOC: 'TVOC 排放浓度', outletNMHC: 'NMHC 排放浓度', outletPM25: 'PM2.5 排放浓度', outletSO2: 'SO₂ 排放浓度', outletNOx: 'NOₓ 排放浓度', outletCO: 'CO 排放浓度', outletCO2: 'CO₂ 排放浓度', outletCH4: 'CH₄ 排放浓度' };
+      const pollutantUnits = { outletTVOC: 'mg/m³', outletNMHC: 'mg/m³', outletPM25: 'μg/m³', outletSO2: 'mg/m³', outletNOx: 'mg/m³', outletCO: 'mg/m³', outletCO2: 'mg/m³', outletCH4: 'mg/m³' };
+      
+      outletKeys.forEach(key => {
+        const data = outletData[key];
+        Object.keys(pollutantNames).forEach(pk => {
+          if (data[pk] !== undefined) {
+            const val = data[pk];
+            const limit = limits[pk];
+            const ratio = val / limit;
+            const status = ratio > 1 ? '🔴 超标' : (ratio > 0.8 ? '🟡 关注' : '🟢 达标');
+            const color = ratio > 1 ? '#f87171' : (ratio > 0.8 ? '#fbbf24' : '#4ade80');
+            pollutantItems.push({ name: pollutantNames[pk] + '（' + key + '）', value: val + ' ' + pollutantUnits[pk], color: color, max: limit, score: Math.round((1 - Math.min(1, ratio)) * 100), desc: '限值' + limit + ' ' + status });
+          }
+        });
+      });
+      
+      if (pollutantItems.length > 0) {
+        renderDetailSection('pollutantSection', '扩展污染物监测达标率（P2-11）', '🔬', pollutantItems.slice(0, 9));
+      }
 
       // 改进优先级
       const priorities = report.priorities || MOCK_DATA.tripleReports[0].priorities;

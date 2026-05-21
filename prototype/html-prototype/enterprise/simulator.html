@@ -123,6 +123,58 @@
       display: flex; justify-content: space-between; margin-top: 24px; padding-top: 20px;
       border-top: 1px solid #f0f0f0;
     }
+
+    /* LCA 视角切换 */
+    .perspective-toggle {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(34, 211, 238, 0.04);
+      border: 1px solid rgba(34, 211, 238, 0.12);
+      border-radius: 24px;
+      padding: 4px;
+    }
+    .perspective-toggle .pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 18px; border-radius: 20px; font-size: 13px; cursor: pointer;
+      transition: all 0.25s ease; color: rgba(226,232,240,0.5);
+      border: 1px solid transparent; user-select: none;
+    }
+    .perspective-toggle .pill:hover {
+      color: rgba(226,232,240,0.8);
+    }
+    .perspective-toggle .pill.active {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(34, 211, 238, 0.12));
+      border-color: rgba(34, 211, 238, 0.5);
+      color: #22d3ee;
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+      font-weight: 500;
+    }
+
+    /* LCA 结果卡片 */
+    .lca-row {
+      display: none;
+      grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+    }
+    .lca-row.active { display: grid; animation: fadeIn 0.4s ease; }
+    .lca-card { text-align: center; padding: 20px; }
+    .lca-card .lca-phase { font-size: 11px; color: rgba(226,232,240,0.35); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+    .lca-card .lca-value { font-size: 26px; font-weight: 700; }
+    .lca-card .lca-label { font-size: 12px; color: rgba(226,232,240,0.4); margin-top: 6px; }
+    .lca-card .lca-change { font-size: 12px; margin-top: 4px; }
+    .lca-card .lca-change.up { color: #4ade80; }
+    .lca-card .lca-change.down { color: #f87171; }
+    .lca-divider {
+      display: none; align-items: center; gap: 12px; margin: 0 0 16px;
+      font-size: 13px; color: rgba(226,232,240,0.4);
+    }
+    .lca-divider.active { display: flex; }
+    .lca-divider::before, .lca-divider::after {
+      content: ""; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(34,211,238,0.2), transparent);
+    }
+    .lca-total .lca-value { color: #22d3ee; }
+    .lca-raw .lca-value { color: #0ea5e9; }
+    .lca-transport .lca-value { color: #a78bfa; }
+    .lca-waste .lca-value { color: #fb923c; }
   </style>
   <link rel="stylesheet" href="../css/style.css">
 
@@ -167,6 +219,23 @@
     
     <!-- 步骤1：选择工艺 -->
     <div class="step-content active" id="step1">
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+          <div style="font-size:15px;font-weight:600">🔭 评估视角</div>
+          <div class="perspective-toggle" id="perspectiveToggle">
+            <div class="pill active" data-value="process" onclick="togglePerspective(this)">
+              <span>🔧</span> 工序端视角
+            </div>
+            <div class="pill" data-value="lca" onclick="togglePerspective(this)">
+              <span>🌍</span> 全生命周期视角（LCA）
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:rgba(226,232,240,0.35);margin-top:10px">
+          <span id="perspectiveHint">工序端视角仅考虑涂装工序本身的 VOCs 与能耗碳排。</span>
+        </div>
+      </div>
+
       <div class="card">
         <div style="font-size:15px;font-weight:600;margin-bottom:16px">🎨 当前工艺（底漆）</div>
         <div class="process-grid" id="currentProcess">
@@ -351,6 +420,35 @@
         </div>
       </div>
 
+      <!-- LCA 专属结果卡片 -->
+      <div class="lca-divider" id="lcaDivider"><span>🌍 LCA 全生命周期分析</span></div>
+      <div class="lca-row" id="lcaRow">
+        <div class="card lca-card lca-total">
+          <div class="lca-phase">Total LCA</div>
+          <div class="lca-value" id="lcaTotalChange">+15%</div>
+          <div class="lca-label">LCA 总碳排变化</div>
+          <div class="lca-change down" id="lcaTotalChangeLabel">↑ 总碳排增加</div>
+        </div>
+        <div class="card lca-card lca-raw">
+          <div class="lca-phase">Raw Material</div>
+          <div class="lca-value" id="lcaRawChange">-28%</div>
+          <div class="lca-label">原料获取阶段变化</div>
+          <div class="lca-change up" id="lcaRawChangeLabel">↓ 原料碳排减少</div>
+        </div>
+        <div class="card lca-card lca-transport">
+          <div class="lca-phase">Transport</div>
+          <div class="lca-value" id="lcaTransportChange">-28%</div>
+          <div class="lca-label">运输阶段变化</div>
+          <div class="lca-change up" id="lcaTransportChangeLabel">↓ 运输碳排减少</div>
+        </div>
+        <div class="card lca-card lca-waste">
+          <div class="lca-phase">Waste Disposal</div>
+          <div class="lca-value" id="lcaWasteChange">-50%</div>
+          <div class="lca-label">废弃处置阶段变化</div>
+          <div class="lca-change up" id="lcaWasteChangeLabel">↓ 处置碳排减少</div>
+        </div>
+      </div>
+
       <div class="suggestion-box" id="suggestionBox">
         <div class="suggestion-title">💡 AI 优化建议</div>
         <ol class="suggestion-list" id="suggestionList">
@@ -373,7 +471,7 @@
       <div class="card">
         <div class="card-title">📜 模拟历史记录 <span style="font-size:12px;color:rgba(226,232,240,0.3);font-weight:400">（勾选两条记录进行对比）</span></div>
         <table class="history-table" id="historyTable">
-          <thead><tr><th><input type="checkbox" disabled style="opacity:0.3"></th><th>时间</th><th>当前工艺</th><th>拟改造工艺</th><th>预测 C-P</th><th>判定</th></tr></thead>
+          <thead><tr><th><input type="checkbox" disabled style="opacity:0.3"></th><th>时间</th><th>视角</th><th>当前工艺</th><th>拟改造工艺</th><th>预测 C-P</th><th>判定</th></tr></thead>
           <tbody id="historyBody"></tbody>
         </table>
       </div>
@@ -391,14 +489,17 @@
   <script>
     let currentStep = 1;
     let lastResult = null;
+    let isLCA = false;
 
-    // 工艺参数数据库
+    // 工艺参数数据库（含 LCA 参数）
+    // lca: { rawMaterial: kgCO₂/kg涂料, transport: kgCO₂/kg涂料, wasteDisposal: kgCO₂/kg涂料 }
+    // 运输按 500km 公路运输，0.12 kgCO₂/t·km → 0.12 * 500 / 1000 = 0.06 kgCO₂/kg
     const PROCESS_DB = {
-      '溶剂型涂料（聚氨酯漆）': { vocsFactor: 0.55, carbonFactor: 2.5, dryTemp: 30, dryEnergy: 1.0 },
-      '水性涂料（双组分）': { vocsFactor: 0.08, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.2 },
-      '水性涂料（单组分）': { vocsFactor: 0.12, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.0 },
-      '粉末涂料': { vocsFactor: 0.0, carbonFactor: 1.2, dryTemp: 180, dryEnergy: 3.5 },
-      '高固体分涂料': { vocsFactor: 0.38, carbonFactor: 2.0, dryTemp: 50, dryEnergy: 1.4 },
+      '溶剂型涂料（聚氨酯漆）': { vocsFactor: 0.55, carbonFactor: 2.5, dryTemp: 30, dryEnergy: 1.0, lca: { rawMaterial: 2.5, transport: 0.06, wasteDisposal: 0.3 } },
+      '水性涂料（双组分）': { vocsFactor: 0.08, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.2, lca: { rawMaterial: 1.8, transport: 0.06, wasteDisposal: 0.15 } },
+      '水性涂料（单组分）': { vocsFactor: 0.12, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.0, lca: { rawMaterial: 1.8, transport: 0.06, wasteDisposal: 0.15 } },
+      '粉末涂料': { vocsFactor: 0.0, carbonFactor: 1.2, dryTemp: 180, dryEnergy: 3.5, lca: { rawMaterial: 1.2, transport: 0.06, wasteDisposal: 0.05 } },
+      '高固体分涂料': { vocsFactor: 0.38, carbonFactor: 2.0, dryTemp: 50, dryEnergy: 1.4, lca: { rawMaterial: 2.0, transport: 0.06, wasteDisposal: 0.25 } },
     };
 
     // 分行业 C-P 阈值配置（PRD 5.4）
@@ -415,6 +516,27 @@
       const cfg = INDUSTRY_THRESHOLD[industry];
       if (cfg) {
         document.getElementById('thresholdHint').textContent = '当前行业 C-P 协同阈值：' + cfg.threshold + '（' + cfg.name + '）';
+      }
+    }
+
+    function togglePerspective(el) {
+      const val = el.dataset.value;
+      if ((val === 'lca') === isLCA) return;
+      isLCA = val === 'lca';
+
+      document.querySelectorAll('#perspectiveToggle .pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+
+      const hint = document.getElementById('perspectiveHint');
+      if (isLCA) {
+        hint.textContent = '全生命周期视角（LCA）覆盖原料获取、运输、使用、废弃处置四个阶段的碳排放。';
+      } else {
+        hint.textContent = '工序端视角仅考虑涂装工序本身的 VOCs 与能耗碳排。';
+      }
+
+      // 若已在结果页，自动重新计算
+      if (currentStep === 3) {
+        calculateResult();
       }
     }
 
@@ -480,19 +602,34 @@
       // 产量排除逻辑：产量变化 >= 10% 时提示排除
       const excludeOutput = Math.abs(outputChange) >= 10;
 
-      // 简化计算模型
+      // 工序端简化计算模型
       const vocsChange = Math.round(((targetParams.vocsFactor - currentParams.vocsFactor) / currentParams.vocsFactor) * 100);
       const gasChange = Math.round(((targetParams.dryEnergy - currentParams.dryEnergy) / currentParams.dryEnergy) * 100);
-      const carbonChange = Math.round(((targetParams.carbonFactor * targetParams.dryEnergy - currentParams.carbonFactor * currentParams.dryEnergy) / (currentParams.carbonFactor * currentParams.dryEnergy)) * 100);
+      const processCarbonChange = Math.round(((targetParams.carbonFactor * targetParams.dryEnergy - currentParams.carbonFactor * currentParams.dryEnergy) / (currentParams.carbonFactor * currentParams.dryEnergy)) * 100);
+
+      // LCA 计算（各阶段单位涂料碳排因子）
+      const curLca = currentParams.lca;
+      const tgtLca = targetParams.lca;
+      const curProcessCarbon = currentParams.carbonFactor * currentParams.dryEnergy;
+      const tgtProcessCarbon = targetParams.carbonFactor * targetParams.dryEnergy;
+
+      const currentLcaTotal = curLca.rawMaterial + curLca.transport + curProcessCarbon + curLca.wasteDisposal;
+      const targetLcaTotal = tgtLca.rawMaterial + tgtLca.transport + tgtProcessCarbon + tgtLca.wasteDisposal;
+
+      const lcaTotalChange = Math.round(((targetLcaTotal - currentLcaTotal) / currentLcaTotal) * 100);
+      const lcaRawChange = Math.round(((tgtLca.rawMaterial - curLca.rawMaterial) / curLca.rawMaterial) * 100);
+      const lcaTransportChange = Math.round(((tgtLca.transport - curLca.transport) / curLca.transport) * 100);
+      const lcaWasteChange = Math.round(((tgtLca.wasteDisposal - curLca.wasteDisposal) / curLca.wasteDisposal) * 100);
 
       // 获取行业阈值
       const industry = document.getElementById('industrySelect').value || 'auto_part';
       const industryCfg = INDUSTRY_THRESHOLD[industry] || INDUSTRY_THRESHOLD.auto_part;
       const threshold = industryCfg.threshold;
 
-      // C-P 协同指数估算
+      // C-P 协同指数估算：LCA 模式下碳排影响使用 LCA 总碳排变化
       const cpBefore = 0.72;
-      let cpAfter = cpBefore + (vocsChange / 100) * 0.3 - (gasChange / 100) * 0.4;
+      const carbonImpact = isLCA ? (lcaTotalChange / 100) * 0.4 : (processCarbonChange / 100) * 0.4;
+      let cpAfter = cpBefore + (vocsChange / 100) * 0.3 - carbonImpact;
       cpAfter = Math.max(0.2, Math.min(0.95, cpAfter));
       cpAfter = Math.round(cpAfter * 100) / 100;
 
@@ -542,19 +679,54 @@
       document.getElementById('gasChange').style.color = gasChange > 0 ? '#f87171' : '#4ade80';
       document.getElementById('gasChangeLabel').textContent = gasChange > 0 ? '↑ 显著增加' : '↓ 下降';
 
-      document.getElementById('carbonChange').textContent = (carbonChange > 0 ? '+' : '') + carbonChange + '%';
-      document.getElementById('carbonChange').style.color = carbonChange > 0 ? '#f87171' : '#4ade80';
-      document.getElementById('carbonChangeLabel').textContent = carbonChange > 0 ? '↑ 碳排增加' : '↓ 碳排减少';
+      // 工序端碳排卡片始终显示工序端视角的变化
+      document.getElementById('carbonChange').textContent = (processCarbonChange > 0 ? '+' : '') + processCarbonChange + '%';
+      document.getElementById('carbonChange').style.color = processCarbonChange > 0 ? '#f87171' : '#4ade80';
+      document.getElementById('carbonChangeLabel').textContent = processCarbonChange > 0 ? '↑ 碳排增加' : '↓ 碳排减少';
 
       document.getElementById('cpResult').textContent = cpAfter;
       document.getElementById('cpResult').style.color = resultColor;
       document.getElementById('cpChangeLabel').textContent = '↓ 从 ' + cpBefore + ' 降至 ' + cpAfter + '（阈值' + threshold + '）';
+
+      // LCA 结果卡片显示/隐藏
+      const lcaRow = document.getElementById('lcaRow');
+      const lcaDivider = document.getElementById('lcaDivider');
+      if (isLCA) {
+        lcaRow.classList.add('active');
+        lcaDivider.classList.add('active');
+
+        document.getElementById('lcaTotalChange').textContent = (lcaTotalChange > 0 ? '+' : '') + lcaTotalChange + '%';
+        document.getElementById('lcaTotalChange').style.color = lcaTotalChange > 0 ? '#f87171' : '#4ade80';
+        document.getElementById('lcaTotalChangeLabel').textContent = lcaTotalChange > 0 ? '↑ 总碳排增加' : '↓ 总碳排减少';
+        document.getElementById('lcaTotalChangeLabel').className = 'lca-change ' + (lcaTotalChange > 0 ? 'down' : 'up');
+
+        document.getElementById('lcaRawChange').textContent = (lcaRawChange > 0 ? '+' : '') + lcaRawChange + '%';
+        document.getElementById('lcaRawChange').style.color = lcaRawChange > 0 ? '#f87171' : '#4ade80';
+        document.getElementById('lcaRawChangeLabel').textContent = lcaRawChange > 0 ? '↑ 原料碳排增加' : '↓ 原料碳排减少';
+        document.getElementById('lcaRawChangeLabel').className = 'lca-change ' + (lcaRawChange > 0 ? 'down' : 'up');
+
+        document.getElementById('lcaTransportChange').textContent = (lcaTransportChange > 0 ? '+' : '') + lcaTransportChange + '%';
+        document.getElementById('lcaTransportChange').style.color = lcaTransportChange > 0 ? '#f87171' : '#4ade80';
+        document.getElementById('lcaTransportChangeLabel').textContent = lcaTransportChange > 0 ? '↑ 运输碳排增加' : '↓ 运输碳排减少';
+        document.getElementById('lcaTransportChangeLabel').className = 'lca-change ' + (lcaTransportChange > 0 ? 'down' : 'up');
+
+        document.getElementById('lcaWasteChange').textContent = (lcaWasteChange > 0 ? '+' : '') + lcaWasteChange + '%';
+        document.getElementById('lcaWasteChange').style.color = lcaWasteChange > 0 ? '#f87171' : '#4ade80';
+        document.getElementById('lcaWasteChangeLabel').textContent = lcaWasteChange > 0 ? '↑ 处置碳排增加' : '↓ 处置碳排减少';
+        document.getElementById('lcaWasteChangeLabel').className = 'lca-change ' + (lcaWasteChange > 0 ? 'down' : 'up');
+      } else {
+        lcaRow.classList.remove('active');
+        lcaDivider.classList.remove('active');
+      }
 
       // 动态建议
       const suggestions = document.getElementById('suggestionList');
       suggestions.innerHTML = '';
       if (resultType === 'trap') {
         suggestions.innerHTML = '<li>同步引入<strong>热泵辅助烘干</strong>，可将天然气消耗增量控制在 10% 以内</li><li>建议采用<strong>沸石转轮浓缩 + RTO</strong> 组合工艺，降低 RTO 运行负荷</li><li>优化喷涂排班，<strong>集中生产时段</strong>，减少 RTO 空烧时长</li><li>引入<strong>余热回收系统</strong>，预计可提升热回收效率至 95% 以上</li>';
+        if (isLCA && lcaRawChange > 0) {
+          suggestions.innerHTML += '<li>LCA 视角下<strong>原料获取阶段碳排上升</strong>，建议优先选用低碳涂料供应商或生物基涂料</li>';
+        }
       } else if (resultType === 'imbalance') {
         suggestions.innerHTML = '<li>考虑<strong>分段烘干</strong>策略，降低整体能耗</li><li>引入<strong>蓄热体优化</strong>，提升热回收效率 5-8%</li><li>评估<strong>太阳能预热</strong>可行性，降低天然气依赖</li>';
       } else {
@@ -568,8 +740,13 @@
         cpAfter: cpAfter,
         vocsChange: vocsChange,
         gasChange: gasChange,
-        carbonChange: carbonChange,
+        carbonChange: processCarbonChange,
         result: resultType,
+        perspective: isLCA ? 'lca' : 'process',
+        lcaTotalChange: lcaTotalChange,
+        lcaRawChange: lcaRawChange,
+        lcaTransportChange: lcaTransportChange,
+        lcaWasteChange: lcaWasteChange,
       };
     }
 
@@ -580,7 +757,7 @@
       if (!tbody) return;
       const history = DataStore.getSimulatorHistory();
       if (history.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(226,232,240,0.3)">暂无历史记录</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:rgba(226,232,240,0.3)">暂无历史记录</td></tr>';
         return;
       }
       tbody.innerHTML = history.map(h => {
@@ -589,7 +766,8 @@
         const cpColor = h.result === 'trap' ? '#f87171' : h.result === 'imbalance' ? '#fa8c16' : '#4ade80';
         const checked = selectedCompareIds.includes(h.id) ? 'checked' : '';
         const disabled = !checked && selectedCompareIds.length >= 2 ? 'disabled' : '';
-        return `<tr><td><input type="checkbox" ${checked} ${disabled} onchange="toggleCompare('${h.id}', this.checked)"></td><td>${h.time}</td><td>${h.current}</td><td>${h.target}</td><td style="color:${cpColor}">${h.cpAfter}</td><td><span class="tag ${tag[1]}">${tag[0]}</span></td></tr>`;
+        const perspectiveLabel = h.perspective === 'lca' ? '🌍 LCA' : '🔧 工序端';
+        return `<tr><td><input type="checkbox" ${checked} ${disabled} onchange="toggleCompare('${h.id}', this.checked)"></td><td>${h.time}</td><td>${perspectiveLabel}</td><td>${h.current}</td><td>${h.target}</td><td style="color:${cpColor}">${h.cpAfter}</td><td><span class="tag ${tag[1]}">${tag[0]}</span></td></tr>`;
       }).join('');
       updateComparePanel();
     }
@@ -673,6 +851,11 @@
         gasChange: lastResult.gasChange,
         carbonChange: lastResult.carbonChange,
         result: lastResult.result,
+        perspective: lastResult.perspective,
+        lcaTotalChange: lastResult.lcaTotalChange,
+        lcaRawChange: lastResult.lcaRawChange,
+        lcaTransportChange: lastResult.lcaTransportChange,
+        lcaWasteChange: lastResult.lcaWasteChange,
       });
       renderHistory();
       showToast('✅ 评估结果已保存', 'success');

@@ -49,6 +49,66 @@
     .kpi-card.purple::before { background:linear-gradient(90deg,transparent,#a78bfa,transparent); }
     .kpi-card.cyan::before { background:linear-gradient(90deg,transparent,#22d3ee,transparent); }
     
+    /* ===== AI 智能摘要面板（L1） ===== */
+    .ai-summary-bar {
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      background: rgba(34,211,238,0.04); backdrop-filter:blur(12px);
+      border:1px solid rgba(34,211,238,0.25); border-radius:10px;
+      padding:12px 18px; margin-bottom:14px;
+      box-shadow: 0 0 20px rgba(34,211,238,0.06), inset 0 0 20px rgba(34,211,238,0.02);
+      position:relative; overflow:hidden;
+    }
+    .ai-summary-bar::before {
+      content:""; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg,transparent,#22d3ee,transparent);
+      opacity:0.6;
+    }
+    .ai-summary-bar::after {
+      content:""; position:absolute; bottom:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg,transparent,#22d3ee,transparent);
+      opacity:0.3;
+    }
+    .ai-summary-left { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+    .ai-summary-icon { font-size:16px; flex-shrink:0; }
+    .ai-summary-text {
+      font-size:13px; color:#a5f3fc; letter-spacing:0.3px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      text-shadow: 0 0 8px rgba(34,211,238,0.25);
+    }
+    .ai-summary-text marquee { color:#a5f3fc; }
+    .ai-summary-refresh {
+      flex-shrink:0; padding:5px 14px; border-radius:6px; font-size:12px;
+      background:rgba(34,211,238,0.08); color:#22d3ee; border:1px solid rgba(34,211,238,0.2);
+      cursor:pointer; transition:all 0.25s; display:flex; align-items:center; gap:5px;
+    }
+    .ai-summary-refresh:hover {
+      background:rgba(34,211,238,0.15); border-color:rgba(34,211,238,0.4);
+      box-shadow:0 0 12px rgba(34,211,238,0.15);
+    }
+    .ai-summary-refresh .spin-icon { display:inline-block; transition:transform 0.4s; }
+    .ai-summary-refresh:active .spin-icon { transform:rotate(180deg); }
+
+    /* ===== 预测性预警面板（L2） ===== */
+    .prediction-item {
+      padding:10px 0; border-bottom:1px solid rgba(34,211,238,0.06);
+      font-size:12px; cursor:pointer; transition:all 0.2s;
+    }
+    .prediction-item:last-child { border-bottom:none; }
+    .prediction-item:hover { background:rgba(34,211,238,0.03); padding-left:6px; border-radius:4px; }
+    .prediction-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .prediction-title { color:#e2e8f0; font-weight:500; line-height:1.5; }
+    .prediction-prob-text { font-family:monospace; font-size:12px; font-weight:600; flex-shrink:0; margin-left:8px; }
+    .prediction-prob-text.low { color:#4ade80; }
+    .prediction-prob-text.mid { color:#fbbf24; }
+    .prediction-prob-text.high { color:#f87171; }
+    .prediction-progress-wrap { height:4px; background:rgba(34,211,238,0.08); border-radius:2px; overflow:hidden; margin-bottom:6px; }
+    .prediction-progress-fill { height:100%; border-radius:2px; transition:width 0.8s ease; }
+    .prediction-progress-fill.low { background:linear-gradient(90deg,#4ade80,#22c55e); }
+    .prediction-progress-fill.mid { background:linear-gradient(90deg,#fbbf24,#d97706); }
+    .prediction-progress-fill.high { background:linear-gradient(90deg,#f87171,#dc2626); }
+    .prediction-meta { display:flex; justify-content:space-between; color:rgba(226,232,240,0.35); font-size:11px; }
+    .prediction-suggest { color:#7dd3fc; font-size:11px; margin-top:4px; }
+    
     /* 主体区 */
     .screen-body { display:grid; grid-template-columns:1fr 360px; gap:14px; flex:1; min-height:0; }
     .screen-left { display:flex; flex-direction:column; gap:14px; }
@@ -66,6 +126,7 @@
     .panel-title.green::before { background:linear-gradient(180deg,#4ade80,#22c55e); }
     .panel-title.yellow::before { background:linear-gradient(180deg,#fbbf24,#f59e0b); }
     .panel-title.red::before { background:linear-gradient(180deg,#f87171,#ef4444); }
+    .panel-title.purple::before { background:linear-gradient(180deg,#a78bfa,#7c3aed); }
     
     /* 地图占位 */
     .map-area { flex:1; min-height:200px; position:relative; background: linear-gradient(180deg, rgba(8,47,73,0.4) 0%, rgba(2,6,23,0.8) 100%); border-radius:8px; border:1px dashed rgba(34,211,238,0.15); display:flex; flex-direction:column; align-items:center; justify-content:center; }
@@ -74,6 +135,18 @@
     .map-zone:hover { transform:scale(1.05); }
     .map-zone.warn { background:rgba(251,191,36,0.15); color:#fde047; border:1px solid rgba(251,191,36,0.3); top:20%; left:28%; }
     .map-zone.danger { background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); top:45%; right:22%; }
+    /* 地图脉冲动画 */
+    .map-zone-pulse { position:absolute; width:100%; height:100%; top:0; left:0; border-radius:6px; z-index:-1; }
+    .map-zone.warn .map-zone-pulse { animation: mapPulseWarn 2s ease-in-out infinite; border:1px solid rgba(251,191,36,0.5); }
+    .map-zone.danger .map-zone-pulse { animation: mapPulseDanger 2s ease-in-out infinite; border:1px solid rgba(239,68,68,0.5); }
+    @keyframes mapPulseWarn {
+      0%,100% { transform:scale(1); opacity:0.6; }
+      50% { transform:scale(1.15); opacity:0; }
+    }
+    @keyframes mapPulseDanger {
+      0%,100% { transform:scale(1); opacity:0.6; }
+      50% { transform:scale(1.2); opacity:0; }
+    }
     .map-legend-bar { position:absolute; bottom:10px; left:10px; right:10px; display:flex; gap:16px; justify-content:center; z-index:2; }
     .map-legend-bar span { font-size:11px; color:rgba(226,232,240,0.4); cursor:pointer; transition:color 0.2s; }
     .map-legend-bar span:hover { color:#22d3ee; }
@@ -81,11 +154,24 @@
     /* 效果图表 */
     .effect-chart { height:140px; position:relative; }
     .effect-bar { display:flex; align-items:flex-end; gap:12px; height:110px; padding-top:10px; justify-content:center; }
-    .effect-bar-item { text-align:center; cursor:pointer; transition:all 0.2s; }
+    .effect-bar-item { text-align:center; cursor:pointer; transition:all 0.2s; position:relative; }
     .effect-bar-item:hover { transform:translateY(-4px); }
     .effect-bar-fill { width:36px; border-radius:4px 4px 0 0; transition:height 0.6s ease; position:relative; box-shadow:0 0 12px currentColor; }
     .effect-bar-fill::after { content: attr(data-val); position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:600; white-space:nowrap; color:#fff; }
     .effect-bar-label { font-size:10px; color:rgba(226,232,240,0.35); margin-top:6px; }
+    /* 效果图表 tooltip */
+    .effect-tooltip {
+      position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+      background:rgba(2,6,23,0.95); border:1px solid rgba(34,211,238,0.25); border-radius:6px;
+      padding:8px 12px; font-size:11px; color:#e2e8f0; white-space:nowrap;
+      box-shadow:0 4px 16px rgba(0,0,0,0.4); pointer-events:none; opacity:0; transition:opacity 0.2s;
+      z-index:10;
+    }
+    .effect-tooltip::after {
+      content:""; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+      border:5px solid transparent; border-top-color:rgba(34,211,238,0.25);
+    }
+    .effect-bar-item:hover .effect-tooltip { opacity:1; }
     
     /* 事件流 */
     .event-stream { max-height:180px; overflow:hidden; position:relative; }
@@ -165,6 +251,21 @@
     .form-actions .btn-primary:hover { background:rgba(34,211,238,0.25); }
     .form-actions .btn-default { background:rgba(34,211,238,0.05); color:rgba(226,232,240,0.5); border-color:rgba(34,211,238,0.1); }
     .form-actions .btn-default:hover { border-color:rgba(34,211,238,0.2); color:#22d3ee; }
+
+    /* AI 生成调度建议按钮 */
+    .ai-generate-btn {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:5px 12px; border-radius:6px; font-size:12px; margin-bottom:8px;
+      background:rgba(167,139,250,0.1); color:#a78bfa; border:1px solid rgba(167,139,250,0.2);
+      cursor:pointer; transition:all 0.25s;
+    }
+    .ai-generate-btn:hover {
+      background:rgba(167,139,250,0.18); border-color:rgba(167,139,250,0.4);
+      box-shadow:0 0 12px rgba(167,139,250,0.12);
+    }
+    .ai-generate-btn .ai-spin { display:inline-block; }
+    .ai-generate-btn.generating .ai-spin { animation: aiSpin 1s linear infinite; }
+    @keyframes aiSpin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
   </style>
   <link rel="stylesheet" href="../css/style.css">
 
@@ -194,45 +295,56 @@
     </div>
     
     <!-- KPI -->
-    <div class="kpi-bar">
+    <div class="kpi-bar" id="kpiBar">
       <div class="kpi-card blue" onclick="openKpiDetail('cp')">
         <div class="kpi-label">📍 当前区域协同指数</div>
-        <div class="kpi-value" style="color:#0ea5e9">62<span class="unit">/100</span></div>
-        <div class="kpi-trend">🟡 关注区（阈值 70）</div>
+        <div class="kpi-value" style="color:#0ea5e9" id="kpiCp"><span class="unit">/100</span></div>
+        <div class="kpi-trend" id="kpiCpTrend">加载中...</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
       <div class="kpi-card red" onclick="openKpiDetail('减污增碳/减碳增污悖论')">
         <div class="kpi-label">🚨 今日 减污增碳/减碳增污悖论 预警</div>
-        <div class="kpi-value" style="color:#ef4444">3<span class="unit">条</span></div>
-        <div class="kpi-trend up">↑ 较昨日 +1</div>
+        <div class="kpi-value" style="color:#ef4444" id="kpiAlert"><span class="unit">条</span></div>
+        <div class="kpi-trend" id="kpiAlertTrend">加载中...</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
       <div class="kpi-card yellow" onclick="openKpiDetail('task')">
         <div class="kpi-label">⏳ 待处置任务</div>
-        <div class="kpi-value" style="color:#fbbf24">2<span class="unit">条</span></div>
-        <div class="kpi-trend down">↓ 较昨日 -1</div>
+        <div class="kpi-value" style="color:#fbbf24" id="kpiTask"><span class="unit">条</span></div>
+        <div class="kpi-trend" id="kpiTaskTrend">加载中...</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
       <div class="kpi-card green" onclick="openKpiDetail('closed')">
         <div class="kpi-label">✅ 本月已闭环</div>
-        <div class="kpi-value" style="color:#4ade80">15<span class="unit">条</span></div>
-        <div class="kpi-trend down">闭环率 88%</div>
+        <div class="kpi-value" style="color:#4ade80" id="kpiClosed"><span class="unit">条</span></div>
+        <div class="kpi-trend" id="kpiClosedTrend">加载中...</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
     </div>
     <div class="kpi-bar kpi-bar-sm">
       <div class="kpi-card purple" onclick="showToast('MCI 多污染物指数：综合评估区域多种污染物排放水平','info')">
         <div class="kpi-label">🧪 MCI 区域均值</div>
-        <div class="kpi-value" style="color:#a78bfa" id="mciKpi">0.55</div>
+        <div class="kpi-value" style="color:#a78bfa" id="mciKpi"></div>
         <div class="kpi-trend">多污染物协同指数</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
       <div class="kpi-card cyan" onclick="showToast('EHI 环境健康评分：综合评估区域环境质量','info')">
         <div class="kpi-label">🏥 EHI 区域均值</div>
-        <div class="kpi-value" style="color:#22d3ee" id="ehiKpi">68<span class="unit">分</span></div>
+        <div class="kpi-value" style="color:#22d3ee" id="ehiKpi"></div>
         <div class="kpi-trend">环境健康评分</div>
         <div class="kpi-click-hint">点击查看详情 →</div>
       </div>
+    </div>
+
+    <!-- AI 智能摘要面板（L1） -->
+    <div class="ai-summary-bar" id="aiSummaryBar">
+      <div class="ai-summary-left">
+        <span class="ai-summary-icon">🤖</span>
+        <span class="ai-summary-text" id="aiSummaryText">AI 实时洞察加载中...</span>
+      </div>
+      <button class="ai-summary-refresh" onclick="refreshAiSummary()">
+        <span class="spin-icon">🔄</span> 刷新洞察
+      </button>
     </div>
     
     <div class="screen-body">
@@ -241,8 +353,14 @@
         <div class="panel" style="flex:1.2">
           <div class="panel-title">🗺️ 辖区企业态势概览</div>
           <div class="map-area">
-            <div class="map-zone warn" onclick="showToast('张镇工业园：协同指数58，12家企业中3家减污增碳/减碳增污悖论','warn')">⚠️ 张镇工业园 协同指数 58</div>
-            <div class="map-zone danger" onclick="showToast('李村工业区：2家减污增碳/减碳增污悖论，已下发调度指令','error')">🔴 李村工业区 2家 减污增碳/减碳增污悖论</div>
+            <div class="map-zone warn" onclick="showToast('张镇工业园：协同指数58，12家企业中3家减污增碳/减碳增污悖论','warn')">
+              <span class="map-zone-pulse"></span>
+              ⚠️ 张镇工业园 协同指数 58
+            </div>
+            <div class="map-zone danger" onclick="showToast('李村工业区：2家减污增碳/减碳增污悖论，已下发调度指令','error')">
+              <span class="map-zone-pulse"></span>
+              🔴 李村工业区 2家 减污增碳/减碳增污悖论
+            </div>
             <div class="map-legend-bar">
               <span onclick="showToast('双减标兵企业：8家','success')">🟢 双减标兵 8家</span>
               <span onclick="showToast('关注企业：12家','warn')">🟡 关注企业 12家</span>
@@ -275,16 +393,22 @@
         <div class="panel" style="flex:1.3">
           <div class="panel-title yellow">📋 任务调度看板</div>
           <div class="task-tabs" id="taskTabs">
-            <div class="task-tab active" data-status="dispatched" onclick="switchTab(this,'dispatched')"><span class="num" id="tabDispatched">2</span>待调度</div>
-            <div class="task-tab" data-status="feedback" onclick="switchTab(this,'feedback')"><span class="num" id="tabFeedback">1</span>处置中</div>
-            <div class="task-tab" data-status="reviewed" onclick="switchTab(this,'reviewed')"><span class="num" id="tabReviewed">1</span>待复核</div>
-            <div class="task-tab" data-status="closed" onclick="switchTab(this,'closed')"><span class="num" id="tabClosed">15</span>已销号</div>
+            <div class="task-tab active" data-status="dispatched" onclick="switchTab(this,'dispatched')"><span class="num" id="tabDispatched">0</span>待调度</div>
+            <div class="task-tab" data-status="feedback" onclick="switchTab(this,'feedback')"><span class="num" id="tabFeedback">0</span>处置中</div>
+            <div class="task-tab" data-status="reviewed" onclick="switchTab(this,'reviewed')"><span class="num" id="tabReviewed">0</span>待复核</div>
+            <div class="task-tab" data-status="closed" onclick="switchTab(this,'closed')"><span class="num" id="tabClosed">0</span>已销号</div>
           </div>
           <div class="task-list" id="taskList"></div>
           <div class="quick-actions">
             <button class="btn primary" onclick="openDispatchModal()">➕ 新建调度</button>
             <button class="btn" onclick="window.open('../gov-monitoring/monthly-monitor.html','_blank')">📊 统计报表</button>
           </div>
+        </div>
+
+        <!-- 预测性预警面板（L2） -->
+        <div class="panel" style="flex:1.2">
+          <div class="panel-title purple">🔮 AI 预测性预警（未来7天）</div>
+          <div id="predictionList"></div>
         </div>
       </div>
     </div>
@@ -294,15 +418,8 @@
   <div class="ticker">
     <div class="ticker-label">📢 实时播报</div>
     <div class="ticker-content">
-      <div class="ticker-track">
-        <span class="ticker-item">🔴 <span class="name">蓝天工业涂装</span> C-P <span class="cp">0.38</span> 减污增碳陷阱 | RTO空烧22%</span>
-        <span class="ticker-item">🔴 <span class="name">红星喷涂厂</span> C-P <span class="cp">0.35</span> 减碳增污 | 燃烧室温度680°C</span>
-        <span class="ticker-item">🟡 <span class="name">鑫达汽修</span> C-P <span class="cp">0.52</span> 协同失衡 | 水性漆增碳</span>
-        <span class="ticker-item">🟢 <span class="name">标杆企业A</span> C-P <span style="color:#4ade80">0.88</span> 双减标兵 | 维持优秀</span>
-        <span class="ticker-item">🔴 <span class="name">蓝天工业涂装</span> C-P <span class="cp">0.38</span> 减污增碳陷阱 | RTO空烧22%</span>
-        <span class="ticker-item">🔴 <span class="name">红星喷涂厂</span> C-P <span class="cp">0.35</span> 减碳增污 | 燃烧室温度680°C</span>
-        <span class="ticker-item">🟡 <span class="name">鑫达汽修</span> C-P <span class="cp">0.52</span> 协同失衡 | 水性漆增碳</span>
-        <span class="ticker-item">🟢 <span class="name">标杆企业A</span> C-P <span style="color:#4ade80">0.88</span> 双减标兵 | 维持优秀</span>
+      <div class="ticker-track" id="tickerTrack">
+        <!-- 动态填充 -->
       </div>
     </div>
   </div>
@@ -344,6 +461,9 @@
         </div>
         <div class="form-group">
           <label>调度内容</label>
+          <button class="ai-generate-btn" id="aiGenerateBtn" onclick="generateAiDispatch()">
+            <span class="ai-spin">⚡</span> AI 生成调度建议
+          </button>
           <textarea id="dContent" placeholder="请输入调度指令内容...">请立即排查RTO运行异常，并于3个工作日内反馈整改措施。</textarea>
         </div>
         <div class="form-actions">
@@ -355,22 +475,191 @@
   </div>
 
   <script>
-    // ========== 事件流渲染 ==========
-    const events = [
-      { time: '09:00', type: 'red', name: '蓝天工业', cp: '0.38', cpClass: 'red', desc: '减污增碳' },
-      { time: '08:45', type: 'red', name: '红星喷涂', cp: '0.35', cpClass: 'red', desc: '减碳增污' },
-      { time: '08:12', type: 'yellow', name: '鑫达汽修', cp: '0.52', cpClass: 'yellow', desc: '协同失衡' },
-      { time: '07:30', type: 'red', name: '金辉涂装', cp: '0.41', cpClass: 'red', desc: '减污增碳' },
-      { time: '昨日', type: 'yellow', name: '伟达制造', cp: '0.55', cpClass: 'yellow', desc: '协同失衡' },
+    // ========== 数据准备 ==========
+    const TODAY_STR = '05-18';
+    const TODAY_FULL = '2026-05-18';
+
+    // ========== KPI 动态渲染 ==========
+    function renderKpiCards() {
+      const alerts = DataStore.getAlerts();
+      const dispatches = DataStore.getDispatches();
+      const indices = DataStore.getLayeredIndices ? DataStore.getLayeredIndices() : { cpIndex: 0.62 };
+
+      // 区域协同指数 (cpIndex * 100)
+      const cpVal = Math.round((indices.cpIndex || 0.62) * 100);
+      const cpEl = document.getElementById('kpiCp');
+      const cpTrendEl = document.getElementById('kpiCpTrend');
+      if (cpEl) animateKpiValue(cpEl, cpVal, 1200, '<span class="unit">/100</span>', 0);
+      if (cpTrendEl) {
+        if (cpVal >= 70) cpTrendEl.innerHTML = '🟢 达标区（阈值 70）';
+        else if (cpVal >= 50) cpTrendEl.innerHTML = '🟡 关注区（阈值 70）';
+        else cpTrendEl.innerHTML = '🔴 警示区（阈值 70）';
+      }
+
+      // 今日预警数（今日且未读）
+      const todayAlerts = alerts.filter(a => a.date === TODAY_STR && !a.read);
+      const todayAlertCount = todayAlerts.length;
+      const alertEl = document.getElementById('kpiAlert');
+      const alertTrendEl = document.getElementById('kpiAlertTrend');
+      if (alertEl) animateKpiValue(alertEl, todayAlertCount, 1200, '<span class="unit">条</span>', 0);
+      if (alertTrendEl) {
+        const yesterdays = alerts.filter(a => a.date === '05-17').length;
+        const diff = todayAlertCount - yesterdays;
+        alertTrendEl.innerHTML = diff >= 0 ? `<span class="up">↑ 较昨日 +${diff}</span>` : `<span class="down">↓ 较昨日 ${diff}</span>`;
+        alertTrendEl.className = diff >= 0 ? 'kpi-trend up' : 'kpi-trend down';
+      }
+
+      // 待处置任务（未闭环）
+      const pendingCount = dispatches.filter(d => d.statusCode !== 'closed').length;
+      const taskEl = document.getElementById('kpiTask');
+      const taskTrendEl = document.getElementById('kpiTaskTrend');
+      if (taskEl) animateKpiValue(taskEl, pendingCount, 1200, '<span class="unit">条</span>', 0);
+      if (taskTrendEl) {
+        taskTrendEl.innerHTML = pendingCount > 3 ? `<span class="up">↑ 积压 ${pendingCount - 3} 条</span>` : `<span class="down">↓ 运转正常</span>`;
+        taskTrendEl.className = pendingCount > 3 ? 'kpi-trend up' : 'kpi-trend down';
+      }
+
+      // 本月已闭环
+      const closedCount = dispatches.filter(d => d.statusCode === 'closed').length;
+      const closedEl = document.getElementById('kpiClosed');
+      const closedTrendEl = document.getElementById('kpiClosedTrend');
+      if (closedEl) animateKpiValue(closedEl, closedCount, 1200, '<span class="unit">条</span>', 0);
+      if (closedTrendEl) {
+        const rate = dispatches.length > 0 ? Math.round(closedCount / dispatches.length * 100) : 0;
+        closedTrendEl.innerHTML = `闭环率 ${rate}%`;
+      }
+    }
+
+    // ========== AI 智能摘要（L1） ==========
+    const AI_INSIGHTS = [
+      { text: '今日3家企业触发减污增碳/减碳增污悖论，较昨日+1，主要原因为RTO空烧', priority: 'high' },
+      { text: '区域C-P均值0.62，环比下降8.8%，建议关注李村工业区', priority: 'medium' },
+      { text: '蓝天工业涂装VOCs去除率94.2%达标，但天然气消耗环比激增35%，存在减污增碳风险', priority: 'high' },
+      { text: '红星喷涂厂RTO燃烧室温度持续低于760°C，已触发协同失衡预警', priority: 'high' },
+      { text: '本月闭环率88%，平均处置时长4.2天，1条任务已超期，建议优先跟进', priority: 'medium' },
+      { text: '鑫达汽修热回收效率87%，低于90%警戒线，建议清洗蓄热体', priority: 'low' },
+      { text: '张镇工业园12家企业中3家处于减污增碳/减碳增污悖论状态，建议园区集中排查', priority: 'high' },
+      { text: 'AI模型预测未来7天内蓝天工业涂装C-P可能跌破0.35，概率72%，建议提前干预', priority: 'high' },
     ];
-    const es = document.getElementById('eventStream');
-    events.forEach(e => {
-      const div = document.createElement('div');
-      div.className = 'event-item';
-      div.onclick = () => window.location.href = '../enterprise/paradox-report.html';
-      div.innerHTML = `<div class="event-dot ${e.type}"></div><div class="event-time">${e.time}</div><div class="event-text"><span class="name">${e.name}</span> C-P <span class="event-cp ${e.cpClass}">${e.cp}</span> ${e.desc}</div>`;
-      es.appendChild(div);
-    });
+
+    function renderAiSummary() {
+      const el = document.getElementById('aiSummaryText');
+      const insight = AI_INSIGHTS[0];
+      if (el) el.textContent = insight.text;
+    }
+
+    function refreshAiSummary() {
+      const el = document.getElementById('aiSummaryText');
+      const btn = document.querySelector('.ai-summary-refresh .spin-icon');
+      if (btn) btn.style.transform = 'rotate(360deg)';
+      setTimeout(() => { if (btn) btn.style.transform = 'rotate(0deg)'; }, 400);
+
+      const idx = Math.floor(Math.random() * AI_INSIGHTS.length);
+      const insight = AI_INSIGHTS[idx];
+      if (el) {
+        el.style.opacity = '0';
+        setTimeout(() => {
+          el.textContent = insight.text;
+          el.style.opacity = '1';
+        }, 200);
+      }
+    }
+
+    // ========== 预测性预警面板（L2） ==========
+    const PREDICTIONS = [
+      { enterprise: '蓝天工业涂装', date: '5月20日', event: 'C-P可能跌破0.35', prob: 72, cause: '周末排班分散', suggest: '建议提前通知企业集中喷涂排班，避免RTO空烧' },
+      { enterprise: '红星喷涂厂', date: '5月22日', event: '燃烧室温度可能低于760°C', prob: 65, cause: '蓄热体老化导致热回收效率下降', suggest: '建议安排设备检修，更换老化蓄热体' },
+      { enterprise: '鑫达汽修', date: '5月25日', event: '排污许可证到期', prob: 100, cause: '证件即将到期（2026-06-15）', suggest: '建议立即通知企业办理续期手续' },
+    ];
+
+    function getProbClass(prob) {
+      if (prob < 50) return 'low';
+      if (prob <= 70) return 'mid';
+      return 'high';
+    }
+
+    function renderPredictions() {
+      const container = document.getElementById('predictionList');
+      if (!container) return;
+      container.innerHTML = PREDICTIONS.map((p, i) => `
+        <div class="prediction-item" onclick="showToast('${p.enterprise}：${p.suggest}','${getProbClass(p.prob) === 'high' ? 'error' : getProbClass(p.prob) === 'mid' ? 'warn' : 'info'}')">
+          <div class="prediction-header">
+            <div class="prediction-title">预测：${p.enterprise} ${p.date} ${p.event}</div>
+            <div class="prediction-prob-text ${getProbClass(p.prob)}">${p.prob}%</div>
+          </div>
+          <div class="prediction-progress-wrap">
+            <div class="prediction-progress-fill ${getProbClass(p.prob)}" style="width:0%" data-width="${p.prob}%"></div>
+          </div>
+          <div class="prediction-meta">
+            <span>原因：${p.cause}</span>
+          </div>
+          <div class="prediction-suggest">💡 ${p.suggest}</div>
+        </div>
+      `).join('');
+
+      // 进度条动画
+      setTimeout(() => {
+        container.querySelectorAll('.prediction-progress-fill').forEach(bar => {
+          bar.style.width = bar.getAttribute('data-width');
+        });
+      }, 300);
+    }
+
+    // ========== 事件流动态渲染 ==========
+    function renderEventStream() {
+      const alerts = DataStore.getAlerts();
+      const todayAlerts = alerts.filter(a => a.date === TODAY_STR).slice(0, 5);
+      const es = document.getElementById('eventStream');
+      if (!es) return;
+      es.innerHTML = '';
+
+      if (todayAlerts.length === 0) {
+        es.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(226,232,240,0.25);font-size:12px">今日暂无事件</div>';
+        return;
+      }
+
+      todayAlerts.forEach(a => {
+        const isRed = a.level === 'critical';
+        const dotClass = isRed ? 'red' : 'yellow';
+        const cpClass = isRed ? 'red' : 'yellow';
+        const cpVal = a.cpValue || (a.type === '减污增碳/减碳增污悖论' ? '0.38' : '0.52');
+        const desc = a.type === '减污增碳/减碳增污悖论' ? '减污增碳/减碳增污悖论' : (a.type === 'imbalance' ? '协同失衡' : a.type === 'threshold' ? '超阈值' : a.type === 'data' ? '数据异常' : '预警');
+        const div = document.createElement('div');
+        div.className = 'event-item';
+        div.onclick = () => window.location.href = '../enterprise/paradox-report.html';
+        div.innerHTML = `<div class="event-dot ${dotClass}"></div><div class="event-time">${a.time || '--'}</div><div class="event-text"><span class="name">${a.title?.replace('风险预警','').replace('预警','') || '企业预警'}</span> C-P <span class="event-cp ${cpClass}">${cpVal}</span> ${desc}</div>`;
+        es.appendChild(div);
+      });
+    }
+
+    // ========== 底部 ticker 动态渲染 ==========
+    function renderTicker() {
+      const alerts = DataStore.getAlerts();
+      const track = document.getElementById('tickerTrack');
+      if (!track) return;
+
+      // 取最近的预警生成 ticker 内容
+      const items = alerts.filter(a => a.level === 'critical' || a.level === 'warning').slice(0, 4).map(a => {
+        const cpVal = a.cpValue || '0.40';
+        const isRed = a.level === 'critical';
+        const emoji = isRed ? '🔴' : '🟡';
+        const name = a.title?.replace('风险预警','').replace('预警','') || '企业预警';
+        const detail = a.desc?.split('，')[0] || '数据异常';
+        return `<span class="ticker-item">${emoji} <span class="name">${name}</span> C-P <span class="cp">${cpVal}</span> ${detail}</span>`;
+      });
+
+      // 添加一些正面信息
+      items.push(`<span class="ticker-item">🟢 <span class="name">标杆企业A</span> C-P <span style="color:#4ade80">0.88</span> 双减标兵 | 维持优秀</span>`);
+      items.push(`<span class="ticker-item">🟢 <span class="name">标杆企业B</span> C-P <span style="color:#4ade80">0.82</span> 双减标兵 | 维持优秀</span>`);
+
+      if (items.length === 0) {
+        track.innerHTML = '<span class="ticker-item">暂无实时播报数据</span>';
+        return;
+      }
+
+      // 复制一份用于无缝滚动
+      track.innerHTML = items.concat(items).join('');
+    }
 
     // ========== 任务调度看板 ==========
     let currentTab = 'dispatched';
@@ -428,6 +717,66 @@
       if (t) document.getElementById('dContent').value = t.content;
     }
 
+    // ===== AI 生成调度建议（L3） =====
+    const AI_SUGGESTIONS = {
+      '蓝天工业涂装有限公司': {
+        '减污增碳/减碳增污悖论': '经AI监测分析，蓝天工业涂装C-P协同指数持续低于阈值（当前0.38），已连续12小时处于减污增碳陷阱区间。\n\n主要异常指标：\n- RTO空烧时长占比22%，高于警戒线5%\n- 天然气流量维持1200 Nm³/h高位，入口VOCs浓度仅485 mg/m³\n- 喷涂作业分散在4个时段，启停频繁\n\n建议立即排查RTO运行参数，调整喷涂排班至集中时段（建议每日10:00-16:00连续作业），并检查蓄热体堵塞情况。请于3个工作日内反馈整改措施。',
+        'data': '经AI数据分析，蓝天工业涂装月度上报中天然气/RTO时长比值偏离历史均值45%，存在数据异常风险。\n\n请核实以下数据项：\n1. 天然气计量表读数是否与供气方对账单一致\n2. RTO运行时长记录是否包含空烧时段\n3. 涂料消耗量与产出量匹配性\n\n请于5个工作日内重新提交核实后的月度数据。',
+        'permit': '经AI系统提醒，蓝天工业涂装排污许可证将于2026-12-31到期，剩余有效期不足7个月。\n\n请提前做好以下准备工作：\n1. 整理上一年度排污许可执行报告\n2. 更新污染防治设施运行台账\n3. 核算年度实际排放量与许可量对比\n\n建议于到期前60日启动续期申请流程。',
+        'imbalance': '经AI协同评估，蓝天工业涂装C-P协同指数0.52处于协同失衡区间，污染控制与碳排放管理存在不同步现象。\n\n建议措施：\n1. 优化RTO运行策略，在保障VOCs去除率的前提下降低天然气消耗\n2. 评估水性涂料替代方案的综合环境效益\n3. 引入能源管理系统，实时监控碳排放强度\n\n请于7个工作日内提交协同优化方案。'
+      },
+      '红星喷涂厂': {
+        '减污增碳/减碳增污悖论': '经AI监测分析，红星喷涂厂C-P协同指数0.35，燃烧室温度持续偏低（720°C），导致VOCs分解效率下降。为维持去除率，天然气流量被迫提升至1350 Nm³/h，形成减碳增污态势。\n\n建议立即：\n1. 校准燃烧室温度传感器，排查温控系统故障\n2. 检查天然气喷嘴是否堵塞，确保燃烧充分\n3. 如蓄热体老化严重，建议更换以提升热回收效率\n\n请于3个工作日内反馈排查结果。',
+        'data': '经AI数据审核，红星喷涂厂上报数据中存在天然气/RTO时长比值异常，偏离行业均值38%。\n\n请重点核实：\n1. 天然气流量计是否需要校准\n2. RTO启停记录是否完整准确\n3. 月度涂料消耗数据与库存变动是否匹配\n\n请于5个工作日内提交数据核实说明。',
+        'permit': '经AI系统监测，红星喷涂厂排污许可证将于近期到期，请及时办理续期手续，避免无证排污风险。\n\n请提前准备：\n1. 近一年度自行监测报告\n2. 污染防治设施运行维护记录\n3. 年度排放量核算报表\n\n建议尽快联系环保部门了解续期流程。',
+        'imbalance': '经AI协同分析，红星喷涂厂近期VOCs去除率保持稳定，但碳排放强度环比增加22%，协同指数下降至0.48。\n\n建议优化方向：\n1. 调整RTO运行温度设定，避免过度燃烧\n2. 评估涂料烘干工艺改进空间\n3. 建立碳排放基准线，实施强度管控\n\n请于7个工作日内提交改进计划。'
+      },
+      '鑫达汽修': {
+        '减污增碳/减碳增污悖论': '经AI监测分析，鑫达汽修C-P协同指数0.52，热回收效率87%低于90%警戒线，存在减污增碳隐患。\n\n建议立即：\n1. 清洗RTO蓄热体，清除堵塞物\n2. 检查陶瓷蓄热体是否老化开裂，必要时更换\n3. 优化喷涂作业时段，减少设备启停频次\n\n请于5个工作日内完成整改并提交报告。',
+        'data': '经AI数据筛查，鑫达汽修月度运行数据中存在异常波动，建议开展数据自查。\n\n请重点检查：\n1. 涂料使用量与维修记录匹配性\n2. 天然气消耗量与RTO运行时长一致性\n3. VOCs监测数据是否完整上传\n\n请于5个工作日内完成自查。',
+        'permit': '经AI系统提醒，鑫达汽修排污许可证将于2026-06-15到期，剩余有效期不足30天，属于紧急事项。\n\n请立即：\n1. 联系环保部门确认续期材料清单\n2. 准备排污许可执行报告\n3. 提交续期申请\n\n如逾期未续期，将面临行政处罚风险。',
+        'imbalance': '经AI协同评估，鑫达汽修当前C-P协同指数处于关注区间，建议开展能效提升专项工作。\n\n优化建议：\n1. 提升热回收效率至90%以上\n2. 优化喷烤漆房运行时间管理\n3. 逐步替换高固体分涂料，降低VOCs源头排放\n\n请于10个工作日内制定改进计划。'
+      },
+      '金辉涂装': {
+        '减污增碳/减碳增污悖论': '经AI监测分析，金辉涂装C-P协同指数0.41，水性涂料切换后VOCs下降但天然气激增35%，形成典型的减污增碳陷阱。\n\n建议措施：\n1. 评估水性涂料烘干温度设定是否合理（建议≤80°C）\n2. 引入热泵或红外烘干辅助，降低天然气依赖\n3. 优化烘干房保温性能，减少热量散失\n\n请于7个工作日内反馈整改方案。',
+        'data': '经AI数据比对，金辉涂装近期上报数据与设备运行记录存在偏差，建议核实。\n\n请重点检查：\n1. 水性涂料与溶剂型涂料切换期间的计量准确性\n2. 烘干设备运行时长记录\n3. 天然气消耗量变化原因说明\n\n请于5个工作日内完成核实。',
+        'permit': '经AI系统提醒，金辉涂装排污许可证即将到期，请及时办理续期手续。\n\n请提前准备相关材料，确保许可证持续有效，避免因证件过期导致停产整改。',
+        'imbalance': '经AI协同分析，金辉涂装在涂料结构转型期间出现协同失衡，建议制定过渡期协同管控方案。\n\n建议：\n1. 建立涂料切换期间的碳排放监测机制\n2. 优化烘干工艺参数，降低单位产品能耗\n3. 定期评估C-P协同指数变化趋势\n\n请于7个工作日内提交管控方案。'
+      },
+      '伟达制造': {
+        '减污增碳/减碳增污悖论': '经AI监测分析，伟达制造近期C-P协同指数出现下降趋势，建议排查RTO运行状态及喷涂排班安排。\n\n请立即开展自查，重点关注空烧时长和天然气消耗异常。',
+        'data': '经AI数据筛查，伟达制造上报数据完整性不足，部分时段监测数据缺失。\n\n请补充完善监测数据，确保数据上传连续性。',
+        'permit': '经AI系统提醒，伟达制造排污许可证将于近期到期，请及时办理续期。\n\n请提前准备续期所需材料，避免超期运营。',
+        'imbalance': '经AI协同评估，伟达制造当前协同状态一般，建议开展能效提升专项排查。\n\n请于10个工作日内制定改进计划。'
+      }
+    };
+
+    function generateAiDispatch() {
+      const btn = document.getElementById('aiGenerateBtn');
+      const enterprise = document.getElementById('dEnterprise').value;
+      const type = document.getElementById('dType').value;
+      const textarea = document.getElementById('dContent');
+
+      btn.classList.add('generating');
+      btn.disabled = true;
+
+      // 模拟AI生成延迟
+      setTimeout(() => {
+        const companyMap = AI_SUGGESTIONS[enterprise];
+        let suggestion = '';
+        if (companyMap && companyMap[type]) {
+          suggestion = companyMap[type];
+        } else {
+          // 兜底建议
+          suggestion = `经AI监测分析，${enterprise}近期监测数据出现异常波动，建议立即开展自查自纠。\n\n请重点排查以下方面：\n1. RTO设备运行参数是否正常\n2. 喷涂作业排班是否合理\n3. 能源消耗与产出匹配性\n\n请于规定时间内反馈排查结果及整改措施。`;
+        }
+        textarea.value = suggestion;
+        btn.classList.remove('generating');
+        btn.disabled = false;
+        showToast('✅ AI 调度建议已生成', 'success');
+      }, 800);
+    }
+
     function submitDispatch() {
       const enterprise = document.getElementById('dEnterprise').value;
       const type = document.getElementById('dType').value;
@@ -446,7 +795,7 @@
         statusCode: 'dispatched',
         step: 0,
         steps: ['已下发','企业签收','整改反馈','监测科复核','已销号'],
-        createdAt: '2026-05-18 ' + new Date().toTimeString().slice(0,5),
+        createdAt: TODAY_FULL + ' ' + new Date().toTimeString().slice(0,5),
         content: content
       };
       
@@ -456,6 +805,7 @@
       
       closeModalDirect();
       renderTasks();
+      renderKpiCards();
       showToast(`✅ 调度指令 ${id} 已下发至 ${enterprise}`, 'success');
     }
 
@@ -464,16 +814,20 @@
       const modal = document.getElementById('kpiModal');
       const title = document.getElementById('kpiModalTitle');
       const body = document.getElementById('kpiModalBody');
+      const alerts = DataStore.getAlerts();
+      const dispatches = DataStore.getDispatches();
       
       if (type === 'cp') {
+        const indices = DataStore.getLayeredIndices ? DataStore.getLayeredIndices() : { cpIndex: 0.62 };
+        const cpVal = Math.round((indices.cpIndex || 0.62) * 100);
         title.textContent = '📍 区域协同指数详情';
         body.innerHTML = `
-          <div class="modal-row"><span>当前指数</span><span style="color:#0ea5e9;font-weight:700">62 / 100</span></div>
-          <div class="modal-row"><span>等级</span><span>🟡 关注区（阈值 70）</span></div>
+          <div class="modal-row"><span>当前指数</span><span style="color:#0ea5e9;font-weight:700">${cpVal} / 100</span></div>
+          <div class="modal-row"><span>等级</span><span>${cpVal >= 70 ? '🟢 达标区' : cpVal >= 50 ? '🟡 关注区' : '🔴 警示区'}（阈值 70）</span></div>
           <div class="modal-row"><span>环比变化</span><span style="color:#f87171">↓ 8.8%</span></div>
           <div class="modal-row"><span>辖区企业</span><span>28 家</span></div>
           <div class="modal-row"><span>双减标兵</span><span style="color:#4ade80">8 家</span></div>
-          <div class="modal-row"><span>减污增碳/减碳增污悖论企业</span><span style="color:#f87171">3 家</span></div>
+          <div class="modal-row"><span>减污增碳/减碳增污悖论企业</span><span style="color:#f87171">${alerts.filter(a => a.type === '减污增碳/减碳增污悖论' && !a.read).length} 家</span></div>
           <div style="margin-top:12px;padding:10px;background:rgba(34,211,238,0.04);border-radius:6px;font-size:12px;color:rgba(226,232,240,0.5)">
             💡 主要下降原因：3家企业同时拉满RTO负荷，天然气总耗环比增加28%
           </div>
@@ -482,24 +836,26 @@
             <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
           </div>`;
       } else if (type === '减污增碳/减碳增污悖论') {
+        const 悖论Alerts = alerts.filter(a => a.type === '减污增碳/减碳增污悖论');
+        const todayCount = 悖论Alerts.filter(a => a.date === TODAY_STR).length;
         title.textContent = '🚨 减污增碳/减碳增污悖论 预警详情';
         body.innerHTML = `
-          <div class="modal-row"><span>今日预警</span><span style="color:#ef4444;font-weight:700">3 条</span></div>
-          <div class="modal-row"><span>减污增碳</span><span style="color:#f87171">2 条</span></div>
-          <div class="modal-row"><span>减碳增污</span><span style="color:#fbbf24">1 条</span></div>
+          <div class="modal-row"><span>今日预警</span><span style="color:#ef4444;font-weight:700">${todayCount} 条</span></div>
+          <div class="modal-row"><span>减污增碳</span><span style="color:#f87171">${悖论Alerts.filter(a => a.desc && a.desc.includes('减污增碳')).length} 条</span></div>
+          <div class="modal-row"><span>减碳增污</span><span style="color:#fbbf24">${悖论Alerts.filter(a => a.desc && a.desc.includes('减碳增污')).length} 条</span></div>
           <div class="modal-row"><span>较昨日</span><span style="color:#f87171">↑ +1</span></div>
           <div style="margin-top:12px;font-size:12px;color:rgba(226,232,240,0.5);line-height:2">
-            🔴 蓝天工业涂装 C-P 0.38 减污增碳 | RTO空烧22%<br>
-            🔴 红星喷涂厂 C-P 0.35 减碳增污 | 温度偏低<br>
-            🟡 鑫达汽修 C-P 0.52 协同失衡
+            ${悖论Alerts.slice(0,5).map(a => {
+              const emoji = a.level === 'critical' ? '🔴' : '🟡';
+              const cp = a.cpValue || '--';
+              return `${emoji} ${a.title?.replace('风险预警','').replace('预警','') || '企业'} C-P ${cp} | ${a.desc?.substring(0,30) || '异常'}${(a.desc?.length || 0) > 30 ? '...' : ''}`;
+            }).join('<br>')}
           </div>
           <div style="display:flex;gap:10px;margin-top:16px">
             <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="window.open('../enterprise/alerts.html','_blank')">🔔 查看预警</button>
             <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
           </div>`;
       } else if (type === 'task') {
-        title.textContent = '⏳ 待处置任务详情';
-        const dispatches = DataStore.getDispatches();
         const pending = dispatches.filter(d => d.statusCode !== 'closed');
         body.innerHTML = `
           <div class="modal-row"><span>待处置</span><span style="color:#fbbf24;font-weight:700">${pending.length} 条</span></div>
@@ -514,17 +870,15 @@
             <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="closeModalDirect()">关闭</button>
           </div>`;
       } else {
+        const closedCount = dispatches.filter(d=>d.statusCode==='closed').length;
         title.textContent = '✅ 闭环处置详情';
-        const dispatches = DataStore.getDispatches();
         body.innerHTML = `
-          <div class="modal-row"><span>本月已闭环</span><span style="color:#4ade80;font-weight:700">${dispatches.filter(d=>d.statusCode==='closed').length} 条</span></div>
-          <div class="modal-row"><span>闭环率</span><span style="color:#4ade80">88%</span></div>
+          <div class="modal-row"><span>本月已闭环</span><span style="color:#4ade80;font-weight:700">${closedCount} 条</span></div>
+          <div class="modal-row"><span>闭环率</span><span style="color:#4ade80">${dispatches.length > 0 ? Math.round(closedCount/dispatches.length*100) : 0}%</span></div>
           <div class="modal-row"><span>平均处置时长</span><span>4.2 天</span></div>
           <div class="modal-row"><span>超期任务</span><span style="color:#f87171">1 条</span></div>
           <div style="margin-top:12px;font-size:12px;color:rgba(226,232,240,0.5);line-height:2">
-            ✅ 蓝天工业涂装 05-15 减污增碳/减碳增污悖论 已销号<br>
-            ✅ 红星喷涂厂 05-10 协同失衡 已销号<br>
-            ✅ 金辉涂装 05-08 数据异常 已销号
+            ${dispatches.filter(d=>d.statusCode==='closed').slice(0,3).map(d => `✅ ${d.target} ${d.createdAt?.slice(5,10) || ''} ${d.type === '减污增碳/减碳增污悖论' ? '减污增碳/减碳增污悖论' : d.type} 已销号`).join('<br>')}
           </div>
           <div style="display:flex;gap:10px;margin-top:16px">
             <button class="btn" style="flex:1;background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2);padding:8px;border-radius:6px;cursor:pointer" onclick="window.open('dispatch-detail.html','_blank')">📋 调度详情</button>
@@ -557,9 +911,7 @@
         return;
       }
 
-      // 取最近一条已销号的调度指令
       const latest = closedDispatches[0];
-      // 模拟整改前后数据（根据调度类型生成）
       let before = { vocs: 12.5, carbon: 0.42, cp: 0.38 };
       let after = { vocs: 8.2, carbon: 0.31, cp: 0.72 };
       if (latest.type === 'data') {
@@ -571,28 +923,34 @@
       const cpDiff = Math.round((after.cp - before.cp) / before.cp * 100);
 
       bar.innerHTML = `
-        <div class="effect-bar-item" onclick="showToast('VOCs整改前：排放${before.vocs}kg/h','info')">
+        <div class="effect-bar-item">
+          <div class="effect-tooltip">整改前 VOCs：${before.vocs} kg/h</div>
           <div class="effect-bar-fill" style="height:${Math.min(90, before.vocs / 15 * 90)}%;background:linear-gradient(180deg,#ef4444,#dc2626);color:#ef4444" data-val="整改前"></div>
           <div class="effect-bar-label">VOCs</div>
         </div>
-        <div class="effect-bar-item" onclick="showToast('碳排整改前：${before.carbon} tCO₂/h','info')">
+        <div class="effect-bar-item">
+          <div class="effect-tooltip">整改前 碳排：${before.carbon} tCO₂/h</div>
           <div class="effect-bar-fill" style="height:${Math.min(90, before.carbon / 0.6 * 90)}%;background:linear-gradient(180deg,#fbbf24,#d97706);color:#fbbf24" data-val="整改前"></div>
           <div class="effect-bar-label">碳排</div>
         </div>
-        <div class="effect-bar-item" onclick="showToast('C-P整改前：${before.cp}','info')">
+        <div class="effect-bar-item">
+          <div class="effect-tooltip">整改前 C-P：${before.cp}</div>
           <div class="effect-bar-fill" style="height:${Math.min(90, before.cp / 1.0 * 90)}%;background:linear-gradient(180deg,#0ea5e9,#0284c7);color:#0ea5e9" data-val="整改前"></div>
           <div class="effect-bar-label">C-P</div>
         </div>
         <div style="width:16px"></div>
-        <div class="effect-bar-item" onclick="showToast('VOCs整改后：排放${after.vocs}kg/h ↓${vocsDiff}%','success')">
+        <div class="effect-bar-item">
+          <div class="effect-tooltip">整改后 VOCs：${after.vocs} kg/h ↓${vocsDiff}%</div>
           <div class="effect-bar-fill" style="height:${Math.min(90, after.vocs / 15 * 90)}%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后 ↓${vocsDiff}%"></div>
           <div class="effect-bar-label">VOCs</div>
         </div>
-        <div class="effect-bar-item" onclick="showToast('碳排整改后：${after.carbon} tCO₂/h ↓${carbonDiff}%','success')">
+        <div class="effect-bar-item">
+          <div class="effect-tooltip">整改后 碳排：${after.carbon} tCO₂/h ↓${carbonDiff}%</div>
           <div class="effect-bar-fill" style="height:${Math.min(90, after.carbon / 0.6 * 90)}%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后 ↓${carbonDiff}%"></div>
           <div class="effect-bar-label">碳排</div>
         </div>
-        <div class="effect-bar-item" onclick="showToast('C-P整改后：${after.cp} ↑${cpDiff}%','success')">
+        <div class="effect-bar-item">
+          <div class="effect-tooltip">整改后 C-P：${after.cp} ↑${cpDiff}%</div>
           <div class="effect-bar-fill" style="height:${Math.min(90, after.cp / 1.0 * 90)}%;background:linear-gradient(180deg,#4ade80,#16a34a);color:#4ade80" data-val="整改后 ↑${cpDiff}%"></div>
           <div class="effect-bar-label">C-P</div>
         </div>
@@ -635,6 +993,12 @@
     }
 
     // 初始化
+    DataStore.init();
+    renderKpiCards();
+    renderAiSummary();
+    renderPredictions();
+    renderEventStream();
+    renderTicker();
     renderTasks();
     renderEffectTracking();
     renderLayeredIndices();

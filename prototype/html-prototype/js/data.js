@@ -108,12 +108,12 @@ const MOCK_DATA = {
 
   // 悖论模拟器历史记录
   simulatorHistory: [
-    { id: "SIM-202605180915", time: "2026-05-18 09:15", current: "溶剂型涂料（聚氨酯漆）", target: "水性涂料（单组分）", cpBefore: 0.75, cpAfter: 0.48, vocsChange: -60, gasChange: 35, carbonChange: 28, result: "trap" },
-    { id: "SIM-202605101422", time: "2026-05-10 14:22", current: "溶剂型涂料（聚氨酯漆）", target: "粉末涂料", cpBefore: 0.72, cpAfter: 0.52, vocsChange: -85, gasChange: 55, carbonChange: 42, result: "trap" },
-    { id: "SIM-202605031530", time: "2026-05-03 15:30", current: "水性涂料（双组分）", target: "水性涂料（单组分）", cpBefore: 0.68, cpAfter: 0.71, vocsChange: -15, gasChange: -5, carbonChange: -3, result: "good" },
-    { id: "SIM-202604281005", time: "2026-04-28 10:05", current: "溶剂型涂料（聚氨酯漆）", target: "高固体分涂料", cpBefore: 0.70, cpAfter: 0.68, vocsChange: -25, gasChange: 8, carbonChange: 5, result: "good" },
-    { id: "SIM-202604151100", time: "2026-04-15 11:00", current: "溶剂型涂料（聚氨酯漆）", target: "水性涂料（单组分）", cpBefore: 0.74, cpAfter: 0.45, vocsChange: -58, gasChange: 32, carbonChange: 26, result: "trap" },
-    { id: "SIM-202604080940", time: "2026-04-08 09:40", current: "高固体分涂料", target: "粉末涂料", cpBefore: 0.65, cpAfter: 0.58, vocsChange: -45, gasChange: 38, carbonChange: 22, result: "imbalance" },
+    { id: "SIM-202605180915", time: "2026-05-18 09:15", current: "溶剂型涂料（聚氨酯漆）", target: "水性涂料（单组分）", cpBefore: 0.75, cpAfter: 0.48, vocsChange: -60, gasChange: 35, carbonChange: 28, result: "trap", perspective: "process" },
+    { id: "SIM-202605101422", time: "2026-05-10 14:22", current: "溶剂型涂料（聚氨酯漆）", target: "粉末涂料", cpBefore: 0.72, cpAfter: 0.52, vocsChange: -85, gasChange: 55, carbonChange: 42, result: "trap", perspective: "lca" },
+    { id: "SIM-202605031530", time: "2026-05-03 15:30", current: "水性涂料（双组分）", target: "水性涂料（单组分）", cpBefore: 0.68, cpAfter: 0.71, vocsChange: -15, gasChange: -5, carbonChange: -3, result: "good", perspective: "process" },
+    { id: "SIM-202604281005", time: "2026-04-28 10:05", current: "溶剂型涂料（聚氨酯漆）", target: "高固体分涂料", cpBefore: 0.70, cpAfter: 0.68, vocsChange: -25, gasChange: 8, carbonChange: 5, result: "good", perspective: "process" },
+    { id: "SIM-202604151100", time: "2026-04-15 11:00", current: "溶剂型涂料（聚氨酯漆）", target: "水性涂料（单组分）", cpBefore: 0.74, cpAfter: 0.45, vocsChange: -58, gasChange: 32, carbonChange: 26, result: "trap", perspective: "lca" },
+    { id: "SIM-202604080940", time: "2026-04-08 09:40", current: "高固体分涂料", target: "粉末涂料", cpBefore: 0.65, cpAfter: 0.58, vocsChange: -45, gasChange: 38, carbonChange: 22, result: "imbalance", perspective: "process" },
   ],
 
   // 三评合一报告数据
