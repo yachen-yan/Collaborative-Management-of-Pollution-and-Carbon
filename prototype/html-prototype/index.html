@@ -57,6 +57,8 @@
     }
   </style>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
 
 </head>
 <body>
@@ -92,6 +94,30 @@
         </div>
       </a>
     </div>
+    
+    <div class="nav-stats" id="navStats">
+      <div class="nav-stat-card">
+        <div class="nav-stat-icon">📊</div>
+        <div class="nav-stat-value" id="statEnterprises">0</div>
+        <div class="nav-stat-label">接入企业数</div>
+      </div>
+      <div class="nav-stat-card">
+        <div class="nav-stat-icon">🚨</div>
+        <div class="nav-stat-value" id="statAlerts">0</div>
+        <div class="nav-stat-label">今日预警数</div>
+      </div>
+      <div class="nav-stat-card">
+        <div class="nav-stat-icon">✅</div>
+        <div class="nav-stat-value" id="statClosed">0</div>
+        <div class="nav-stat-label">本月已闭环</div>
+      </div>
+      <div class="nav-stat-card">
+        <div class="nav-stat-icon">🤖</div>
+        <div class="nav-stat-ai" id="statAi">AI 洞察加载中...</div>
+        <div class="nav-stat-label">AI 智能洞察</div>
+      </div>
+    </div>
+    <div id="initTip" style="display:none;margin-top:16px;padding:12px 24px;background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);border-radius:8px;color:#fde047;font-size:14px;text-align:center;">⚠️ 首次使用，请点击企业端进入注册</div>
     
     <div class="nav-pages">
       <div class="nav-page-item">
@@ -165,19 +191,102 @@
       </div>
     </div>
     
-    <div class="nav-info">
+    <div class="nav-info" id="navInfo">
       <span>📅 版本：MVP v1.0</span>
       <span>📁 项目：工业涂装专版</span>
-      <span>🔖 日期：2026-05-18</span>
+      <span id="updateTime">🔖 日期：加载中...</span>
       <span>📄 共 25 个页面</span>
     </div>
   </div>
+<style>
+  .nav-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 960px;
+    width: 100%;
+    margin-top: 32px;
+  }
+  .nav-stat-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: all 0.3s;
+  }
+  .nav-stat-card:hover {
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-2px);
+  }
+  .nav-stat-icon { font-size: 24px; margin-bottom: 8px; }
+  .nav-stat-value { font-size: 32px; font-weight: 700; color: #fff; line-height: 1; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+  .nav-stat-label { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 8px; }
+  .nav-stat-ai { font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.5; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+  @media (max-width: 960px) {
+    .nav-stats { grid-template-columns: repeat(2, 1fr); max-width: 400px; }
+  }
+</style>
 <script>
+  function animateNumber(el, target, duration) {
+    var start = 0;
+    var startTime = performance.now();
+    function update(currentTime) {
+      var elapsed = currentTime - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var easeOut = 1 - Math.pow(1 - progress, 3);
+      var current = Math.round(start + (target - start) * easeOut);
+      el.textContent = current;
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+  
+  var AI_INSIGHTS = [
+    '今日3家企业触发减污增碳/减碳增污悖论，较昨日+1，主要原因为RTO空烧',
+    '区域C-P均值0.62，环比下降8.8%，建议关注李村工业区',
+    '蓝天工业涂装VOCs去除率94.2%达标，但天然气消耗环比激增35%，存在减污增碳风险',
+    '红星喷涂厂RTO燃烧室温度持续低于760°C，已触发协同失衡预警',
+    '本月闭环率88%，平均处置时长4.2天，1条任务已超期，建议优先跟进',
+    '鑫达汽修热回收效率87%，低于90%警戒线，建议清洗蓄热体',
+    '张镇工业园12家企业中3家处于减污增碳/减碳增污悖论状态，建议园区集中排查',
+    'AI模型预测未来7天内蓝天工业涂装C-P可能跌破0.35，概率72%，建议提前干预'
+  ];
+  
   window.addEventListener('load', function() {
     setTimeout(function() {
       var el = document.getElementById('pageLoader');
       if (el) el.classList.add('done');
     }, 500);
+    
+    var now = new Date();
+    var timeStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    var updateEl = document.getElementById('updateTime');
+    if (updateEl) updateEl.textContent = '🔖 最后更新：' + timeStr;
+    
+    var inited = DataStore.get('_inited');
+    var enterprise = DataStore.get('enterprise');
+    if (!inited || !enterprise) {
+      var tip = document.getElementById('initTip');
+      if (tip) tip.style.display = 'block';
+      return;
+    }
+    
+    var alerts = DataStore.getAlerts();
+    var dispatches = DataStore.getDispatches();
+    var todayAlerts = alerts.filter(function(a) { return a.date === '05-18' && !a.read; });
+    var closedDispatches = dispatches.filter(function(d) { return d.statusCode === 'closed'; });
+    
+    animateNumber(document.getElementById('statEnterprises'), 28, 1500);
+    animateNumber(document.getElementById('statAlerts'), todayAlerts.length, 1500);
+    animateNumber(document.getElementById('statClosed'), closedDispatches.length, 1500);
+    
+    var aiEl = document.getElementById('statAi');
+    if (aiEl) {
+      var idx = Math.floor(Math.random() * AI_INSIGHTS.length);
+      aiEl.textContent = AI_INSIGHTS[idx];
+    }
   });
 </script>
 </body>

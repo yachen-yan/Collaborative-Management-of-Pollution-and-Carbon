@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>报告PDF预览 — 污碳协同AI监管平台</title>
   <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
   <style>
     body { background: #020617; }
     .pdf-wrap { max-width: 800px; margin: 30px auto; }
@@ -217,15 +218,6 @@
     }
 
     renderPdfPreview();
-  </script>
-
-  <script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
   </script>
 </body>
 </html>

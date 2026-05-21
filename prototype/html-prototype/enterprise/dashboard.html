@@ -6,6 +6,7 @@
   <title>工作台 — 蓝天工业涂装有限公司</title>
 
   <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
   <style>
     body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; }
     .topbar { height:64px; background:linear-gradient(90deg,rgba(12,74,110,0.9),rgba(3,105,161,0.9)); backdrop-filter:blur(12px); border-bottom:1px solid rgba(34,211,238,0.15); display:flex; align-items:center; justify-content:space-between; padding:0 24px; position:fixed; top:0; left:0; right:0; z-index:100; }
@@ -478,13 +479,3 @@
   <style>@keyframes bubblePulse { 0%,100%{box-shadow:0 0 12px #ef4444} 50%{box-shadow:0 0 24px #ef4444,0 0 40px rgba(239,68,68,0.4)} }</style>
   <link rel="stylesheet" href="../css/style.css">
 
-<script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
-</script>
-</body>
-</html>

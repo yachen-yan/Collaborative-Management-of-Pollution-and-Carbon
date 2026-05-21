@@ -139,16 +139,16 @@
     
     <div id="login-pwd">
       <div class="login-input-wrap">
-        <span class="login-input-icon">👤</span>
-        <input class="login-input" placeholder="请输入统一社会信用代码 / 手机号" value="91110108MA0012345">
+        <span class="login-input-icon">🏭</span>
+        <input class="login-input" id="loginName" placeholder="请输入企业名称" value="">
       </div>
       <div class="login-input-wrap">
-        <span class="login-input-icon">🔒</span>
-        <input class="login-input" type="password" placeholder="请输入密码" value="demo1234">
+        <span class="login-input-icon">🆔</span>
+        <input class="login-input" id="loginLicense" placeholder="请输入统一社会信用代码" value="">
       </div>
       <div class="login-options">
-        <label class="login-remember"><input type="checkbox" checked> 记住我</label>
-        <span class="login-forgot" onclick="alert('请联系管理员重置密码\\n电话：010-12345678')">忘记密码？</span>
+        <label class="login-remember"><input type="checkbox" id="loginRemember" checked> 记住我</label>
+        <span class="login-forgot" onclick="alert('请联系管理员重置密码\n电话：010-12345678')">忘记密码？</span>
       </div>
       <button class="login-submit" onclick="doLogin()">登 录</button>
     </div>
@@ -184,6 +184,7 @@
     </div>
   </div>
   
+  <script src="../js/data.js"></script>
   <script>
     function switchTab(el, type) {
       document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
@@ -191,9 +192,53 @@
       document.getElementById('login-pwd').style.display = type === 'pwd' ? 'block' : 'none';
       document.getElementById('login-sms').style.display = type === 'sms' ? 'block' : 'none';
     }
-    function doLogin() { window.location.href = 'dashboard.html'; }
+    function doLogin() {
+      var name = document.getElementById('loginName').value.trim();
+      var license = document.getElementById('loginLicense').value.trim();
+      var remember = document.getElementById('loginRemember').checked;
+      var enterprise = DataStore.get('enterprise');
+      if (!enterprise) {
+        showToast('系统未初始化，请稍后重试', 'error');
+        return;
+      }
+      if (name === enterprise.name && license === enterprise.licenseNo) {
+        if (remember) {
+          localStorage.setItem('pcap_rememberLogin', JSON.stringify({name: name, license: license}));
+        } else {
+          localStorage.removeItem('pcap_rememberLogin');
+        }
+        showToast('登录成功', 'success');
+        setTimeout(function() {
+          window.location.href = 'dashboard.html';
+        }, 2000);
+      } else {
+        showToast('企业名称或统一社会信用代码错误', 'error');
+      }
+    }
+    window.addEventListener('load', function() {
+      var enterprise = DataStore.get('enterprise');
+      if (!enterprise) {
+        DataStore.reset();
+      }
+      var remembered = localStorage.getItem('pcap_rememberLogin');
+      if (remembered) {
+        try {
+          var data = JSON.parse(remembered);
+          document.getElementById('loginName').value = data.name || '';
+          document.getElementById('loginLicense').value = data.license || '';
+          document.getElementById('loginRemember').checked = true;
+        } catch(e) {}
+      } else {
+        var ent = DataStore.get('enterprise');
+        if (ent) {
+          document.getElementById('loginName').value = ent.name;
+          document.getElementById('loginLicense').value = ent.licenseNo;
+        }
+      }
+    });
   </script>
   <script>
+  /* [TODO-LOADER] 待统一替换为 common.js 的 closePageLoader() */
   window.addEventListener('load', function() {
     setTimeout(function() {
       var el = document.getElementById('pageLoader');

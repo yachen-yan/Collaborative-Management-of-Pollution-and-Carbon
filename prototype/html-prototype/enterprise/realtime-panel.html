@@ -6,6 +6,7 @@
   <title>实时双算看板 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
   <style>
     .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
@@ -34,15 +35,15 @@
     .mini-line { fill: none; stroke-width: 2; stroke-linecap: round; }
     .mini-area { opacity: 0.1; }
     .mini-dot { r: 3; fill: #fff; stroke-width: 2; }
-    .mini-label { font-size: 10px; fill: rgba(0,0,0,0.35); }
-    .mini-axis { stroke: #f0f0f0; stroke-width: 1; }
+    .mini-label { font-size: 10px; fill: rgba(226,232,240,0.35); }
+    .mini-axis { stroke: rgba(34,211,238,0.2); stroke-width: 1; }
     
     .compare-section { margin-top: 8px; }
     .compare-bar {
       display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
     }
     .compare-label { width: 80px; font-size: 12px; color: rgba(226,232,240,0.4); }
-    .compare-track { flex: 1; height: 20px; background: #f0f0f0; border-radius: 4px; position: relative; }
+    .compare-track { flex: 1; height: 20px; background: rgba(34,211,238,0.1); border-radius: 4px; position: relative; }
     .compare-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
     .compare-value { width: 50px; text-align: right; font-size: 13px; font-weight: 500; }
     .compare-marker {
@@ -323,8 +324,6 @@ window.addEventListener("load",function(){
   // ========== DataStore 动态数据接入 ==========
   function initRealtimeData() {
     const rt = DataStore.getRealtime();
-    const ent = DataStore.get('enterprise', MOCK_DATA.enterprise);
-    const health = DataStore.get('healthScore', MOCK_DATA.healthScore);
 
     // 同区域同行业脱敏均值（模拟数据）
     const regionAvg = {
@@ -612,14 +611,6 @@ window.addEventListener("load",function(){
   renderOutletDetails();
   setTimeout(animateNumbers, 300);
 });
-</script>
-<script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
 </script>
 </body>
 </html>

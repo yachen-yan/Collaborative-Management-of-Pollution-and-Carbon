@@ -6,6 +6,7 @@
   <title>预警中心 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
   <style>
     .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
@@ -338,7 +339,7 @@
           </div>
           <div style="text-align:center;margin-top:12px">
             <button class="btn btn-primary" onclick="window.location.href='paradox-report.html?id=' + currentAlertId">📄 查看完整诊断报告</button>
-          </div>
+          </div>`
       } else if (a.type === 'imbalance') {
         body = `
           <div class="diag-section">
@@ -453,13 +454,5 @@
     // 初始渲染
     renderAlerts();
   </script>
-  <script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
-</script>
 </body>
 </html>

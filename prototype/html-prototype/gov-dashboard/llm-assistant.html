@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LLM 智能政务助手 — 污碳协同AI监管平台</title>
   <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
 
   <style>
     body { background: #020617; color: #e2e8f0; }
@@ -55,7 +56,7 @@
       display: flex; align-items: center; justify-content: center; font-size: 16px;
     }
     .msg-avatar.ai { background: linear-gradient(135deg, #1677ff, #36cfc9); }
-    .msg-avatar.user { background: #f0f0f0; color: #333; }
+    .msg-avatar.user { background: rgba(34,211,238,0.15); color: #e2e8f0; }
     .msg-bubble {
       max-width: 70%; padding: 14px 18px; border-radius: 12px; font-size: 14px; line-height: 1.8;
       position: relative;
@@ -399,9 +400,7 @@
       try {
         const cpTrend = DataStore.get('cpTrend', {});
         const alerts = DataStore.getAlerts();
-        const realtime = DataStore.getRealtime();
         const unreadAlerts = alerts.filter(a => !a.read).length;
-        const currentCp = realtime ? realtime.cpIndex : null;
 
         // C-P 下降趋势判断
         let isCpDropping = false;

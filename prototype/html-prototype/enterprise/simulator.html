@@ -6,6 +6,7 @@
   <title>悖论模拟器 — 污碳协同AI监管平台</title>
 
   <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
   <style>
     .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
@@ -21,11 +22,11 @@
       font-size: 14px; font-weight: 600; flex-shrink: 0;
       border: 2px solid #d9d9d9; color: rgba(226,232,240,0.3); background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px);
     }
-    .step-item.active .step-circle { border-color: #0ea5e9; color: #0ea5e9; background: #e6f4ff; }
+    .step-item.active .step-circle { border-color: #0ea5e9; color: #0ea5e9; background: rgba(34,211,238,0.12); }
     .step-item.done .step-circle { border-color: #4ade80; color: #fff; background: #4ade80; }
     .step-text { font-size: 14px; color: rgba(226,232,240,0.4); }
     .step-item.active .step-text { color: #e2e8f0; font-weight: 500; }
-    .step-line { flex: 1; height: 2px; background: #f0f0f0; margin: 0 12px; }
+    .step-line { flex: 1; height: 2px; background: rgba(34,211,238,0.15); margin: 0 12px; }
     .step-line.done { background: #4ade80; }
     
     /* 步骤内容 */
@@ -35,11 +36,11 @@
     /* 工艺选择 */
     .process-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
     .process-card {
-      border: 2px solid #f0f0f0; border-radius: 8px; padding: 20px;
+      border: 2px solid rgba(34,211,238,0.15); border-radius: 8px; padding: 20px;
       cursor: pointer; transition: all 0.2s; position: relative;
     }
     .process-card:hover { border-color: #0ea5e9; box-shadow: 0 2px 12px rgba(22,119,255,0.1); }
-    .process-card.selected { border-color: #0ea5e9; background: #e6f4ff; }
+    .process-card.selected { border-color: #0ea5e9; background: rgba(34,211,238,0.12); }
     .process-card .check {
       position: absolute; top: 12px; right: 12px; width: 20px; height: 20px;
       border-radius: 50%; border: 2px solid #d9d9d9; display: flex;
@@ -96,7 +97,7 @@
     .result-change.down { color: #f87171; }
     
     .suggestion-box {
-      background: #e6f4ff; border: 1px solid #91caff; border-radius: 8px;
+      background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.2); border-radius: 8px;
       padding: 16px; margin-bottom: 20px;
     }
     .suggestion-title { font-weight: 600; color: #0ea5e9; margin-bottom: 8px; }
@@ -104,7 +105,7 @@
     .suggestion-list li { margin-left: 18px; }
     
     .history-table { width: 100%; }
-    .history-table th, .history-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+    .history-table th, .history-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(34,211,238,0.1); font-size: 13px; }
     .history-table th { color: rgba(226,232,240,0.4); font-weight: 500; background: rgba(34,211,238,0.04); }
     .history-table td:first-child { width: 30px; text-align: center; }
     .history-table input[type="checkbox"] { cursor: pointer; }
@@ -125,7 +126,7 @@
     
     .btn-nav {
       display: flex; justify-content: space-between; margin-top: 24px; padding-top: 20px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid rgba(34,211,238,0.15);
     }
 
     /* LCA 视角切换 */
@@ -623,7 +624,6 @@
       const currentParams = PROCESS_DB[current] || PROCESS_DB['溶剂型涂料（聚氨酯漆）'];
       const targetParams = PROCESS_DB[target] || PROCESS_DB['水性涂料（单组分）'];
 
-      const sprayArea = parseFloat(document.getElementById('sprayAreaYear').value) || 18;
       const runDays = parseFloat(document.getElementById('runDays').value) || 300;
       const dailyHours = parseFloat(document.getElementById('dailyHours').value) || 10;
       const paintUsage = parseFloat(document.getElementById('paintUsage').value) || 15000;
@@ -924,13 +924,5 @@
 
     renderHistory();
   </script>
-  <script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
-</script>
 </body>
 </html>

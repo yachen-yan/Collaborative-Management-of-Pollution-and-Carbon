@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>污碳协同知识库 — 悖论案例库</title>
   <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
   <style>
     body { background: #020617; color: #e2e8f0; }
     .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); border-bottom:1px solid rgba(34,211,238,0.2); }
@@ -334,15 +335,6 @@
     }
 
     renderCases(CASES);
-  </script>
-
-  <script>
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      var el = document.getElementById('pageLoader');
-      if (el) el.classList.add('done');
-    }, 500);
-  });
   </script>
 </body>
 </html>

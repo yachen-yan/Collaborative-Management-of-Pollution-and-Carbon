@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>数据管理 — 全域数据资产中心</title>
 <script src="../js/data.js"></script>
+  <script src="../js/common.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif; min-height:100vh; }
@@ -305,7 +306,7 @@ function renderAuditTable() {
   tbody.innerHTML = filtered.map(a=>{
     const ruleCells = a.rules.map(r=>r?'<span class="badge badge-pass">通过</span>':'<span class="badge badge-fail">异常</span>').join('');
     let actions = '';
-    if(a.status==='待审核') actions = '<button class="badge badge-pass" onclick="auditAction('+a.id+','pass')">通过</button> <button class="badge badge-fail" onclick="auditAction('+a.id+','reject')">退回</button>';
+    if(a.status==='待审核') actions = '<button class="badge badge-pass" onclick="auditAction('+a.id+',\'pass\')">通过</button> <button class="badge badge-fail" onclick="auditAction('+a.id+',\'reject\')">退回</button>';
     return '<tr><td><input type="checkbox" class="audit-check" value="'+a.id+'"></td><td>'+a.name+'</td><td>'+a.month+'</td><td>'+a.submit+'</td><td>'+a.status+'</td>'+ruleCells+'<td>'+actions+'</td></tr>';
   }).join('');
 }
@@ -436,12 +437,6 @@ function renderBloodline(query) {
 renderRealtimeTable();
 refreshChart();
 
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    var el = document.getElementById('pageLoader');
-    if(el) el.classList.add('done');
-  }, 500);
-});
 </script>
 </body>
 </html>
