@@ -125,6 +125,7 @@
       <div class="col-4">
         <div class="card-dark" style="animation-delay:0.05s">
           <div class="card-title">🎯 污碳协同健康评分</div>
+          <div id="paradoxRiskTag" style="margin-bottom:10px;min-height:24px;"></div>
           <div class="score-card">
             <div class="score-left">
               <div class="score-big" style="color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.3)" data-target="68" data-suffix="">0</div>
@@ -430,6 +431,36 @@
       if (link) { div.onclick = function() { window.location.href = link; }; }
       qg.appendChild(div);
     });
+    // 悖论风险标签渲染
+    function renderParadoxRiskTag() {
+      const alerts = DataStore.getAlerts();
+      const paradoxAlerts = alerts.filter(a => a.type === '减污增碳/减碳增污悖论' && !a.read);
+      const container = document.getElementById('paradoxRiskTag');
+      if (!container) return;
+      if (paradoxAlerts.length === 0) {
+        container.innerHTML = '<span class="tag-neon tag-neon-green">🟢 本月无悖论风险</span>';
+        return;
+      }
+      let jwz = 0, tzz = 0;
+      paradoxAlerts.forEach(a => {
+        const text = ((a.desc || '') + ' ' + (a.rootCause || '')).toLowerCase();
+        if (text.includes('温度偏低') || text.includes('去除率下降') || text.includes('分解效率下降') || text.includes('燃烧室温度')) {
+          tzz++;
+        } else {
+          jwz++;
+        }
+      });
+      let html = '';
+      if (jwz > 0) {
+        html += `<a href="alerts.html" class="tag-neon tag-neon-red" style="text-decoration:none;margin-right:8px;">🔴 本月存在减污增碳陷阱风险（${jwz}条未处理）</a>`;
+      }
+      if (tzz > 0) {
+        html += `<a href="alerts.html" class="tag-neon tag-neon-yellow" style="text-decoration:none;">🟠 本月存在减碳增污陷阱风险（${tzz}条未处理）</a>`;
+      }
+      container.innerHTML = html;
+    }
+    renderParadoxRiskTag();
+
     const tl = document.getElementById('todoList');
     DataStore.get('todos', MOCK_DATA.todos).forEach((t, i) => {
       const div = document.createElement('div');

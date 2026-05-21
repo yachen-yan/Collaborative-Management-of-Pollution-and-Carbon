@@ -41,7 +41,7 @@
     .filter-bar .btn-filter:hover { background:rgba(34,211,238,0.2); box-shadow:0 0 12px rgba(34,211,238,0.15); }
     .filter-bar .btn-export {
       padding:7px 18px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(74,222,128,0.3);
-      background:rgba(74,222,128,0.08); color:#4ade80; transition:all 0.2s; margin-left:auto;
+      background:rgba(74,222,128,0.08); color:#4ade80; transition:all 0.2s;
     }
     .filter-bar .btn-export:hover { background:rgba(74,222,128,0.15); }
     .filter-bar .btn-compare {
@@ -49,6 +49,37 @@
       background:rgba(167,139,250,0.08); color:#a78bfa; transition:all 0.2s;
     }
     .filter-bar .btn-compare:hover { background:rgba(167,139,250,0.15); }
+
+    /* 批量操作下拉 */
+    .batch-dropdown { position:relative; }
+    .batch-dropdown-toggle {
+      padding:7px 14px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(251,191,36,0.3);
+      background:rgba(251,191,36,0.08); color:#fbbf24; transition:all 0.2s; display:flex; align-items:center; gap:6px;
+    }
+    .batch-dropdown-toggle:hover { background:rgba(251,191,36,0.15); }
+    .batch-dropdown-toggle:disabled { opacity:0.4; cursor:not-allowed; }
+    .batch-dropdown-menu {
+      display:none; position:absolute; top:calc(100% + 6px); left:0; min-width:180px;
+      background:rgba(2,6,23,0.98); border:1px solid rgba(34,211,238,0.15); border-radius:8px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.6); z-index:500; overflow:hidden;
+    }
+    .batch-dropdown.open .batch-dropdown-menu { display:block; }
+    .batch-dropdown-menu button {
+      display:block; width:100%; text-align:left; padding:9px 14px; font-size:12px;
+      background:none; border:none; color:#e2e8f0; cursor:pointer; transition:all 0.15s;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .batch-dropdown-menu button:last-child { border-bottom:none; }
+    .batch-dropdown-menu button:hover { background:rgba(34,211,238,0.08); color:#22d3ee; }
+    .batch-dropdown-menu button:disabled { opacity:0.35; cursor:not-allowed; color:rgba(226,232,240,0.3); }
+    .batch-dropdown-menu button:disabled:hover { background:none; color:rgba(226,232,240,0.3); }
+    .batch-dropdown-menu .menu-divider { height:1px; background:rgba(255,255,255,0.06); margin:4px 0; }
+
+    /* 全选/已选计数 */
+    .select-all-wrap { display:flex; align-items:center; gap:10px; margin-right:auto; }
+    .select-all-wrap label { display:flex; align-items:center; gap:6px; font-size:12px; color:rgba(226,232,240,0.6); cursor:pointer; }
+    .select-all-wrap input[type="checkbox"] { accent-color:#22d3ee; width:14px; height:14px; cursor:pointer; }
+    .selected-count { font-size:12px; color:#fbbf24; font-weight:600; min-width:70px; }
 
     /* 企业卡片网格 */
     .enterprise-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
@@ -92,6 +123,29 @@
     .ent-actions .btn-star { background:rgba(74,222,128,0.08); color:#4ade80; border-color:rgba(74,222,128,0.18); }
     .ent-actions .btn-star:hover { background:rgba(74,222,128,0.18); }
     .ent-actions .btn-star.starred { background:rgba(74,222,128,0.2); border-color:rgba(74,222,128,0.4); }
+
+    /* 卡片复选框 */
+    .ent-card-checkbox {
+      position:absolute; top:10px; left:10px; z-index:5;
+    }
+    .ent-card-checkbox input[type="checkbox"] {
+      width:16px; height:16px; accent-color:#22d3ee; cursor:pointer;
+      background:rgba(2,6,23,0.7); border:1px solid rgba(34,211,238,0.3); border-radius:3px;
+    }
+    .ent-card-checkbox input[type="checkbox"]:checked {
+      box-shadow:0 0 8px rgba(34,211,238,0.3);
+    }
+    .ent-card.has-check { padding-left:38px; }
+
+    /* 重点监管徽章 */
+    .star-badge {
+      position:absolute; top:10px; right:10px;
+      font-size:11px; color:#fbbf24; background:rgba(251,191,36,0.12);
+      border:1px solid rgba(251,191,36,0.25); border-radius:4px;
+      padding:2px 7px; display:flex; align-items:center; gap:3px;
+      box-shadow:0 0 10px rgba(251,191,36,0.1);
+      z-index:5;
+    }
 
     /* 右侧抽屉 */
     .drawer-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:600; }
@@ -158,6 +212,36 @@
     .compare-legend { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; font-size:11px; margin-top:8px; }
     .compare-legend span { display:flex; align-items:center; gap:4px; }
     .compare-legend .dot { width:8px; height:8px; border-radius:2px; }
+
+    /* 调度模板弹窗 */
+    .dispatch-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:720; align-items:center; justify-content:center; }
+    .dispatch-overlay.active { display:flex; }
+    .dispatch-box {
+      background:rgba(2,6,23,0.98); border:1px solid rgba(34,211,238,0.2); border-radius:12px;
+      width:440px; max-width:95vw; box-shadow:0 8px 40px rgba(0,0,0,0.5);
+      display:flex; flex-direction:column;
+    }
+    .dispatch-header { padding:14px 18px; border-bottom:1px solid rgba(34,211,238,0.1); display:flex; justify-content:space-between; align-items:center; }
+    .dispatch-title { font-size:14px; font-weight:600; color:#22d3ee; }
+    .dispatch-body { padding:14px 18px; }
+    .dispatch-template-list { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+    .dispatch-template-item {
+      display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px;
+      background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.1);
+      cursor:pointer; transition:all 0.2s;
+    }
+    .dispatch-template-item:hover { background:rgba(34,211,238,0.08); border-color:rgba(34,211,238,0.25); }
+    .dispatch-template-item.selected { background:rgba(34,211,238,0.12); border-color:#22d3ee; box-shadow:0 0 12px rgba(34,211,238,0.1); }
+    .dispatch-template-item input[type="radio"] { accent-color:#22d3ee; width:14px; height:14px; flex-shrink:0; }
+    .dispatch-template-name { font-size:13px; font-weight:500; color:#e2e8f0; }
+    .dispatch-template-desc { font-size:11px; color:rgba(226,232,240,0.4); margin-top:2px; }
+    .dispatch-actions { display:flex; gap:8px; }
+    .dispatch-actions button { flex:1; padding:8px 0; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid transparent; transition:all 0.2s; }
+    .dispatch-actions .btn-confirm { background:rgba(34,211,238,0.12); color:#22d3ee; border-color:rgba(34,211,238,0.3); }
+    .dispatch-actions .btn-confirm:hover { background:rgba(34,211,238,0.22); }
+    .dispatch-actions .btn-confirm:disabled { opacity:0.4; cursor:not-allowed; }
+    .dispatch-actions .btn-cancel { background:rgba(255,255,255,0.04); color:rgba(226,232,240,0.5); border-color:rgba(255,255,255,0.1); }
+    .dispatch-actions .btn-cancel:hover { background:rgba(255,255,255,0.08); }
 
     /* dispatch table in drawer */
     .mini-table { width:100%; border-collapse:collapse; font-size:11px; }
@@ -231,9 +315,31 @@
         <option value="60">60天内</option>
         <option value="90">90天内</option>
       </select>
+      <select id="filterStarred">
+        <option value="">全部企业</option>
+        <option value="1">⭐ 重点监管</option>
+        <option value="0">非重点监管</option>
+      </select>
       <button class="btn-filter" onclick="applyFilters()">🔍 查询</button>
       <button class="btn-compare" onclick="openCompare()">📊 企业对比</button>
-      <button class="btn-export" onclick="exportData()">📥 批量导出</button>
+
+      <div class="select-all-wrap">
+        <label><input type="checkbox" id="selectAllBox" onchange="toggleSelectAll()"><span>全选</span></label>
+        <span class="selected-count" id="selectedCount">已选 0 家</span>
+      </div>
+
+      <div class="batch-dropdown" id="batchDropdown">
+        <button class="batch-dropdown-toggle" id="batchToggle" onclick="toggleBatchDropdown()">
+          ⚡ 批量操作 <span style="font-size:10px">▼</span>
+        </button>
+        <div class="batch-dropdown-menu">
+          <button id="btnBatchDispatch" onclick="openBatchDispatch()" disabled>📋 批量下发调度</button>
+          <button id="btnBatchStar" onclick="batchStar()" disabled>⭐ 标记为重点监管</button>
+          <button id="btnBatchUnstar" onclick="batchUnstar()" disabled>☆ 取消重点监管</button>
+          <div class="menu-divider"></div>
+          <button onclick="exportData()">📥 批量导出</button>
+        </div>
+      </div>
     </div>
 
     <!-- 企业卡片列表 -->
@@ -270,6 +376,55 @@
     </div>
   </div>
 
+  <!-- 批量调度弹窗 -->
+  <div class="dispatch-overlay" id="dispatchOverlay" onclick="closeDispatchOverlay(event)">
+    <div class="dispatch-box">
+      <div class="dispatch-header">
+        <span class="dispatch-title">📋 批量下发调度指令</span>
+        <span class="drawer-close" onclick="closeDispatchDirect()">✕</span>
+      </div>
+      <div class="dispatch-body">
+        <div style="font-size:12px;color:rgba(226,232,240,0.5);margin-bottom:12px">
+          已选 <span id="dispatchCount" style="color:#fbbf24;font-weight:600">0</span> 家企业，请选择调度模板：
+        </div>
+        <div class="dispatch-template-list" id="dispatchTemplateList">
+          <label class="dispatch-template-item" data-value="自查自纠" onclick="selectDispatchTemplate(this)">
+            <input type="radio" name="dispatchTemplate" value="自查自纠">
+            <div>
+              <div class="dispatch-template-name">🔍 自查自纠</div>
+              <div class="dispatch-template-desc">要求企业对照标准开展内部排查并提交整改报告</div>
+            </div>
+          </label>
+          <label class="dispatch-template-item" data-value="现场核查" onclick="selectDispatchTemplate(this)">
+            <input type="radio" name="dispatchTemplate" value="现场核查">
+            <div>
+              <div class="dispatch-template-name">🚗 现场核查</div>
+              <div class="dispatch-template-desc">派专员赴企业现场进行实地核查与数据核验</div>
+            </div>
+          </label>
+          <label class="dispatch-template-item" data-value="限期整改" onclick="selectDispatchTemplate(this)">
+            <input type="radio" name="dispatchTemplate" value="限期整改">
+            <div>
+              <div class="dispatch-template-name">⏰ 限期整改</div>
+              <div class="dispatch-template-desc">下发整改通知书，要求在规定期限内完成整改</div>
+            </div>
+          </label>
+          <label class="dispatch-template-item" data-value="专家会诊" onclick="selectDispatchTemplate(this)">
+            <input type="radio" name="dispatchTemplate" value="专家会诊">
+            <div>
+              <div class="dispatch-template-name">👨‍⚕️ 专家会诊</div>
+              <div class="dispatch-template-desc">组织行业专家进行技术诊断与协同优化方案制定</div>
+            </div>
+          </label>
+        </div>
+        <div class="dispatch-actions">
+          <button class="btn-confirm" id="btnConfirmDispatch" onclick="confirmBatchDispatch()" disabled>确认下发</button>
+          <button class="btn-cancel" onclick="closeDispatchDirect()">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ========== 企业模拟数据 ==========
     const ENTERPRISES = [
@@ -290,18 +445,21 @@
       { id:"ENT-008", name:"银海金属表面处理厂", code:"91110108MA0089012", industry:"金属", address:"怀柔区渤海镇渤海所村西", contact:"周经理 136****3210", permitNo:"XKP-2020-00389", carbonQuota:11000, licenseExpire:"2026-11-15", cp:0.28, mci:0.35, ehi:48, quadrant:"减碳增污", starred:false,
         cpHistory:[0.42,0.40,0.36,0.34,0.32,0.30,0.28], paradoxHistory:[{date:"05-18",type:"red",text:"减碳增污严重 — C-P仅0.28"},{date:"05-08",type:"red",text:"RTO效率下降至78%"}], radar:{vocs:30,nox:25,pm25:35,so2:40,co2:22,ch4:28} },
       { id:"ENT-009", name:"美家家具涂装作坊", code:"91110108MA0023456", industry:"家具", address:"怀柔区九渡河镇九渡河村", contact:"吴老板 135****6543", permitNo:"XKP-2022-00501", carbonQuota:4500, licenseExpire:"2026-06-01", cp:0.46, mci:0.58, ehi:64, quadrant:"数据不足", starred:false,
-        cpHistory:[0.50,0.49,0.48,0.48,0.47,0.46,0.46], paradoxHistory:[{date:"05-05",type:"yellow",text:"数据上报延迟3天"}], radar:{vocs:60,nox:55,pm25:62,so2:68,co2:50,ch2:52} },
+        cpHistory:[0.50,0.49,0.48,0.48,0.47,0.46,0.46], paradoxHistory:[{date:"05-05",type:"yellow",text:"数据上报延迟3天"}], radar:{vocs:60,nox:55,pm25:62,so2:68,co2:50,ch4:52} },
       { id:"ENT-010", name:"精诚汽修快喷中心", code:"91110108MA0015678", industry:"汽修", address:"怀柔区泉河街道迎宾路18号", contact:"郑技师 138****0987", permitNo:"XKP-2021-00412", carbonQuota:2800, licenseExpire:"2027-02-28", cp:0.82, mci:0.85, ehi:86, quadrant:"双减标兵", starred:false,
         cpHistory:[0.76,0.77,0.78,0.79,0.80,0.81,0.82], paradoxHistory:[], radar:{vocs:90,nox:88,pm25:85,so2:89,co2:80,ch4:82} }
     ];
 
-    // 持久化 starred 状态
+    // 持久化 starred 状态（使用 pcap_starredEnterprises）
     function getStarredSet() {
-      try { return new Set(JSON.parse(localStorage.getItem('pcap_ent_starred')||'[]')); } catch(e) { return new Set(); }
+      try { return new Set(JSON.parse(localStorage.getItem('pcap_starredEnterprises')||'[]')); } catch(e) { return new Set(); }
     }
-    function saveStarredSet(set) { localStorage.setItem('pcap_ent_starred', JSON.stringify([...set])); }
+    function saveStarredSet(set) { localStorage.setItem('pcap_starredEnterprises', JSON.stringify([...set])); }
     let starredSet = getStarredSet();
     ENTERPRISES.forEach(e => { if(starredSet.has(e.id)) e.starred = true; });
+
+    // 选中状态管理
+    let selectedIds = new Set();
 
     function getCpColor(cp) {
       if(cp>=0.8) return '#4ade80';
@@ -342,8 +500,13 @@
         const starClass = e.starred ? 'starred' : '';
         const cpColor = getCpColor(e.cp);
         const mciColor = getMciColor(e.mci);
+        const isSelected = selectedIds.has(e.id);
         return `
-        <div class="ent-card fade-in" style="animation-delay:${i*0.05}s">
+        <div class="ent-card fade-in ${isSelected?'has-check':''}" style="animation-delay:${i*0.05}s">
+          <div class="ent-card-checkbox">
+            <input type="checkbox" ${isSelected?'checked':''} onchange="toggleSelect('${e.id}')" title="选择该企业">
+          </div>
+          ${e.starred ? `<div class="star-badge">⭐ 重点监管</div>` : ''}
           <div class="ent-card-header">
             <div style="display:flex;align-items:flex-start">
               <div class="ent-card-name">${e.name}</div>
@@ -375,6 +538,43 @@
           </div>
         </div>`;
       }).join('');
+      updateSelectAllState();
+      updateBatchButtons();
+    }
+
+    // ========== 选中管理 ==========
+    function toggleSelect(id) {
+      if(selectedIds.has(id)) selectedIds.delete(id);
+      else selectedIds.add(id);
+      renderEnterprises(currentList);
+    }
+
+    function toggleSelectAll() {
+      const box = document.getElementById('selectAllBox');
+      if(box.checked) {
+        currentList.forEach(e => selectedIds.add(e.id));
+      } else {
+        currentList.forEach(e => selectedIds.delete(e.id));
+      }
+      renderEnterprises(currentList);
+    }
+
+    function updateSelectAllState() {
+      const box = document.getElementById('selectAllBox');
+      if(currentList.length === 0) { box.checked = false; box.indeterminate = false; return; }
+      const allSelected = currentList.every(e => selectedIds.has(e.id));
+      const someSelected = currentList.some(e => selectedIds.has(e.id));
+      box.checked = allSelected;
+      box.indeterminate = someSelected && !allSelected;
+    }
+
+    function updateBatchButtons() {
+      const count = selectedIds.size;
+      document.getElementById('selectedCount').textContent = `已选 ${count} 家`;
+      const disabled = count === 0;
+      document.getElementById('btnBatchDispatch').disabled = disabled;
+      document.getElementById('btnBatchStar').disabled = disabled;
+      document.getElementById('btnBatchUnstar').disabled = disabled;
     }
 
     // ========== 筛选 ==========
@@ -385,6 +585,7 @@
       const quad = document.getElementById('filterQuadrant').value;
       const cp = document.getElementById('filterCP').value;
       const lic = document.getElementById('filterLicense').value;
+      const starred = document.getElementById('filterStarred').value;
       currentList = ENTERPRISES.filter(e => {
         if(name && !e.name.includes(name)) return false;
         if(ind && e.industry!==ind) return false;
@@ -399,6 +600,7 @@
           const d = daysUntil(e.licenseExpire);
           if(d>parseInt(lic) || d<0) return false;
         }
+        if(starred!=='' && (starred==='1')!==e.starred) return false;
         return true;
       });
       renderEnterprises(currentList);
@@ -406,8 +608,9 @@
     }
 
     function exportData() {
-      const csv = '\uFEFF企业名称,统一社会信用代码,行业,C-P指数,MCI指数,EHI评分,象限,许可证到期,地址,联系人\n' +
-        currentList.map(e => `${e.name},${e.code},${e.industry},${e.cp},${e.mci},${e.ehi},${e.quadrant},${e.licenseExpire},${e.address},${e.contact}`).join('\n');
+      const list = currentList.filter(e => selectedIds.size===0 || selectedIds.has(e.id));
+      const csv = '\uFEFF企业名称,统一社会信用代码,行业,C-P指数,MCI指数,EHI评分,象限,许可证到期,地址,联系人,重点监管\n' +
+        list.map(e => `${e.name},${e.code},${e.industry},${e.cp},${e.mci},${e.ehi},${e.quadrant},${e.licenseExpire},${e.address},${e.contact},${e.starred?'是':'否'}`).join('\n');
       const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -425,11 +628,97 @@
       const btn = document.getElementById('star-'+id);
       if(btn) { btn.classList.toggle('starred', ent.starred); btn.innerHTML = (ent.starred?'★':'☆')+' 标记重点'; }
       showToast(ent.starred ? '已标记为重点企业' : '已取消重点企业标记', 'success');
+      renderEnterprises(currentList);
     }
 
     function dispatchTo(id) {
       const ent = ENTERPRISES.find(e=>e.id===id);
       showToast(`已向 ${ent.name} 下发调度指令（模拟）`, 'warn');
+    }
+
+    // ========== 批量操作 ==========
+    function toggleBatchDropdown() {
+      document.getElementById('batchDropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const dd = document.getElementById('batchDropdown');
+      if(!dd.contains(e.target)) dd.classList.remove('open');
+    });
+
+    function openBatchDispatch() {
+      if(selectedIds.size===0) return;
+      document.getElementById('dispatchCount').textContent = selectedIds.size;
+      // 清除之前的选择
+      document.querySelectorAll('.dispatch-template-item').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('input[name="dispatchTemplate"]').forEach(el => el.checked = false);
+      document.getElementById('btnConfirmDispatch').disabled = true;
+      document.getElementById('dispatchOverlay').classList.add('active');
+      document.getElementById('batchDropdown').classList.remove('open');
+    }
+
+    function selectDispatchTemplate(el) {
+      document.querySelectorAll('.dispatch-template-item').forEach(item => item.classList.remove('selected'));
+      el.classList.add('selected');
+      el.querySelector('input[type="radio"]').checked = true;
+      document.getElementById('btnConfirmDispatch').disabled = false;
+    }
+
+    function confirmBatchDispatch() {
+      const selectedTemplate = document.querySelector('input[name="dispatchTemplate"]:checked');
+      if(!selectedTemplate) { showToast('请选择调度模板', 'warn'); return; }
+      const template = selectedTemplate.value;
+      const targets = [...selectedIds];
+      const timestamp = new Date().toISOString();
+
+      // 写入 DataStore（localStorage）
+      let dispatchLog = [];
+      try { dispatchLog = JSON.parse(localStorage.getItem('pcap_dispatchLog') || '[]'); } catch(e) {}
+      targets.forEach(id => {
+        const ent = ENTERPRISES.find(e => e.id === id);
+        dispatchLog.push({
+          id: 'DSP-' + Date.now() + '-' + Math.random().toString(36).slice(2,6).toUpperCase(),
+          enterpriseId: id,
+          enterpriseName: ent ? ent.name : id,
+          template: template,
+          status: '待处理',
+          createdAt: timestamp
+        });
+      });
+      localStorage.setItem('pcap_dispatchLog', JSON.stringify(dispatchLog));
+
+      showToast(`已向 ${targets.length} 家企业下发「${template}」调度指令`, 'success');
+      closeDispatchDirect();
+    }
+
+    function closeDispatchOverlay(e) { if(e.target.classList.contains('dispatch-overlay')) closeDispatchDirect(); }
+    function closeDispatchDirect() { document.getElementById('dispatchOverlay').classList.remove('active'); }
+
+    function batchStar() {
+      if(selectedIds.size===0) return;
+      let count = 0;
+      selectedIds.forEach(id => {
+        const ent = ENTERPRISES.find(e=>e.id===id);
+        if(ent && !ent.starred) { ent.starred = true; count++; }
+        starredSet.add(id);
+      });
+      saveStarredSet(starredSet);
+      renderEnterprises(currentList);
+      showToast(`已标记 ${count} 家企业为重点监管对象`, 'success');
+      document.getElementById('batchDropdown').classList.remove('open');
+    }
+
+    function batchUnstar() {
+      if(selectedIds.size===0) return;
+      let count = 0;
+      selectedIds.forEach(id => {
+        const ent = ENTERPRISES.find(e=>e.id===id);
+        if(ent && ent.starred) { ent.starred = false; count++; }
+        starredSet.delete(id);
+      });
+      saveStarredSet(starredSet);
+      renderEnterprises(currentList);
+      showToast(`已取消 ${count} 家企业的重点监管标记`, 'success');
+      document.getElementById('batchDropdown').classList.remove('open');
     }
 
     // ========== 详情抽屉 ==========

@@ -69,6 +69,24 @@ body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft Y
 .batch-btn-reject { background:rgba(239,68,68,0.08); color:#f87171; border-color:rgba(239,68,68,0.2); }
 
 .empty-state { text-align:center; padding:60px 20px; color:rgba(226,232,240,0.25); font-size:13px; }
+
+/* 数据血缘追溯 */
+.preset-btns { display:flex; gap:8px; }
+.preset-btns button { padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid rgba(34,211,238,0.25); background:rgba(34,211,238,0.08); color:#22d3ee; transition:all 0.2s; }
+.preset-btns button:hover { background:rgba(34,211,238,0.15); }
+.bloodline-flow { display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; padding:30px 20px; }
+.bloodline-node { background:rgba(255,255,255,0.03); backdrop-filter:blur(10px); border:1px solid rgba(34,211,238,0.15); border-radius:10px; padding:16px 18px; min-width:150px; text-align:center; position:relative; transition:all 0.3s; }
+.bloodline-node:hover { transform:translateY(-4px); border-color:rgba(34,211,238,0.35); box-shadow:0 8px 32px rgba(34,211,238,0.1); }
+.bloodline-node.node-normal { border-color:rgba(74,222,128,0.25); }
+.bloodline-node.node-warn { border-color:rgba(248,113,113,0.35); }
+.node-status-dot { width:10px; height:10px; border-radius:50%; margin:0 auto 10px; }
+.node-name { font-size:12px; font-weight:600; color:#e2e8f0; margin-bottom:6px; line-height:1.4; }
+.node-time { font-size:10px; color:rgba(226,232,240,0.4); }
+.bloodline-arrow { font-size:22px; color:rgba(34,211,238,0.35); font-weight:300; }
+@media (max-width: 900px) {
+  .bloodline-flow { flex-direction:column; }
+  .bloodline-arrow { transform:rotate(90deg); }
+}
 </style>
 <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -98,6 +116,7 @@ body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft Y
   <button class="tab-btn active" onclick="switchTab(0)">实时数据查询</button>
   <button class="tab-btn" onclick="switchTab(1)">月度数据审核</button>
   <button class="tab-btn" onclick="switchTab(2)">数据质量仪表盘</button>
+  <button class="tab-btn" onclick="switchTab(3)">🔗 数据血缘追溯</button>
 </div>
 
 <!-- Tab 0 -->
@@ -167,6 +186,43 @@ body { background:#020617; color:#e2e8f0; font-family:"PingFang SC","Microsoft Y
     </div>
   </div>
 </div>
+
+<!-- Tab 3 -->
+<div class="tab-content" id="tab3">
+  <div class="filter-bar">
+    <input type="text" id="bloodlineInput" list="bloodlineOptions" placeholder="输入数据点名称" style="width:220px">
+    <datalist id="bloodlineOptions">
+      <option value="喷涂线TVOC出口浓度"></option>
+      <option value="烘干线NMHC出口浓度"></option>
+      <option value="调漆间流量传感器"></option>
+    </datalist>
+    <select id="bloodlineSelect" onchange="if(this.value){document.getElementById('bloodlineInput').value=this.value;renderBloodline(this.value)}">
+      <option value="">选择数据点</option>
+      <option value="喷涂线TVOC出口浓度">喷涂线TVOC出口浓度</option>
+      <option value="烘干线NMHC出口浓度">烘干线NMHC出口浓度</option>
+      <option value="调漆间流量传感器">调漆间流量传感器</option>
+    </select>
+    <div class="preset-btns">
+      <button onclick="renderBloodline('喷涂线TVOC出口浓度')">喷涂线TVOC</button>
+      <button onclick="renderBloodline('烘干线NMHC出口浓度')">烘干线NMHC</button>
+      <button onclick="renderBloodline('调漆间流量传感器')">调漆间流量</button>
+    </div>
+    <button class="btn-filter" onclick="renderBloodline()">追溯</button>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">数据血缘链路</div>
+    <div class="bloodline-flow" id="bloodlineNodes">
+      <div class="empty-state" style="padding:40px 20px;">请选择或输入数据点，查看完整血缘链路</div>
+    </div>
+  </div>
+  <div class="chart-card" style="padding:0; overflow:hidden;">
+    <div class="chart-title" style="padding:16px 16px 0;">详细操作日志</div>
+    <table class="data-table" style="margin-top:8px;">
+      <thead><tr><th>时间</th><th>操作类型</th><th>操作人/设备</th><th>结果</th><th>备注</th></tr></thead>
+      <tbody id="bloodlineLogBody"></tbody>
+    </table>
+  </div>
+</div>
 </div>
 
 <script>
@@ -176,6 +232,7 @@ function switchTab(idx) {
   if(idx===0) { renderRealtimeTable(); refreshChart(); }
   if(idx===1) renderAuditTable();
   if(idx===2) renderQualityDashboard();
+  if(idx===3) renderBloodline();
 }
 
 const POLLUTANTS = [
@@ -294,6 +351,86 @@ function renderQualityDashboard() {
   document.getElementById('offlineList').innerHTML = OFFLINE.map(o=>{
     return '<div style="padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.03);"><div style="color:#f87171;font-weight:600">'+o.ent+'</div><div style="color:rgba(226,232,240,0.5);margin-top:2px">'+o.outlet+' · 离线 '+o.since+'</div></div>';
   }).join('');
+}
+
+const BLOODLINE_DATA = {
+  '喷涂线TVOC出口浓度': {
+    nodes: [
+      {name:'CEMS-01<br>原始采集设备', status:'normal', time:'2026-05-18 08:00:00'},
+      {name:'MQTT网关<br>传输层', status:'normal', time:'2026-05-18 08:00:05'},
+      {name:'规则引擎<br>数据清洗', status:'normal', time:'2026-05-18 08:00:12'},
+      {name:'Postgres<br>数据仓库', status:'normal', time:'2026-05-18 08:00:15'},
+      {name:'当前展示<br>数据点', status:'normal', time:'2026-05-18 09:00:00'}
+    ],
+    logs: [
+      {time:'2026-05-18 08:00:00', type:'设备采集', operator:'CEMS-01', result:'成功', note:'TVOC浓度 85.2 mg/m³'},
+      {time:'2026-05-18 08:00:05', type:'数据传输', operator:'MQTT网关', result:'成功', note:'延迟 47ms，丢包率 0%'},
+      {time:'2026-05-18 08:00:12', type:'数据清洗', operator:'规则引擎', result:'成功', note:'规则R-102命中：去噪平滑处理'},
+      {time:'2026-05-18 08:00:15', type:'数据入库', operator:'Postgres', result:'成功', note:'写入 real_time_calcs 表'},
+      {time:'2026-05-18 07:30:00', type:'设备校准', operator:'运维人员-张工', result:'通过', note:'零点校准偏差 +0.3%，在允许范围内'}
+    ]
+  },
+  '烘干线NMHC出口浓度': {
+    nodes: [
+      {name:'CEMS-02<br>原始采集设备', status:'normal', time:'2026-05-18 08:00:00'},
+      {name:'MQTT网关<br>传输层', status:'normal', time:'2026-05-18 08:00:06'},
+      {name:'规则引擎<br>数据清洗', status:'warn', time:'2026-05-18 08:00:14'},
+      {name:'Postgres<br>数据仓库', status:'normal', time:'2026-05-18 08:00:18'},
+      {name:'当前展示<br>数据点', status:'warn', time:'2026-05-18 09:00:00'}
+    ],
+    logs: [
+      {time:'2026-05-18 08:00:00', type:'设备采集', operator:'CEMS-02', result:'成功', note:'NMHC浓度 112.5 mg/m³'},
+      {time:'2026-05-18 08:00:06', type:'数据传输', operator:'MQTT网关', result:'成功', note:'延迟 62ms，丢包率 0%'},
+      {time:'2026-05-18 08:00:14', type:'数据清洗', operator:'规则引擎', result:'异常', note:'规则R-208命中：突跃值 detected，标记为待复核'},
+      {time:'2026-05-18 08:00:18', type:'数据入库', operator:'Postgres', result:'成功', note:'写入 real_time_calcs 表，附加异常标记'},
+      {time:'2026-05-17 16:00:00', type:'设备校准', operator:'运维人员-李工', result:'通过', note:'量程校准，标准气 200mg/m³，偏差 -1.2%'}
+    ]
+  },
+  '调漆间流量传感器': {
+    nodes: [
+      {name:'FIC-03<br>流量传感器', status:'normal', time:'2026-05-18 08:00:00'},
+      {name:'LoRa网关<br>传输层', status:'normal', time:'2026-05-18 08:00:08'},
+      {name:'规则引擎<br>数据清洗', status:'normal', time:'2026-05-18 08:00:16'},
+      {name:'Postgres<br>数据仓库', status:'normal', time:'2026-05-18 08:00:20'},
+      {name:'当前展示<br>数据点', status:'normal', time:'2026-05-18 09:00:00'}
+    ],
+    logs: [
+      {time:'2026-05-18 08:00:00', type:'设备采集', operator:'FIC-03', result:'成功', note:'风量 12500 m³/h'},
+      {time:'2026-05-18 08:00:08', type:'数据传输', operator:'LoRa网关', result:'成功', note:'信号强度 -85dBm，延迟 120ms'},
+      {time:'2026-05-18 08:00:16', type:'数据清洗', operator:'规则引擎', result:'成功', note:'规则R-305命中：单位换算 m³/h → Nm³/h'},
+      {time:'2026-05-18 08:00:20', type:'数据入库', operator:'Postgres', result:'成功', note:'写入 daily_metrics 表'},
+      {time:'2026-05-15 09:00:00', type:'设备校准', operator:'运维人员-王工', result:'通过', note:'风速仪比对，偏差 +0.8%'}
+    ]
+  }
+};
+
+function renderBloodline(query) {
+  const input = document.getElementById('bloodlineInput');
+  const key = query || (input ? input.value : '');
+  const data = BLOODLINE_DATA[key];
+  const container = document.getElementById('bloodlineNodes');
+  const logBody = document.getElementById('bloodlineLogBody');
+  const select = document.getElementById('bloodlineSelect');
+  if(!data) {
+    container.innerHTML = '<div class="empty-state" style="padding:40px 20px;">请输入或选择数据点进行血缘追溯</div>';
+    if(logBody) logBody.innerHTML = '';
+    return;
+  }
+  if(input) input.value = key;
+  if(select) select.value = key;
+  container.innerHTML = data.nodes.map((node, i) => {
+    const statusClass = node.status === 'normal' ? 'node-normal' : 'node-warn';
+    const statusDot = node.status === 'normal' ? '#4ade80' : '#f87171';
+    const isLast = i === data.nodes.length - 1;
+    const arrow = isLast ? '' : '<div class="bloodline-arrow">→</div>';
+    return '<div class="bloodline-node '+statusClass+'"><div class="node-status-dot" style="background:'+statusDot+';box-shadow:0 0 8px '+statusDot+'"></div><div class="node-name">'+node.name+'</div><div class="node-time">'+node.time+'</div></div>'+arrow;
+  }).join('');
+  if(logBody) {
+    logBody.innerHTML = data.logs.map(log => {
+      const resultClass = log.result === '成功' || log.result === '通过' ? 'status-pass' : 'status-fail';
+      return '<tr><td>'+log.time+'</td><td>'+log.type+'</td><td>'+log.operator+'</td><td class="'+resultClass+'">'+log.result+'</td><td>'+log.note+'</td></tr>';
+    }).join('');
+  }
 }
 
 renderRealtimeTable();

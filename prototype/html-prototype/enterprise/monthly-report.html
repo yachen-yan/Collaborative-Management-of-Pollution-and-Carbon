@@ -116,7 +116,7 @@
       opacity: 0; padding: 0 14px;
     }
     .collapsible-panel.open .collapsible-content {
-      max-height: 1200px; opacity: 1; padding: 16px 14px 8px;
+      max-height: 2000px; opacity: 1; padding: 16px 14px 8px;
     }
     .outlet-subtitle {
       font-size: 13px; font-weight: 600; color: #22d3ee;
@@ -251,6 +251,54 @@
       </div>
     </div>
 
+    <!-- LCA 上游数据（折叠面板） -->
+    <div class="card form-section collapsible-panel" id="lcaPanel">
+      <div class="collapsible-header" onclick="toggleLcaPanel()">
+        <span class="collapsible-title">🌍 LCA 上游数据（选填）</span>
+        <span class="collapsible-toggle">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <div class="form-grid">
+          <div class="form-item">
+            <label>涂料供应商及产地</label>
+            <input type="text" id="lcaSupplier" value="上海XX化工有限公司（江苏泰州）">
+          </div>
+          <div class="form-item">
+            <label>涂料运输距离<span class="unit">km</span></label>
+            <input type="number" id="lcaTransportDistance" value="180">
+          </div>
+          <div class="form-item">
+            <label>运输方式</label>
+            <select id="lcaTransportMode">
+              <option value="road" selected>公路</option>
+              <option value="rail">铁路</option>
+              <option value="water">水运</option>
+            </select>
+          </div>
+          <div class="form-item">
+            <label>原辅料运输吨公里数<span class="unit">t·km</span></label>
+            <input type="number" id="lcaRawMaterialTkm" value="2450">
+          </div>
+          <div class="form-item">
+            <label>成品运输吨公里数<span class="unit">t·km</span></label>
+            <input type="number" id="lcaProductTkm" value="3800">
+          </div>
+          <div class="form-item">
+            <label>产品存储方式</label>
+            <select id="lcaStorageMode">
+              <option value="常温" selected>常温</option>
+              <option value="冷藏">冷藏</option>
+              <option value="恒温">恒温</option>
+            </select>
+          </div>
+          <div class="form-item">
+            <label>仓储能耗<span class="unit">kWh/月</span></label>
+            <input type="number" id="lcaStorageEnergy" value="1200">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 排口补充数据（折叠面板） -->
     <div class="card form-section collapsible-panel" id="outletPanel">
       <div class="collapsible-header" onclick="toggleOutletPanel()">
@@ -273,6 +321,26 @@
             <label>TVOC 出口浓度<span class="unit">mg/m³</span></label>
             <input type="number" id="outlet1_outletTVOC" value="28">
           </div>
+          <div class="form-item">
+            <label>NMHC 进口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet1_inletNMHC" value="420">
+          </div>
+          <div class="form-item">
+            <label>NMHC 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet1_outletNMHC" value="25">
+          </div>
+          <div class="form-item">
+            <label>PM2.5 出口浓度<span class="unit">μg/m³</span></label>
+            <input type="number" id="outlet1_outletPM25" value="12">
+          </div>
+          <div class="form-item">
+            <label>SO₂ 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet1_outletSO2" value="8">
+          </div>
+          <div class="form-item">
+            <label>NOₓ 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet1_outletNOx" value="35">
+          </div>
         </div>
 
         <!-- 烘干线排口 -->
@@ -290,6 +358,26 @@
             <label>TVOC 出口浓度<span class="unit">mg/m³</span></label>
             <input type="number" id="outlet2_outletTVOC" value="22">
           </div>
+          <div class="form-item">
+            <label>NMHC 进口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet2_inletNMHC" value="280">
+          </div>
+          <div class="form-item">
+            <label>NMHC 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet2_outletNMHC" value="18">
+          </div>
+          <div class="form-item">
+            <label>PM2.5 出口浓度<span class="unit">μg/m³</span></label>
+            <input type="number" id="outlet2_outletPM25" value="8">
+          </div>
+          <div class="form-item">
+            <label>SO₂ 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet2_outletSO2" value="5">
+          </div>
+          <div class="form-item">
+            <label>NOₓ 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet2_outletNOx" value="28">
+          </div>
         </div>
 
         <!-- 调漆间排口 -->
@@ -306,6 +394,26 @@
           <div class="form-item">
             <label>TVOC 出口浓度<span class="unit">mg/m³</span></label>
             <input type="number" id="outlet3_outletTVOC" value="35">
+          </div>
+          <div class="form-item">
+            <label>NMHC 进口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet3_inletNMHC" value="155">
+          </div>
+          <div class="form-item">
+            <label>NMHC 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet3_outletNMHC" value="32">
+          </div>
+          <div class="form-item">
+            <label>PM2.5 出口浓度<span class="unit">μg/m³</span></label>
+            <input type="number" id="outlet3_outletPM25" value="15">
+          </div>
+          <div class="form-item">
+            <label>SO₂ 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet3_outletSO2" value="3">
+          </div>
+          <div class="form-item">
+            <label>NOₓ 出口浓度<span class="unit">mg/m³</span></label>
+            <input type="number" id="outlet3_outletNOx" value="18">
           </div>
         </div>
       </div>
@@ -335,9 +443,11 @@
   <script>
     const FORM_KEY = 'pcap_formDraft';
     const REPORT_ID = 'MR-202605-001';
-    const OUTLET_KEYS = ['outlet1_flowRate','outlet1_inletTVOC','outlet1_outletTVOC',
-                         'outlet2_flowRate','outlet2_inletTVOC','outlet2_outletTVOC',
-                         'outlet3_flowRate','outlet3_inletTVOC','outlet3_outletTVOC'];
+    const OUTLET_KEYS = [
+      'outlet1_flowRate','outlet1_inletTVOC','outlet1_outletTVOC','outlet1_inletNMHC','outlet1_outletNMHC','outlet1_outletPM25','outlet1_outletSO2','outlet1_outletNOx',
+      'outlet2_flowRate','outlet2_inletTVOC','outlet2_outletTVOC','outlet2_inletNMHC','outlet2_outletNMHC','outlet2_outletPM25','outlet2_outletSO2','outlet2_outletNOx',
+      'outlet3_flowRate','outlet3_inletTVOC','outlet3_outletTVOC','outlet3_inletNMHC','outlet3_outletNMHC','outlet3_outletPM25','outlet3_outletSO2','outlet3_outletNOx'
+    ];
 
     // 加载草稿
     function loadDraft() {
@@ -363,18 +473,12 @@
           const d = mon[oid];
           if (!d) return;
           const prefix = 'outlet' + (idx + 1) + '_';
-          if (d.flowRate !== undefined) {
-            const el = document.getElementById(prefix + 'flowRate');
-            if (el && !el.value) el.value = d.flowRate;
-          }
-          if (d.inletTVOC !== undefined) {
-            const el = document.getElementById(prefix + 'inletTVOC');
-            if (el && !el.value) el.value = d.inletTVOC;
-          }
-          if (d.outletTVOC !== undefined) {
-            const el = document.getElementById(prefix + 'outletTVOC');
-            if (el && !el.value) el.value = d.outletTVOC;
-          }
+          ['flowRate','inletTVOC','outletTVOC','inletNMHC','outletNMHC','outletPM25','outletSO2','outletNOx'].forEach(field => {
+            if (d[field] !== undefined) {
+              const el = document.getElementById(prefix + field);
+              if (el && !el.value) el.value = d[field];
+            }
+          });
         });
       }
       // 同步报告状态显示
@@ -416,6 +520,13 @@
         greenPower: document.getElementById('greenPower').value,
         fossilPower: document.getElementById('fossilPower').value,
         waterUsage: document.getElementById('waterUsage').value,
+        lcaSupplier: document.getElementById('lcaSupplier').value,
+        lcaTransportDistance: document.getElementById('lcaTransportDistance').value,
+        lcaTransportMode: document.getElementById('lcaTransportMode').value,
+        lcaRawMaterialTkm: document.getElementById('lcaRawMaterialTkm').value,
+        lcaProductTkm: document.getElementById('lcaProductTkm').value,
+        lcaStorageMode: document.getElementById('lcaStorageMode').value,
+        lcaStorageEnergy: document.getElementById('lcaStorageEnergy').value,
       };
       OUTLET_KEYS.forEach(k => {
         const el = document.getElementById(k);
@@ -444,6 +555,11 @@
           flowRate: Number(document.getElementById(prefix + 'flowRate').value) || 0,
           inletTVOC: Number(document.getElementById(prefix + 'inletTVOC').value) || 0,
           outletTVOC: Number(document.getElementById(prefix + 'outletTVOC').value) || 0,
+          inletNMHC: Number(document.getElementById(prefix + 'inletNMHC').value) || 0,
+          outletNMHC: Number(document.getElementById(prefix + 'outletNMHC').value) || 0,
+          outletPM25: Number(document.getElementById(prefix + 'outletPM25').value) || 0,
+          outletSO2: Number(document.getElementById(prefix + 'outletSO2').value) || 0,
+          outletNOx: Number(document.getElementById(prefix + 'outletNOx').value) || 0,
         };
       });
       return out;
@@ -475,6 +591,11 @@
 
     function toggleOutletPanel() {
       const panel = document.getElementById('outletPanel');
+      panel.classList.toggle('open');
+    }
+
+    function toggleLcaPanel() {
+      const panel = document.getElementById('lcaPanel');
       panel.classList.toggle('open');
     }
 

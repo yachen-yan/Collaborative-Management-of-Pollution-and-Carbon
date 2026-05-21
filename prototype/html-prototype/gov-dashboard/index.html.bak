@@ -287,102 +287,6 @@
     .ai-attribution-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:13px; font-weight:600; color:#22d3ee; }
     .ai-attribution-body { font-size:12px; color:#a5f3fc; line-height:1.8; letter-spacing:0.3px; }
     .ai-attribution-tag { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:4px; font-size:10px; background:rgba(34,211,238,0.1); color:#67e8f9; border:1px solid rgba(34,211,238,0.2); margin-top:10px; }
-
-    /* ===== 折叠面板 ===== */
-    .collapse-panel { border:1px solid rgba(34,211,238,0.12); border-radius:10px; overflow:hidden; background:rgba(34,211,238,0.04); margin-bottom:14px; }
-    .collapse-header { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; cursor:pointer; transition:all 0.25s; user-select:none; }
-    .collapse-header:hover { background:rgba(34,211,238,0.06); }
-    .collapse-header-title { font-size:14px; font-weight:600; color:#22d3ee; display:flex; align-items:center; gap:8px; }
-    .collapse-header-title::before { content:""; display:inline-block; width:3px; height:14px; background:linear-gradient(180deg,#22d3ee,#0ea5e9); border-radius:2px; }
-    .collapse-header-title.yellow::before { background:linear-gradient(180deg,#fbbf24,#f59e0b); }
-    .collapse-header-title.purple::before { background:linear-gradient(180deg,#a78bfa,#7c3aed); }
-    .collapse-arrow { font-size:12px; color:rgba(226,232,240,0.4); transition:transform 0.3s; }
-    .collapse-panel.open .collapse-arrow { transform:rotate(180deg); }
-    .collapse-body { max-height:0; overflow:hidden; transition:max-height 0.4s ease, padding 0.3s ease; padding:0 14px; }
-    .collapse-panel.open .collapse-body { max-height:600px; padding:0 14px 14px; }
-
-    /* ===== 甘特图 ===== */
-    .gantt-wrap { position:relative; }
-    .gantt-legend { display:flex; gap:14px; margin-bottom:10px; font-size:11px; flex-wrap:wrap; }
-    .gantt-legend span { display:flex; align-items:center; gap:5px; color:rgba(226,232,240,0.5); }
-    .gantt-legend i { display:inline-block; width:16px; height:8px; border-radius:2px; }
-    .gantt-legend i.normal { background:#22d3ee; }
-    .gantt-legend i.stop { background:transparent; border:1px dashed #f87171; }
-    .gantt-legend i.optimal { background:rgba(74,222,128,0.25); border:1px solid rgba(74,222,128,0.5); }
-    .gantt-grid { display:grid; grid-template-columns:110px repeat(24, 1fr); gap:2px; }
-    .gantt-label { font-size:11px; color:rgba(226,232,240,0.6); display:flex; align-items:center; padding-right:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .gantt-hour { font-size:9px; color:rgba(226,232,240,0.25); text-align:center; padding:2px 0; border-bottom:1px solid rgba(34,211,238,0.06); }
-    .gantt-cell { height:18px; border-radius:2px; position:relative; }
-    .gantt-cell.normal { background:#22d3ee; box-shadow:0 0 6px rgba(34,211,238,0.3); }
-    .gantt-cell.stop { background:transparent; border:1px dashed #f87171; }
-    .gantt-cell.optimal { background:rgba(74,222,128,0.18); border:1px solid rgba(74,222,128,0.4); }
-    .gantt-cell.empty { background:rgba(34,211,238,0.03); }
-    .gantt-row { display:contents; }
-    .gantt-axis { grid-column:1 / -1; height:1px; background:rgba(34,211,238,0.06); margin:4px 0; }
-
-    /* ===== What-if 模拟 ===== */
-    .whatif-form { display:grid; grid-template-columns:1fr 1fr 80px; gap:10px; margin-bottom:12px; }
-    .whatif-form .form-group { margin-bottom:0; }
-    .whatif-form .form-group label { font-size:11px; margin-bottom:3px; }
-    .whatif-form .form-group input, .whatif-form .form-group select { padding:6px 8px; font-size:12px; }
-    .whatif-btn { align-self:end; padding:7px 10px; font-size:12px; border-radius:6px; background:rgba(167,139,250,0.15); color:#a78bfa; border:1px solid rgba(167,139,250,0.3); cursor:pointer; transition:all 0.25s; height:32px; }
-    .whatif-btn:hover { background:rgba(167,139,250,0.25); box-shadow:0 0 12px rgba(167,139,250,0.15); }
-    .whatif-result { display:none; }
-    .whatif-result.active { display:block; animation:fadeIn 0.4s ease; }
-    @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-    .whatif-metric { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-    .whatif-metric-item { background:rgba(2,6,23,0.5); border:1px solid rgba(34,211,238,0.08); border-radius:8px; padding:10px; }
-    .whatif-metric-label { font-size:11px; color:rgba(226,232,240,0.4); margin-bottom:6px; }
-    .whatif-metric-value { font-size:18px; font-weight:700; }
-    .whatif-metric-value.up { color:#4ade80; }
-    .whatif-metric-value.down { color:#f87171; }
-    .whatif-metric-sub { font-size:10px; color:rgba(226,232,240,0.3); margin-top:3px; }
-    .whatif-bar-wrap { display:flex; align-items:center; gap:10px; margin:8px 0; }
-    .whatif-bar-label { font-size:11px; color:rgba(226,232,240,0.5); width:70px; text-align:right; flex-shrink:0; }
-    .whatif-bar-track { flex:1; height:10px; background:rgba(34,211,238,0.06); border-radius:5px; overflow:hidden; display:flex; }
-    .whatif-bar-seg { height:100%; }
-    .whatif-bar-seg.before { background:linear-gradient(90deg,#0ea5e9,#22d3ee); }
-    .whatif-bar-seg.after { background:linear-gradient(90deg,#4ade80,#22c55e); }
-    .whatif-bar-seg.negative { background:linear-gradient(90deg,#f87171,#ef4444); }
-    .whatif-bar-val { font-size:11px; color:rgba(226,232,240,0.5); width:50px; flex-shrink:0; font-family:monospace; }
-    .whatif-suggest { margin-top:12px; padding:10px; border-radius:8px; background:rgba(34,211,238,0.04); border:1px solid rgba(34,211,238,0.15); font-size:12px; color:#a5f3fc; line-height:1.6; }
-
-    /* ===== 汇报弹窗 ===== */
-    .report-modal-box { width:640px; max-height:85vh; background:rgba(2,6,23,0.98); border:1px solid rgba(34,211,238,0.2); border-radius:14px; overflow:hidden; box-shadow:0 12px 50px rgba(0,0,0,0.6), 0 0 40px rgba(34,211,238,0.06); display:flex; flex-direction:column; }
-    .report-modal-header { padding:18px 22px; border-bottom:1px solid rgba(34,211,238,0.1); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-    .report-modal-title { font-size:16px; font-weight:600; color:#22d3ee; }
-    .report-modal-body { padding:18px 22px; overflow-y:auto; flex:1; }
-    .report-loading { text-align:center; padding:40px 20px; }
-    .report-loading-emoji { font-size:40px; margin-bottom:12px; animation:bounce 1.5s ease infinite; }
-    @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
-    .report-progress { width:70%; height:6px; background:rgba(34,211,238,0.08); border-radius:3px; margin:16px auto 0; overflow:hidden; }
-    .report-progress-fill { height:100%; background:linear-gradient(90deg,#22d3ee,#0ea5e9); border-radius:3px; width:0%; transition:width 0.3s ease; }
-    .report-outline { display:none; }
-    .report-outline.active { display:block; animation:fadeIn 0.4s ease; }
-    .report-headline { font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid rgba(34,211,238,0.1); }
-    .report-item { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid rgba(34,232,238,0.06); }
-    .report-item:last-child { border-bottom:none; }
-    .report-item-num { width:22px; height:22px; border-radius:50%; background:rgba(34,211,238,0.1); color:#22d3ee; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-    .report-item-content { flex:1; }
-    .report-item-title { font-size:13px; font-weight:500; color:#e2e8f0; margin-bottom:3px; }
-    .report-item-desc { font-size:11px; color:rgba(226,232,240,0.4); line-height:1.6; }
-    .report-chart-icon { width:28px; height:28px; border-radius:6px; background:rgba(34,211,238,0.06); border:1px solid rgba(34,211,238,0.12); display:flex; align-items:center; justify-content:center; font-size:12px; color:#22d3ee; cursor:pointer; flex-shrink:0; transition:all 0.2s; }
-    .report-chart-icon:hover { background:rgba(34,211,238,0.12); box-shadow:0 0 8px rgba(34,211,238,0.1); }
-    .report-actions { display:flex; gap:10px; margin-top:16px; padding-top:14px; border-top:1px solid rgba(34,211,238,0.1); }
-    .report-actions .btn { flex:1; padding:9px; font-size:12px; border-radius:6px; cursor:pointer; border:1px solid transparent; text-align:center; transition:all 0.2s; }
-    .report-actions .btn-primary { background:rgba(34,211,238,0.15); color:#22d3ee; border-color:rgba(34,211,238,0.3); }
-    .report-actions .btn-primary:hover { background:rgba(34,211,238,0.25); }
-    .report-actions .btn-default { background:rgba(34,211,238,0.05); color:rgba(226,232,240,0.5); border-color:rgba(34,211,238,0.1); }
-    .report-actions .btn-default:hover { border-color:rgba(34,211,238,0.2); color:#22d3ee; }
-    .report-cp-chart { height:60px; position:relative; margin-top:6px; }
-    .report-cp-line { position:absolute; bottom:0; left:0; right:0; height:40px; }
-    .report-cp-point { position:absolute; width:4px; height:4px; border-radius:50%; background:#22d3ee; box-shadow:0 0 4px #22d3ee; }
-    .report-cp-path { position:absolute; bottom:0; left:0; right:0; height:40px; }
-    .report-cp-path svg { width:100%; height:100%; }
-
-    /* 一键生成汇报按钮 */
-    .nav-report-btn { padding:5px 14px; border-radius:6px; font-size:12px; color:#22d3ee; border:1px solid rgba(34,211,238,0.25); background:rgba(34,211,238,0.08); cursor:pointer; transition:all 0.3s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
-    .nav-report-btn:hover { background:rgba(34,211,238,0.18); box-shadow:0 0 12px rgba(34,211,238,0.15); }
   </style>
   <link rel="stylesheet" href="../css/style.css">
 
@@ -399,18 +303,15 @@
         </div>
         <div class="screen-header-sub">北京市怀柔区生态环境局 · 工业涂装行业 · 2026-05-18 09:00</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="screen-nav">
-          <a href="../index.html">🏠 首页</a>
-          <a class="active" style="text-decoration:none">📊 指挥大屏</a>
-          <a href="llm-assistant.html" style="text-decoration:none">🤖 LLM助手</a>
-          <a href="knowledge-base.html" style="text-decoration:none">📚 案例库</a>
-          <a href="enterprise-management.html" style="text-decoration:none">📋 企业管理</a>
-          <a href="data-management.html" style="text-decoration:none">📊 数据管理</a>
-          <a href="device-management.html" style="text-decoration:none">🔧 设备管理</a>
-          <a href="../gov-monitoring/index.html" style="text-decoration:none">🌐 3D监测</a>
-        </div>
-        <button class="nav-report-btn" onclick="openReportModal()">📊 一键生成汇报</button>
+      <div class="screen-nav">
+        <a href="../index.html">🏠 首页</a>
+        <a class="active" style="text-decoration:none">📊 指挥大屏</a>
+        <a href="llm-assistant.html" style="text-decoration:none">🤖 LLM助手</a>
+        <a href="knowledge-base.html" style="text-decoration:none">📚 案例库</a>
+        <a href="enterprise-management.html" style="text-decoration:none">📋 企业管理</a>
+        <a href="data-management.html" style="text-decoration:none">📊 数据管理</a>
+        <a href="device-management.html" style="text-decoration:none">🔧 设备管理</a>
+        <a href="../gov-monitoring/index.html" style="text-decoration:none">🌐 3D监测</a>
       </div>
     </div>
     
@@ -525,55 +426,6 @@
           </div>
         </div>
 
-        <!-- 错峰生产智能排班甘特图 -->
-        <div class="collapse-panel" id="ganttPanel">
-          <div class="collapse-header" onclick="toggleCollapse('ganttPanel')">
-            <div class="collapse-header-title yellow">📅 错峰生产智能排班</div>
-            <span class="collapse-arrow">▼</span>
-          </div>
-          <div class="collapse-body">
-            <div class="gantt-wrap" id="ganttWrap"></div>
-          </div>
-        </div>
-
-        <!-- What-if 资源调度模拟 -->
-        <div class="collapse-panel open" id="whatifPanel">
-          <div class="collapse-header" onclick="toggleCollapse('whatifPanel')">
-            <div class="collapse-header-title purple">🔮 资源调度模拟</div>
-            <span class="collapse-arrow">▼</span>
-          </div>
-          <div class="collapse-body">
-            <div class="whatif-form">
-              <div class="form-group">
-                <label>目标企业</label>
-                <select id="wEnterprise">
-                  <option>蓝天工业涂装有限公司</option>
-                  <option>红星喷涂厂</option>
-                  <option>鑫达汽修</option>
-                  <option>金辉涂装</option>
-                  <option>伟达制造</option>
-                  <option>永昌喷涂</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>调度动作</label>
-                <select id="wAction">
-                  <option value="shutdown">🏭 停产整改</option>
-                  <option value="limit50">⚡ 限产50%</option>
-                  <option value="stagger">📅 错峰生产</option>
-                  <option value="maintain">🔧 设备检修</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>天数（1-7）</label>
-                <input type="number" id="wDays" min="1" max="7" value="3">
-              </div>
-              <button class="whatif-btn" onclick="runWhatIf()">▶ 开始模拟</button>
-            </div>
-            <div class="whatif-result" id="whatifResult"></div>
-          </div>
-        </div>
-
         <!-- 预测性预警面板（L2） -->
         <div class="panel" style="flex:1.2">
           <div class="panel-title purple">🔮 AI 预测性预警（未来7天）</div>
@@ -606,31 +458,6 @@
     <div class="modal-box">
       <div class="modal-header"><span class="modal-title" id="kpiModalTitle">详情</span><span class="modal-close" onclick="closeModalDirect()">✕</span></div>
       <div class="modal-body" id="kpiModalBody"></div>
-    </div>
-  </div>
-
-  <!-- 一键生成汇报弹窗 -->
-  <div class="modal-overlay" id="reportModal" onclick="closeModal(event)">
-    <div class="report-modal-box">
-      <div class="report-modal-header"><span class="report-modal-title">📊 AI 智能汇报生成</span><span class="modal-close" onclick="closeModalDirect()">✕</span></div>
-      <div class="report-modal-body">
-        <!-- 加载中 -->
-        <div class="report-loading" id="reportLoading">
-          <div class="report-loading-emoji">🤖</div>
-          <div style="font-size:13px;color:#a5f3fc;margin-bottom:6px">正在组装汇报材料...</div>
-          <div style="font-size:11px;color:rgba(226,232,240,0.35)">AI 正在读取大屏数据、分析趋势、生成建议</div>
-          <div class="report-progress"><div class="report-progress-fill" id="reportProgressFill"></div></div>
-        </div>
-        <!-- 汇报提纲 -->
-        <div class="report-outline" id="reportOutline">
-          <div class="report-headline" id="reportHeadline"></div>
-          <div id="reportContent"></div>
-          <div class="report-actions">
-            <button class="btn-default" onclick="copyReportOutline()">📋 复制汇报提纲</button>
-            <button class="btn-primary" onclick="exportReportWord()">📥 导出 Word</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1325,282 +1152,6 @@
       if (ehiEl) animateKpiValue(ehiEl, ehi, 1200, '<span class="unit">分</span>', 0);
     }
 
-    // ========== 折叠面板 ==========
-    function toggleCollapse(id) {
-      const panel = document.getElementById(id);
-      if (panel) panel.classList.toggle('open');
-    }
-
-    // ========== 甘特图 ==========
-    const GANTT_DATA = [
-      { name: '蓝天工业涂装', normal: [[8,12],[13,18]], stop: [[12,13]], optimal: [[10,12],[14,16]] },
-      { name: '红星喷涂厂', normal: [[9,11],[14,17]], stop: [[11,14]], optimal: [[9,11],[15,17]] },
-      { name: '鑫达汽修', normal: [[8,10],[16,19]], stop: [[10,16]], optimal: [[8,10],[17,19]] },
-      { name: '金辉涂装', normal: [[9,12],[13,16]], stop: [[12,13]], optimal: [[10,12],[14,16]] },
-      { name: '伟达制造', normal: [[8,17]], stop: [[17,18]], optimal: [[9,12],[14,17]] },
-      { name: '永昌喷涂', normal: [[10,12],[15,18]], stop: [[12,15]], optimal: [[10,12],[16,18]] },
-    ];
-
-    function renderGantt() {
-      const wrap = document.getElementById('ganttWrap');
-      if (!wrap) return;
-      const hours = Array.from({length:25},(_,i)=>i);
-      let html = '<div class="gantt-legend"><span><i class="normal"></i>正常生产</span><span><i class="stop"></i>建议停产/错峰</span><span><i class="optimal"></i>AI最优窗口</span></div>';
-      html += '<div class="gantt-grid">';
-      html += '<div class="gantt-label"></div>';
-      hours.forEach(h => { html += `<div class="gantt-hour">${h}</div>`; });
-      GANTT_DATA.forEach(row => {
-        html += `<div class="gantt-row"><div class="gantt-label" title="${row.name}">${row.name}</div>`;
-        for (let h = 0; h < 24; h++) {
-          let cls = 'empty';
-          if (row.optimal && row.optimal.some(r => h >= r[0] && h < r[1])) cls = 'optimal';
-          else if (row.stop && row.stop.some(r => h >= r[0] && h < r[1])) cls = 'stop';
-          else if (row.normal && row.normal.some(r => h >= r[0] && h < r[1])) cls = 'normal';
-          html += `<div class="gantt-cell ${cls}"></div>`;
-        }
-        html += '</div>';
-      });
-      html += '</div>';
-      wrap.innerHTML = html;
-    }
-
-    // ========== What-if 模拟 ==========
-    const WHATIF_RULES = {
-      shutdown: { label: '停产整改', vocsFactor: 0, carbonFactor: 0.2, cpDelta: 0.08 },
-      limit50: { label: '限产50%', vocsFactor: 0.5, carbonFactor: 0.6, cpDelta: 0.04 },
-      stagger: { label: '错峰生产', vocsFactor: 0.95, carbonFactor: 0.95, cpDelta: 0.05 },
-      maintain: { label: '设备检修', vocsFactor: 0.7, carbonFactor: 0.8, cpDelta: 0.03 },
-    };
-    const ENTERPRISE_WEIGHT = {
-      '蓝天工业涂装有限公司': { vocsShare: 0.22, carbonShare: 0.20, output: 850 },
-      '红星喷涂厂': { vocsShare: 0.18, carbonShare: 0.16, output: 620 },
-      '鑫达汽修': { vocsShare: 0.12, carbonShare: 0.14, output: 380 },
-      '金辉涂装': { vocsShare: 0.16, carbonShare: 0.15, output: 550 },
-      '伟达制造': { vocsShare: 0.15, carbonShare: 0.17, output: 480 },
-      '永昌喷涂': { vocsShare: 0.17, carbonShare: 0.18, output: 510 },
-    };
-
-    function runWhatIf() {
-      const enterprise = document.getElementById('wEnterprise').value;
-      const action = document.getElementById('wAction').value;
-      const days = parseInt(document.getElementById('wDays').value) || 3;
-      const rule = WHATIF_RULES[action];
-      const weight = ENTERPRISE_WEIGHT[enterprise] || { vocsShare: 0.15, carbonShare: 0.15, output: 500 };
-
-      const indices = DataStore.getLayeredIndices ? DataStore.getLayeredIndices() : { cpIndex: 0.62 };
-      const baseCp = indices.cpIndex || 0.62;
-
-      // 计算变化
-      const vocsChange = Math.round((1 - rule.vocsFactor) * weight.vocsShare * 100);
-      const carbonChange = Math.round((1 - rule.carbonFactor) * weight.carbonShare * 100);
-      let newCp = baseCp;
-      if (action === 'stagger') {
-        newCp = Math.min(1, baseCp + rule.cpDelta);
-      } else {
-        newCp = baseCp + (rule.cpDelta * (days / 3));
-      }
-      newCp = Math.min(1, Math.max(0, newCp));
-      const cpChange = Math.round((newCp - baseCp) / baseCp * 100);
-      const affectedEnterprises = action === 'stagger' ? 6 : 1;
-      const economicLoss = action === 'shutdown' ? Math.round(weight.output * days * 0.85) :
-                           action === 'limit50' ? Math.round(weight.output * days * 0.35) :
-                           action === 'stagger' ? Math.round(weight.output * days * 0.08 * 6) :
-                           Math.round(weight.output * days * 0.12);
-
-      const resultEl = document.getElementById('whatifResult');
-      if (!resultEl) return;
-      resultEl.classList.add('active');
-
-      const cpColor = cpChange >= 0 ? 'up' : 'down';
-      const suggest = cpChange >= 5
-        ? `根据模拟结果，建议对 ${enterprise} 采取<strong>${rule.label}</strong>措施，预计区域 C-P 可提升 <span style="color:#4ade80">${cpChange}%</span>，是近期最优干预方案。`
-        : `根据模拟结果，对 ${enterprise} 采取<strong>${rule.label}</strong>措施，区域 C-P 提升有限（${cpChange}%）。建议结合多企业协同调度或考虑其他处置方式。`;
-
-      resultEl.innerHTML = `
-        <div class="whatif-metric">
-          <div class="whatif-metric-item">
-            <div class="whatif-metric-label">区域 C-P 指数</div>
-            <div class="whatif-metric-value ${cpColor}">${newCp.toFixed(2)} <span style="font-size:11px;color:rgba(226,232,240,0.3)">(${cpChange >= 0 ? '+' : ''}${cpChange}%)</span></div>
-            <div class="whatif-metric-sub">基准 ${baseCp.toFixed(2)}</div>
-          </div>
-          <div class="whatif-metric-item">
-            <div class="whatif-metric-label">VOCs 排放变化</div>
-            <div class="whatif-metric-value up">↓ ${vocsChange}%</div>
-            <div class="whatif-metric-sub">区域贡献占比 ${Math.round(weight.vocsShare*100)}%</div>
-          </div>
-          <div class="whatif-metric-item">
-            <div class="whatif-metric-label">碳排放变化</div>
-            <div class="whatif-metric-value up">↓ ${carbonChange}%</div>
-            <div class="whatif-metric-sub">区域贡献占比 ${Math.round(weight.carbonShare*100)}%</div>
-          </div>
-          <div class="whatif-metric-item">
-            <div class="whatif-metric-label">经济影响估算</div>
-            <div class="whatif-metric-value down">-${economicLoss} 万元</div>
-            <div class="whatif-metric-sub">${days}天产值损失估算</div>
-          </div>
-        </div>
-        <div style="font-size:12px;color:rgba(226,232,240,0.4);margin-bottom:6px">影响对比</div>
-        <div class="whatif-bar-wrap">
-          <div class="whatif-bar-label">C-P 指数</div>
-          <div class="whatif-bar-track">
-            <div class="whatif-bar-seg before" style="width:${Math.round(baseCp*100)}%"></div>
-          </div>
-          <div class="whatif-bar-val">${baseCp.toFixed(2)}</div>
-        </div>
-        <div class="whatif-bar-wrap">
-          <div class="whatif-bar-label"></div>
-          <div class="whatif-bar-track">
-            <div class="whatif-bar-seg ${cpChange >= 0 ? 'after' : 'negative'}" style="width:${Math.round(Math.abs(newCp)*100)}%"></div>
-          </div>
-          <div class="whatif-bar-val">${newCp.toFixed(2)}</div>
-        </div>
-        <div class="whatif-bar-wrap">
-          <div class="whatif-bar-label">影响企业</div>
-          <div class="whatif-bar-track">
-            <div class="whatif-bar-seg after" style="width:${Math.min(100, affectedEnterprises*16)}%"></div>
-          </div>
-          <div class="whatif-bar-val">${affectedEnterprises}家</div>
-        </div>
-        <div class="whatif-suggest">💡 ${suggest}</div>
-      `;
-    }
-
-    // ========== 一键生成汇报 ==========
-    function openReportModal() {
-      const modal = document.getElementById('reportModal');
-      const loading = document.getElementById('reportLoading');
-      const outline = document.getElementById('reportOutline');
-      const progress = document.getElementById('reportProgressFill');
-      if (!modal) return;
-      modal.classList.add('active');
-      if (loading) loading.style.display = 'block';
-      if (outline) outline.classList.remove('active');
-      if (progress) progress.style.width = '0%';
-
-      // 模拟进度
-      setTimeout(() => { if (progress) progress.style.width = '35%'; }, 200);
-      setTimeout(() => { if (progress) progress.style.width = '70%'; }, 900);
-      setTimeout(() => {
-        if (progress) progress.style.width = '100%';
-        setTimeout(() => {
-          if (loading) loading.style.display = 'none';
-          generateReport();
-          if (outline) outline.classList.add('active');
-        }, 400);
-      }, 1700);
-    }
-
-    function generateReport() {
-      const alerts = DataStore.getAlerts();
-      const dispatches = DataStore.getDispatches();
-      const stats = DataStore.getStats ? DataStore.getStats() : {};
-      const cpTrend = DataStore.get('cpTrend', { dates: ['05-12','05-13','05-14','05-15','05-16','05-17','05-18'], values: [0.72,0.68,0.61,0.55,0.48,0.42,0.38] });
-      const indices = DataStore.getLayeredIndices ? DataStore.getLayeredIndices() : { cpIndex: 0.62 };
-      const baseCp = (indices.cpIndex || 0.62).toFixed(2);
-
-      const today = '2026年5月18日';
-      const totalEnterprises = 28;
-      const paradoxAlerts = alerts.filter(a => a.type === '减污增碳/减碳增污悖论');
-      const top3 = paradoxAlerts.slice(0, 3);
-      const dispatchTotal = dispatches.length;
-      const closedTotal = stats.closedDispatches || dispatches.filter(d => d.statusCode === 'closed').length;
-      const closureRate = dispatchTotal > 0 ? Math.round(closedTotal / dispatchTotal * 100) : 0;
-      const overdue = dispatches.filter(d => d.statusCode !== 'closed' && new Date(d.deadline) < new Date('2026-05-18')).length;
-
-      // CSS 折线
-      const vals = cpTrend.values || [0.72,0.68,0.61,0.55,0.48,0.42,0.38];
-      const dates = cpTrend.dates || ['05-12','05-13','05-14','05-15','05-16','05-17','05-18'];
-      const minV = Math.min(...vals), maxV = Math.max(...vals);
-      const range = maxV - minV || 1;
-      const points = vals.map((v,i) => {
-        const x = (i / (vals.length - 1)) * 100;
-        const y = 100 - ((v - minV) / range) * 80 - 10;
-        return `${x}% ${y}%`;
-      }).join(', ');
-      const svgPoints = vals.map((v,i) => {
-        const x = (i / (vals.length - 1)) * 280;
-        const y = 50 - ((v - minV) / range) * 36;
-        return `${x},${y}`;
-      }).join(' ');
-
-      document.getElementById('reportHeadline').textContent = `怀柔区工业涂装行业污碳协同监管周报（${today}）`;
-      document.getElementById('reportContent').innerHTML = `
-        <div class="report-item">
-          <div class="report-item-num">1</div>
-          <div class="report-item-content">
-            <div class="report-item-title">区域概况</div>
-            <div class="report-item-desc">辖区企业总数 <strong>${totalEnterprises}</strong> 家，区域 C-P 均值 <strong>${baseCp}</strong>，环比下降 8.8%。MCI 区域均值 0.55，EHI 区域均值 68 分。双减标兵企业 8 家，关注企业 12 家，减污增碳/减碳增污悖论风险企业 ${paradoxAlerts.length} 家。</div>
-          </div>
-          <div class="report-chart-icon" title="插入图表" onclick="showToast('图表插入功能开发中','info')">📈</div>
-        </div>
-        <div class="report-item">
-          <div class="report-item-num">2</div>
-          <div class="report-item-content">
-            <div class="report-item-title">重点预警</div>
-            <div class="report-item-desc">本周共触发减污增碳/减碳增污悖论预警 <strong>${paradoxAlerts.length}</strong> 条，其中今日 ${paradoxAlerts.filter(a=>a.date==='05-18').length} 条。TOP3 企业：${top3.map(a => a.title?.replace('风险预警','').replace('预警','') || '企业').join('、') || '暂无'}。主要原因为 RTO 空烧时长占比过高及喷涂排班分散。</div>
-          </div>
-          <div class="report-chart-icon" title="插入图表" onclick="showToast('图表插入功能开发中','info')">📈</div>
-        </div>
-        <div class="report-item">
-          <div class="report-item-num">3</div>
-          <div class="report-item-content">
-            <div class="report-item-title">处置进展</div>
-            <div class="report-item-desc">本周下发调度指令 <strong>${dispatchTotal}</strong> 条，已闭环 <strong>${closedTotal}</strong> 条，闭环率 <strong>${closureRate}%</strong>。平均处置时长 4.2 天，超期任务 <strong style="color:#f87171">${overdue}</strong> 条。鑫达汽修蓄热体清洗案例从下发到销号仅 2.8 天，可作为标准模板推广。</div>
-          </div>
-          <div class="report-chart-icon" title="插入图表" onclick="showToast('图表插入功能开发中','info')">📈</div>
-        </div>
-        <div class="report-item">
-          <div class="report-item-num">4</div>
-          <div class="report-item-content">
-            <div class="report-item-title">趋势分析</div>
-            <div class="report-item-desc">近7天区域 C-P 走势：从 ${vals[0]} 持续下降至 ${vals[vals.length-1]}，降幅 ${Math.round((vals[0]-vals[vals.length-1])/vals[0]*100)}%。下降拐点出现在 5月14日，与蓝天工业涂装天然气激增事件高度相关。</div>
-            <div class="report-cp-chart">
-              <svg viewBox="0 0 280 55" preserveAspectRatio="none" style="width:100%;height:100%">
-                <polyline fill="none" stroke="#22d3ee" stroke-width="2" points="${svgPoints}" opacity="0.8"/>
-                ${vals.map((v,i) => {
-                  const x = (i / (vals.length - 1)) * 280;
-                  const y = 50 - ((v - minV) / range) * 36;
-                  return `<circle cx="${x}" cy="${y}" r="2.5" fill="#22d3ee"/>`;
-                }).join('')}
-              </svg>
-              <div style="display:flex;justify-content:space-between;margin-top:2px">
-                ${dates.map(d => `<span style="font-size:9px;color:rgba(226,232,240,0.25)">${d}</span>`).join('')}
-              </div>
-            </div>
-          </div>
-          <div class="report-chart-icon" title="插入图表" onclick="showToast('图表插入功能开发中','info')">📈</div>
-        </div>
-        <div class="report-item">
-          <div class="report-item-num">5</div>
-          <div class="report-item-content">
-            <div class="report-item-title">下周工作重点（AI 生成）</div>
-            <div class="report-item-desc">
-              ① 优先对李村工业区开展集中排班调度，推动 RTO 空烧时长占比降至 5% 以下；<br>
-              ② 对蓝天工业涂装启用"催办+现场核查"双轨机制，督促超期整改任务尽快闭环；<br>
-              ③ 启动园区蓄热体老化专项排查，降低因热回收效率下降导致的天然气浪费。
-            </div>
-          </div>
-          <div class="report-chart-icon" title="插入图表" onclick="showToast('图表插入功能开发中','info')">📈</div>
-        </div>
-      `;
-    }
-
-    function copyReportOutline() {
-      const headline = document.getElementById('reportHeadline')?.textContent || '';
-      const items = document.querySelectorAll('.report-item');
-      let text = headline + '\n\n';
-      items.forEach(item => {
-        const title = item.querySelector('.report-item-title')?.textContent || '';
-        const desc = item.querySelector('.report-item-desc')?.textContent || '';
-        text += title + '\n' + desc + '\n\n';
-      });
-      navigator.clipboard.writeText(text).then(() => showToast('✅ 汇报提纲已复制到剪贴板', 'success')).catch(() => showToast('复制失败，请手动复制', 'error'));
-    }
-
-    function exportReportWord() {
-      showToast('导出功能开发中', 'info');
-    }
-
     // 初始化
     DataStore.init();
     renderKpiCards();
@@ -1611,7 +1162,6 @@
     renderTasks();
     renderEffectTracking();
     renderLayeredIndices();
-    renderGantt();
   </script>
 <script>
   window.addEventListener('load', function() {

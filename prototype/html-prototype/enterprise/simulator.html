@@ -79,6 +79,10 @@
       background: linear-gradient(135deg, rgba(74,222,128,0.1) 0%, rgba(34,211,238,0.08) 100%);
       border: 2px solid #4ade80;
     }
+    .result-banner.carbon_trap {
+      background: linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(234,179,8,0.1) 100%);
+      border: 2px solid #fbbf24;
+    }
     .result-icon { font-size: 48px; margin-bottom: 8px; }
     .result-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
     .result-desc { font-size: 14px; color: rgba(226,232,240,0.6); }
@@ -375,6 +379,32 @@
         </div>
       </div>
       
+      <div class="card" style="margin-top:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:16px">🌍 LCA 专属参数 <span style="font-size:12px;color:rgba(226,232,240,0.35);font-weight:400">（全生命周期分析专用）</span></div>
+        <div class="param-grid">
+          <div class="param-item">
+            <label>涂料供应商距离<span class="unit">km</span></label>
+            <input type="number" id="lcaDistance" value="500">
+          </div>
+          <div class="param-item">
+            <label>涂料运输方式</label>
+            <select id="lcaTransportMode">
+              <option value="road">公路</option>
+              <option value="rail">铁路</option>
+              <option value="water">水运</option>
+            </select>
+          </div>
+          <div class="param-item">
+            <label>成品运输吨公里数<span class="unit">t·km</span></label>
+            <input type="number" id="lcaProductTonKm" value="1000">
+          </div>
+          <div class="param-item">
+            <label>仓储能耗<span class="unit">kWh/月</span></label>
+            <input type="number" id="lcaWarehouseKwh" value="500">
+          </div>
+        </div>
+      </div>
+      
       <div class="btn-nav">
         <button class="btn btn-default" onclick="goStep(1)">← 上一步</button>
         <button class="btn btn-primary" onclick="goStep(3)">🚀 开始模拟计算</button>
@@ -492,8 +522,8 @@
     let isLCA = false;
 
     // 工艺参数数据库（含 LCA 参数）
-    // lca: { rawMaterial: kgCO₂/kg涂料, transport: kgCO₂/kg涂料, wasteDisposal: kgCO₂/kg涂料 }
-    // 运输按 500km 公路运输，0.12 kgCO₂/t·km → 0.12 * 500 / 1000 = 0.06 kgCO₂/kg
+    // lca: { rawMaterial: kgCO₂/kg涂料, wasteDisposal: kgCO₂/kg涂料 }
+    // 运输阶段碳排改由用户输入参数动态计算（距离/运输方式/成品运输/仓储能耗）
     const PROCESS_DB = {
       '溶剂型涂料（聚氨酯漆）': { vocsFactor: 0.55, carbonFactor: 2.5, dryTemp: 30, dryEnergy: 1.0, lca: { rawMaterial: 2.5, transport: 0.06, wasteDisposal: 0.3 } },
       '水性涂料（双组分）': { vocsFactor: 0.08, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.2, lca: { rawMaterial: 1.8, transport: 0.06, wasteDisposal: 0.15 } },
@@ -607,18 +637,38 @@
       const gasChange = Math.round(((targetParams.dryEnergy - currentParams.dryEnergy) / currentParams.dryEnergy) * 100);
       const processCarbonChange = Math.round(((targetParams.carbonFactor * targetParams.dryEnergy - currentParams.carbonFactor * currentParams.dryEnergy) / (currentParams.carbonFactor * currentParams.dryEnergy)) * 100);
 
+      // LCA 参数读取
+      const lcaDistance = parseFloat(document.getElementById('lcaDistance').value) || 500;
+      const lcaTransportMode = document.getElementById('lcaTransportMode').value || 'road';
+      const lcaProductTonKm = parseFloat(document.getElementById('lcaProductTonKm').value) || 1000;
+      const lcaWarehouseKwh = parseFloat(document.getElementById('lcaWarehouseKwh').value) || 500;
+      const TRANSPORT_FACTOR = { road: 0.12, rail: 0.03, water: 0.015 };
+      const tf = TRANSPORT_FACTOR[lcaTransportMode] || 0.12;
+      const paintUsageSafe = paintUsage || 15000;
+      const elecFactor = 0.55; // kgCO₂/kWh
+
+      // 当前工艺物流仓储参数（默认值）
+      const curDistance = 500;
+      const curTf = 0.12;
+      const curProductTonKm = 1000;
+      const curWarehouseKwh = 500;
+
       // LCA 计算（各阶段单位涂料碳排因子）
       const curLca = currentParams.lca;
       const tgtLca = targetParams.lca;
       const curProcessCarbon = currentParams.carbonFactor * currentParams.dryEnergy;
       const tgtProcessCarbon = targetParams.carbonFactor * targetParams.dryEnergy;
 
-      const currentLcaTotal = curLca.rawMaterial + curLca.transport + curProcessCarbon + curLca.wasteDisposal;
-      const targetLcaTotal = tgtLca.rawMaterial + tgtLca.transport + tgtProcessCarbon + tgtLca.wasteDisposal;
+      // 物流仓储阶段碳排（涂料运输 + 成品运输 + 仓储能耗）
+      const curLcaTransport = curDistance * curTf / 1000 + curProductTonKm * 0.12 / paintUsageSafe + curWarehouseKwh * 12 * elecFactor / paintUsageSafe;
+      const tgtLcaTransport = lcaDistance * tf / 1000 + lcaProductTonKm * 0.12 / paintUsageSafe + lcaWarehouseKwh * 12 * elecFactor / paintUsageSafe;
+
+      const currentLcaTotal = curLca.rawMaterial + curLcaTransport + curProcessCarbon + curLca.wasteDisposal;
+      const targetLcaTotal = tgtLca.rawMaterial + tgtLcaTransport + tgtProcessCarbon + tgtLca.wasteDisposal;
 
       const lcaTotalChange = Math.round(((targetLcaTotal - currentLcaTotal) / currentLcaTotal) * 100);
       const lcaRawChange = Math.round(((tgtLca.rawMaterial - curLca.rawMaterial) / curLca.rawMaterial) * 100);
-      const lcaTransportChange = Math.round(((tgtLca.transport - curLca.transport) / curLca.transport) * 100);
+      const lcaTransportChange = Math.round(((tgtLcaTransport - curLcaTransport) / curLcaTransport) * 100);
       const lcaWasteChange = Math.round(((tgtLca.wasteDisposal - curLca.wasteDisposal) / curLca.wasteDisposal) * 100);
 
       // 获取行业阈值
@@ -648,6 +698,12 @@
         resultColor = '#22d3ee';
         resultIcon = 'ℹ️';
         resultDesc = '产量变化 ' + outputChange + '% ≥ 10%，已排除产能扩张因素对悖论判定的影响。实际 C-P 变化需结合产量基准校正。';
+      } else if (vocsChange > 0 && processCarbonChange < 0) {
+        resultType = 'carbon_trap';
+        resultTitle = '减碳增污陷阱';
+        resultColor = '#fbbf24';
+        resultIcon = '🔶';
+        resultDesc = target + '切换后碳排放预计降低 ' + Math.abs(processCarbonChange) + '%，但 VOCs 排放预计增加 ' + vocsChange + '%，C-P 协同指数将从 ' + cpBefore + ' 变为 ' + cpAfter + '（' + industryCfg.name + '阈值 ' + threshold + '）';
       } else if (cpAfter < dangerLine) {
         resultType = 'trap';
         resultTitle = '减污增碳陷阱';
@@ -727,6 +783,11 @@
         if (isLCA && lcaRawChange > 0) {
           suggestions.innerHTML += '<li>LCA 视角下<strong>原料获取阶段碳排上升</strong>，建议优先选用低碳涂料供应商或生物基涂料</li>';
         }
+      } else if (resultType === 'carbon_trap') {
+        suggestions.innerHTML = '<li>该方案虽降低了碳排放，但<strong>VOCs 排放反而增加</strong>，需重点关注涂料 VOCs 含量控制</li><li>建议引入<strong>高效 VOCs 收集与处理系统</strong>，如沸石转轮 + RTO 组合工艺</li><li>评估<strong>低 VOCs 替代涂料</strong>可行性，从源头减少污染物排放</li><li>加强<strong>喷涂过程密闭化</strong>改造，提高废气收集效率至 95% 以上</li>';
+        if (isLCA && lcaTransportChange > 0) {
+          suggestions.innerHTML += '<li>LCA 视角下<strong>物流仓储阶段碳排上升</strong>，建议优化供应商布局或切换低碳运输方式</li>';
+        }
       } else if (resultType === 'imbalance') {
         suggestions.innerHTML = '<li>考虑<strong>分段烘干</strong>策略，降低整体能耗</li><li>引入<strong>蓄热体优化</strong>，提升热回收效率 5-8%</li><li>评估<strong>太阳能预热</strong>可行性，降低天然气依赖</li>';
       } else {
@@ -761,9 +822,9 @@
         return;
       }
       tbody.innerHTML = history.map(h => {
-        const tagMap = { trap: ['减污增碳陷阱','tag-neon-red'], imbalance: ['协同失衡','tag-neon-orange'], good: ['协同改善','tag-neon-green'] };
+        const tagMap = { trap: ['减污增碳陷阱','tag-neon-red'], carbon_trap: ['减碳增污陷阱','tag-neon-yellow'], imbalance: ['协同失衡','tag-neon-orange'], good: ['协同改善','tag-neon-green'] };
         const tag = tagMap[h.result] || ['协同改善','tag-neon-green'];
-        const cpColor = h.result === 'trap' ? '#f87171' : h.result === 'imbalance' ? '#fa8c16' : '#4ade80';
+        const cpColor = h.result === 'trap' ? '#f87171' : h.result === 'carbon_trap' ? '#fbbf24' : h.result === 'imbalance' ? '#fa8c16' : '#4ade80';
         const checked = selectedCompareIds.includes(h.id) ? 'checked' : '';
         const disabled = !checked && selectedCompareIds.length >= 2 ? 'disabled' : '';
         const perspectiveLabel = h.perspective === 'lca' ? '🌍 LCA' : '🔧 工序端';
