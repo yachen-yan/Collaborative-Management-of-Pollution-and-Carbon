@@ -77,7 +77,7 @@
     .todo-text { flex:1; font-size:12px; color:rgba(226,232,240,0.7); }
     .todo-deadline { font-size:10px; color:rgba(226,232,240,0.3); white-space:nowrap; }
     .todo-deadline.urgent { color:#f87171; }
-    .rt-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .rt-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
     .rt-item { text-align:center; padding:12px; background:rgba(34,211,238,0.03); border-radius:6px; border:1px solid rgba(34,211,238,0.06); transition:all 0.3s ease; cursor:pointer; opacity:0; animation:cardEnter 0.4s ease-out forwards; }
     .rt-item:hover { border-color:rgba(34,211,238,0.2); transform:translateY(-3px); box-shadow:0 4px 16px rgba(0,0,0,0.2), 0 0 12px rgba(34,211,238,0.05); }
     .rt-value { font-size:20px; font-weight:700; transition:all 0.3s; }
@@ -229,6 +229,8 @@
             <div class="rt-item" style="animation-delay:0.75s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#fbbf24" data-target="1200" data-suffix="">0</div><div class="rt-unit">Nm³/h</div><div class="rt-label">天然气流量</div></div>
             <div class="rt-item" style="animation-delay:0.80s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#22d3ee" data-target="8.3" data-suffix="">0</div><div class="rt-unit">kg/万m²</div><div class="rt-label">VOCs排放强度</div></div>
             <div class="rt-item" style="animation-delay:0.85s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#f97316" data-target="0.28" data-suffix="">0</div><div class="rt-unit">tCO₂/万m²</div><div class="rt-label">碳排强度</div></div>
+            <div class="rt-item" style="animation-delay:0.90s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#a78bfa" data-target="0.55" data-suffix="" id="mciValue">0</div><div class="rt-label">MCI 多污染物指数</div></div>
+            <div class="rt-item" style="animation-delay:0.95s" onclick="window.location.href='realtime-panel.html'"><div class="rt-value" style="color:#22d3ee" data-target="68" data-suffix="" id="ehiValue">0</div><div class="rt-label">EHI 环境健康评分</div></div>
           </div>
         </div>
       </div>
@@ -263,6 +265,17 @@
 
     // 页面加载完成后执行动画
     window.addEventListener('load', () => {
+      // 读取分层指数并覆盖默认值
+      try {
+        const indices = DataStore.getLayeredIndices ? DataStore.getLayeredIndices() : null;
+        if (indices) {
+          const mciEl = document.getElementById('mciValue');
+          const ehiEl = document.getElementById('ehiValue');
+          if (mciEl && typeof indices.mciIndex === 'number') mciEl.dataset.target = indices.mciIndex;
+          if (ehiEl && typeof indices.ehiScore === 'number') ehiEl.dataset.target = indices.ehiScore;
+        }
+      } catch(e) {}
+
       // 隐藏 loader
       setTimeout(() => {
         document.getElementById('pageLoader').classList.add('done');

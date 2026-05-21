@@ -217,6 +217,8 @@
         const dot = !a.read ? '<span class="dot"></span>' : '';
         const overdue = isOverdue(a);
         const overdueTag = overdue ? `<span style="display:inline-block;margin-left:6px;padding:1px 8px;border-radius:3px;font-size:11px;background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3)">⚠️ 超期</span>` : '';
+        const durLevel = (a.type === '减污增碳/减碳增污悖论' || a.type === 'imbalance') && a.cpValue != null && a.durationHours != null ? getDurationLevel(a.cpValue, a.durationHours) : null;
+        const durationTag = durLevel ? `<span style="display:inline-block;margin-left:6px;padding:1px 8px;border-radius:3px;font-size:11px;background:${durLevel.color}22;color:${durLevel.color};border:1px solid ${durLevel.color}44">${durLevel.icon} ${a.durationHours}h</span>` : '';
         const flowTags = a.flow ? a.flow.map((s, i) => {
           const cls = i < a.currentStep ? 'done' : (i === a.currentStep ? 'current' : '');
           return `<span class="flow-step ${cls}">${s}</span>`;
@@ -226,7 +228,7 @@
             <div class="alert-card-icon ${a.level}">${icons[a.type] || '🔔'}</div>
             <div class="alert-card-body">
               <div class="alert-card-header">
-                <span class="alert-card-title">${typeNames[a.type] || a.title}${dot}${overdueTag}</span>
+                <span class="alert-card-title">${typeNames[a.type] || a.title}${dot}${durationTag}${overdueTag}</span>
                 <span class="alert-card-time">${a.date} ${a.time}</span>
               </div>
               <div class="alert-card-desc">${a.desc}</div>

@@ -11,7 +11,7 @@
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center; }
     .page-header .update-time { font-size: 13px; color: rgba(226,232,240,0.4); font-weight: 400; }
-    .rt-big-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .rt-big-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 20px; }
     .rt-big-card { text-align: center; padding: 24px 16px; }
     .rt-big-value { font-size: 36px; font-weight: 700; line-height: 1.1; }
     .rt-big-label { font-size: 13px; color: rgba(226,232,240,0.4); margin-top: 8px; }
@@ -62,9 +62,55 @@
     .status-icon { font-size: 28px; margin-bottom: 6px; }
     .status-name { font-size: 13px; color: rgba(226,232,240,0.4); }
     .status-value { font-size: 18px; font-weight: 600; margin-top: 4px; }
-    .status-item.normal { background: #f6ffed; border-color: #b7eb8f; }
+    .status-item.normal { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.3); }
     .status-item.warn { background: rgba(234,179,8,0.08); border-color: rgba(234,179,8,0.3); }
     .status-item.danger { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
+
+    /* 排口明细 */
+    .outlet-section { margin-top: 8px; }
+    .outlet-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .outlet-tab {
+      padding: 8px 18px; border-radius: 6px; cursor: pointer; font-size: 13px;
+      background: rgba(15,23,42,0.5); border: 1px solid rgba(34,211,238,0.1);
+      color: rgba(226,232,240,0.5); transition: all 0.2s;
+    }
+    .outlet-tab:hover { border-color: rgba(34,211,238,0.3); color: rgba(226,232,240,0.8); }
+    .outlet-tab.active {
+      background: rgba(34,211,238,0.1); border-color: rgba(34,211,238,0.4);
+      color: #22d3ee; box-shadow: 0 0 12px rgba(34,211,238,0.15);
+    }
+    .outlet-tab .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; }
+    .outlet-panels { }
+    .outlet-panel { display: none; }
+    .outlet-panel.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform: translateY(0);} }
+    .outlet-card-inner {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .outlet-mini-card {
+      background: rgba(15,23,42,0.4); border: 1px solid rgba(34,211,238,0.1);
+      border-radius: 10px; padding: 16px;
+    }
+    .outlet-mini-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+    }
+    .outlet-mini-name { font-size: 15px; font-weight: 600; color: #e2e8f0; }
+    .outlet-mini-device { font-size: 11px; color: rgba(226,232,240,0.4); background: rgba(34,211,238,0.08); padding: 2px 8px; border-radius: 4px; }
+    .outlet-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .outlet-table th { text-align: left; padding: 6px 4px; color: rgba(226,232,240,0.35); font-weight: 400; border-bottom: 1px solid rgba(34,211,238,0.08); }
+    .outlet-table td { padding: 7px 4px; border-bottom: 1px solid rgba(34,211,238,0.05); }
+    .outlet-table tr:last-child td { border-bottom: none; }
+    .outlet-val { font-weight: 600; font-size: 13px; }
+    .outlet-unit { font-size: 10px; color: rgba(226,232,240,0.3); margin-left: 2px; }
+    .outlet-status-good { color: #4ade80; }
+    .outlet-status-warn { color: #fbbf24; }
+    .outlet-status-bad { color: #f87171; }
+    .outlet-eff-badge {
+      display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
+    }
+    .outlet-eff-good { background: rgba(74,222,128,0.12); color: #4ade80; }
+    .outlet-eff-warn { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .outlet-eff-bad { background: rgba(239,68,68,0.12); color: #f87171; }
   </style>
   <link rel="stylesheet" href="../css/style.css">
 
@@ -114,6 +160,16 @@
         <div class="rt-big-value" style="color:#f87171">0.38</div>
         <div class="rt-big-label">C-P 协同指数</div>
         <div class="rt-big-trend up">环比 -15.6%</div>
+      </div>
+      <div class="card rt-big-card">
+        <div class="rt-big-value" style="color:#a78bfa">0.55</div>
+        <div class="rt-big-label">MCI 多污染物指数</div>
+        <div class="rt-big-trend down">环比 -3.5%</div>
+      </div>
+      <div class="card rt-big-card">
+        <div class="rt-big-value" style="color:#22d3ee">68</div>
+        <div class="rt-big-label">EHI 环境健康评分</div>
+        <div class="rt-big-trend up">环比 +2.1%</div>
       </div>
     </div>
     
@@ -244,6 +300,20 @@
       </div>
     </div>
     
+    <!-- 排口实时监测明细 -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card outlet-section">
+          <div class="chart-header">
+            <span class="chart-title">🔬 排口实时监测明细</span>
+            <span style="font-size:12px;color:rgba(226,232,240,0.35)">⏱️ 每5分钟刷新</span>
+          </div>
+          <div class="outlet-tabs" id="outletTabs"></div>
+          <div class="outlet-panels" id="outletPanels"></div>
+        </div>
+      </div>
+    </div>
+
     <div style="height:40px"></div>
   </div>
   <script>
@@ -270,11 +340,14 @@ window.addEventListener("load",function(){
     document.querySelector('.update-time').textContent = '⏱️ 数据更新时间：' + timeStr + '（每5分钟刷新）';
 
     // 核心指标大卡
+    const layered = DataStore.getLayeredIndices();
     const metrics = [
       { selector: '.rt-big-grid .rt-big-card:nth-child(1) .rt-big-value', value: rt.vocsRate, suffix: '', color: '#0ea5e9', unit: 'kg/h', trend: '环比 -8.2%', trendCls: 'down' },
       { selector: '.rt-big-grid .rt-big-card:nth-child(2) .rt-big-value', value: rt.vocsEfficiency, suffix: '%', color: '#4ade80', unit: '', trend: '环比 +1.5%', trendCls: 'up' },
       { selector: '.rt-big-grid .rt-big-card:nth-child(3) .rt-big-value', value: rt.carbonTotal, suffix: '', color: '#fbbf24', unit: 'tCO₂/h', trend: '环比 +18.6%', trendCls: 'up' },
       { selector: '.rt-big-grid .rt-big-card:nth-child(4) .rt-big-value', value: rt.cpIndex, suffix: '', color: '#f87171', unit: '', trend: '环比 -15.6%', trendCls: 'up' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(5) .rt-big-value', value: layered.mciIndex, suffix: '', color: '#a78bfa', unit: '', trend: '环比 -3.5%', trendCls: 'down' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(6) .rt-big-value', value: layered.ehiScore, suffix: '', color: '#22d3ee', unit: '', trend: '环比 +2.1%', trendCls: 'up' },
     ];
     metrics.forEach(m => {
       const el = document.querySelector(m.selector);
@@ -350,10 +423,121 @@ window.addEventListener("load",function(){
         const progress = Math.min((now - start) / 1000, 1);
         const ease = 1 - Math.pow(1 - progress, 3);
         const val = from + (target - from) * ease;
-        el.textContent = (target < 1 ? val.toFixed(2) : val.toFixed(1)) + suffix;
+        const decimals = Number.isInteger(target) ? 0 : (target < 1 ? 2 : 1);
+        el.textContent = val.toFixed(decimals) + suffix;
         if (progress < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
+    });
+  }
+
+  // ========== 排口明细渲染 ==========
+  function renderOutletDetails() {
+    const outlets = DataStore.getOutlets();
+    const tabsEl = document.getElementById('outletTabs');
+    const panelsEl = document.getElementById('outletPanels');
+    if (!tabsEl || !panelsEl) return;
+
+    const limits = { tvoc: 120, nmhc: 100, so2: 50, nox: 150, pm25: 30 };
+
+    function getStatus(val, limit) {
+      if (val === undefined || val === null) return 'good';
+      if (val > limit) return 'bad';
+      if (val > limit * 0.8) return 'warn';
+      return 'good';
+    }
+    function getEffStatus(eff) {
+      if (eff >= 90) return 'good';
+      if (eff >= 80) return 'warn';
+      return 'bad';
+    }
+    function fmt(n, d) {
+      if (n === undefined || n === null) return '—';
+      return Number(n).toFixed(d);
+    }
+
+    outlets.forEach((outlet, idx) => {
+      const data = DataStore.getOutletData(outlet.id);
+      const devices = DataStore.getDevicesByOutlet(outlet.id);
+      const deviceName = devices.map(d => d.deviceCode).join(', ') || '无';
+
+      // Tab
+      const tab = document.createElement('div');
+      tab.className = 'outlet-tab' + (idx === 0 ? ' active' : '');
+      const dotColor = outlet.status === 'online' ? '#4ade80' : '#f87171';
+      tab.innerHTML = '<span class="status-dot" style="background:' + dotColor + '"></span>' + outlet.outletName;
+      tab.addEventListener('click', function() {
+        tabsEl.querySelectorAll('.outlet-tab').forEach(t => t.classList.remove('active'));
+        panelsEl.querySelectorAll('.outlet-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const panel = panelsEl.querySelector('[data-outlet-id="' + outlet.id + '"]');
+        if (panel) panel.classList.add('active');
+      });
+      tabsEl.appendChild(tab);
+
+      // Panel (card grid)
+      const panel = document.createElement('div');
+      panel.className = 'outlet-panel' + (idx === 0 ? ' active' : '');
+      panel.setAttribute('data-outlet-id', outlet.id);
+
+      if (!data) {
+        panel.innerHTML = '<div style="padding:20px;color:rgba(226,232,240,0.4)">暂无监测数据</div>';
+        panelsEl.appendChild(panel);
+        return;
+      }
+
+      const tvocStatus = getStatus(data.outletTVOC, limits.tvoc);
+      const nmhcStatus = getStatus(data.outletNMHC, limits.nmhc);
+      const so2Status = getStatus(data.outletSO2, limits.so2);
+      const noxStatus = getStatus(data.outletNOx, limits.nox);
+      const pm25Status = getStatus(data.outletPM25, limits.pm25);
+      const effStatus = getEffStatus(data.removalEfficiency);
+
+      const effCls = effStatus === 'good' ? 'outlet-eff-good' : (effStatus === 'warn' ? 'outlet-eff-warn' : 'outlet-eff-bad');
+
+      panel.innerHTML =
+        '<div class="outlet-card-inner">' +
+          '<div class="outlet-mini-card">' +
+            '<div class="outlet-mini-header">' +
+              '<span class="outlet-mini-name">' + outlet.outletName + '</span>' +
+              '<span class="outlet-mini-device">' + deviceName + '</span>' +
+            '</div>' +
+            '<table class="outlet-table">' +
+              '<tr><th>指标</th><th>入口浓度</th><th>出口浓度</th><th>状态</th></tr>' +
+              '<tr><td>TVOC</td><td>' + fmt(data.inletTVOC, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td class="outlet-status-' + tvocStatus + '">' + fmt(data.outletTVOC, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td><span class="outlet-eff-badge ' + effCls + '">' + fmt(data.removalEfficiency, 1) + '%</span></td></tr>' +
+              '<tr><td>NMHC</td><td>' + fmt(data.inletNMHC, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td class="outlet-status-' + nmhcStatus + '">' + fmt(data.outletNMHC, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td></td></tr>' +
+            '</table>' +
+          '</div>' +
+          '<div class="outlet-mini-card">' +
+            '<div style="font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:10px;">扩展污染物</div>' +
+            '<table class="outlet-table">' +
+              '<tr><th>指标</th><th>浓度</th><th>指标</th><th>浓度</th></tr>' +
+              '<tr><td>SO₂</td><td class="outlet-status-' + so2Status + '">' + fmt(data.outletSO2, 1) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td>NOₓ</td><td class="outlet-status-' + noxStatus + '">' + fmt(data.outletNOx, 0) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
+              '<tr><td>PM2.5</td><td class="outlet-status-' + pm25Status + '">' + fmt(data.outletPM25, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td>CO</td><td>' + fmt(data.outletCO, 0) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
+              '<tr><td>CO₂</td><td>' + fmt(data.outletCO2, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td>CH₄</td><td>' + fmt(data.outletCH4, 1) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
+            '</table>' +
+          '</div>' +
+          '<div class="outlet-mini-card">' +
+            '<div style="font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:10px;">运行参数</div>' +
+            '<table class="outlet-table">' +
+              '<tr><th>参数</th><th>数值</th><th>参数</th><th>数值</th></tr>' +
+              '<tr><td>废气流量</td><td>' + fmt(data.flowRate, 0) + '<span class="outlet-unit">m³/h</span></td>' +
+                  '<td>设备功率</td><td>' + fmt(data.devicePowerKw, 0) + '<span class="outlet-unit">kW</span></td></tr>' +
+              '<tr><td>天然气流量</td><td>' + fmt(data.deviceGasNm3h, 0) + '<span class="outlet-unit">Nm³/h</span></td>' +
+                  '<td>燃烧室温度</td><td>' + fmt(data.chamberTemp, 0) + '<span class="outlet-unit">°C</span></td></tr>' +
+              '<tr><td>热回收效率</td><td>' + fmt(data.heatRecoveryEff, 0) + '<span class="outlet-unit">%</span></td>' +
+                  '<td>空烧判定</td><td style="color:' + (data.isEmptyBurn ? '#f87171' : '#4ade80') + '">' + (data.isEmptyBurn ? '是' : '否') + '</td></tr>' +
+            '</table>' +
+          '</div>' +
+        '</div>';
+      panelsEl.appendChild(panel);
     });
   }
 
@@ -425,6 +609,7 @@ window.addEventListener("load",function(){
 
   initRealtimeData();
   renderTrendCharts();
+  renderOutletDetails();
   setTimeout(animateNumbers, 300);
 });
 </script>
