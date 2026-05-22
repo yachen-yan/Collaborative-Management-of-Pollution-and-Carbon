@@ -91,7 +91,7 @@
   </div>
   <div class="sidebar">
     <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
-    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📋</span>月度数据填报</a>
+    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时数据监控</a>
     <a href="realtime-panel.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时双算看板</a>
     <a href="simulator.html" class="sidebar-item"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
     <a href="triple-report.html" class="sidebar-item active"><span class="sidebar-icon">📑</span>三评合一报告</a>
@@ -103,12 +103,13 @@
     <div class="page-sub" id="reportSub">报告周期：2026年5月 | 生成时间：2026-06-05 08:30 | 类型：自动生成</div>
 
     <!-- 历史报告选择器 -->
-    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
       <span style="font-size:13px;color:rgba(226,232,240,0.5)">📅 选择报告月份：</span>
       <select id="reportSelector" onchange="switchReport(this.value)" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(34,211,238,0.2);background:rgba(34,211,238,0.05);color:#22d3ee;font-size:13px;outline:none;cursor:pointer">
         <option value="">-- 加载中 --</option>
       </select>
       <span id="reportTotal" style="font-size:12px;color:rgba(226,232,240,0.3)"></span>
+      <span style="font-size:11px;color:rgba(226,232,240,0.25);padding:3px 10px;background:rgba(34,211,238,0.06);border-radius:10px;border:1px solid rgba(34,211,238,0.08)">📋 以下报告为样例数据，供参考</span>
     </div>
 
     <div class="report-header" id="reportHeader">
@@ -152,7 +153,8 @@
     let currentReportId = null;
 
     function initReportSelector() {
-      const reports = DataStore.getTripleReports();
+      let reports = DataStore.getTripleReports();
+      if (!reports || reports.length === 0) reports = MOCK_DATA.tripleReports || [];
       const sel = document.getElementById('reportSelector');
       if (!reports.length) {
         sel.innerHTML = '<option value="">暂无历史报告</option>';
@@ -163,7 +165,8 @@
     }
 
     function switchReport(id) {
-      const reports = DataStore.getTripleReports();
+      let reports = DataStore.getTripleReports();
+      if (!reports || reports.length === 0) reports = MOCK_DATA.tripleReports || [];
       const report = reports.find(r => r.id === id);
       if (report) renderTripleReport(report);
     }
@@ -171,6 +174,10 @@
     function renderTripleReport(report) {
       if (!report) {
         report = DataStore.getLatestTripleReport();
+      }
+      if (!report) {
+        const mockReports = MOCK_DATA.tripleReports || [];
+        report = mockReports[0] || null;
       }
       if (!report) {
         document.querySelector('.main').innerHTML = '<div style="text-align:center;padding:60px;color:rgba(226,232,240,0.4)">暂无报告数据</div>';
@@ -277,5 +284,6 @@
     initReportSelector();
     renderTripleReport();
   </script>
+  <script>initCommon();</script>
 </body>
 </html>

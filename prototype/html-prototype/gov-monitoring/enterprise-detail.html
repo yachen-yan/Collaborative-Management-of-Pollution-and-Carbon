@@ -396,6 +396,38 @@
       '南苑涂装': { name:'南苑涂装有限公司', code:'91110108MA0002469', industry:'工业涂装', addr:'北京市怀柔区李村工业区AB区28号', contact:'何环保 133****2469', score:'--', level:'数据不足', scoreColor:'#94a3b8', cp:'--', cpColor:'#94a3b8', vocsRate:'--', carbonTotal:'--', chamberTemp:'--', gasFlow:'--' },
     };
 
+
+    const ENT_ID_MAP = {
+      '蓝天工业涂装有限公司': 'ENT-001',
+      '红星喷涂厂': 'ENT-002',
+      '永昌喷涂有限公司': 'ENT-003',
+      '鑫达汽修服务有限公司': 'ENT-004',
+      '伟达制造有限公司': 'ENT-005',
+      '金辉涂装有限公司': 'ENT-006',
+      '鸿运汽修服务有限公司': 'ENT-007',
+      '大成涂装有限公司': 'ENT-008',
+      '华兴制造有限公司': 'ENT-009',
+      '恒通喷涂有限公司': 'ENT-010',
+      '顺风汽修服务有限公司': 'ENT-011',
+      '荣达工业有限公司': 'ENT-012',
+      '宏宇涂装有限公司': 'ENT-013',
+      '信达制造有限公司': 'ENT-014',
+      '龙腾汽修服务有限公司': 'ENT-015',
+      '标杆企业A（绿色工厂）': 'ENT-016',
+      '标杆企业B（绿色工厂）': 'ENT-017',
+      '标杆企业C（绿色工厂）': 'ENT-018',
+      '标杆企业D（绿色工厂）': 'ENT-019',
+      '标杆企业E（绿色工厂）': 'ENT-020',
+      '标杆企业F（绿色工厂）': 'ENT-021',
+      '标杆企业G（绿色工厂）': 'ENT-022',
+      '标杆企业H（绿色工厂）': 'ENT-023',
+      '新达涂装有限公司': 'ENT-024',
+      '东升汽修服务有限公司': 'ENT-025',
+      '北环工业有限公司': 'ENT-026',
+      '西郊制造有限公司': 'ENT-027',
+      '南苑涂装有限公司': 'ENT-028',
+    };
+
     function renderRiskPanel(data) {
       const riskList = document.getElementById('riskList');
       const riskTitle = document.getElementById('riskTitle');
@@ -739,5 +771,6 @@
       document.getElementById('tab' + idx).classList.add('active');
     }
   </script>
+  <script>initCommon();</script>
 </body>
 </html>

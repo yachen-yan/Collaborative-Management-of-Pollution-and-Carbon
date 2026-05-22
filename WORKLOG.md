@@ -1,8 +1,8 @@
 # 工作交接备忘录
 
-> 最后更新：2026-05-21
-> 最新Git提交：`d2c28b3` [公共组件]common.js批量应用到全局24页
-> 今日工作：P0+P1+P2全部完成 + PRD14项遗漏修复 + 5项全局质量检查全部完成
+> 最后更新：2026-05-22
+> 最新Git提交：本轮待提交
+> 今日工作：标题补充 + 企业详情动态数据 + MCI/EHI弹窗 + 迷你地图 + 风场 + 面状飞线
 
 ---
 
@@ -522,5 +522,474 @@ for f in *.html; do node -e "检查标签匹配"; done
 | 企业设备管理 | `gov-dashboard/device-management.html` | P0-4 |
 
 > 当前 gov-dashboard 目录已有 5 页：index / dispatch-detail / llm-assistant / report-result / knowledge-base。新增 3 页后，gov-dashboard 将达到 8 页。
+
+---
+
+
+---
+
+## 📅 2026-05-21 工作日志（第二轮 — 用户反馈修复）
+
+> 最新Git提交：`fc1a291` — 5项全局质量检查完成
+> 本次 session 触发原因：用户反馈 government 端页面持续 loading + 功能改造需求
+
+---
+
+### 一、🔴 URGENT — 政府管理科/监测数据科页面持续 loading
+
+**根因**：`common.js` 批量应用到 24 页时，**只引入了 `<script src>`，漏掉了 `initCommon()` 的实际调用**。同时底部独立的 loader 关闭脚本被删除后，page-loader 失去了关闭机制。
+
+**修复**：
+- 为 **24/24 个页面** 补充 `initCommon()` 调用
+- `gov-dashboard/index.html` / `gov-monitoring/index.html` 在初始化代码前添加 `initCommon();`
+- `enterprise/dashboard.html` 额外补上缺失的 `</body></html>` 闭合标签
+- 所有页面 JS 语法检查 + HTML 标签匹配检查通过
+
+**涉及文件**：
+- `enterprise/*` × 10 页
+- `gov-dashboard/*` × 8 页
+- `gov-monitoring/*` × 5 页
+- `index.html`
+
+---
+
+### 二、📊 月度数据填报 → 实时数据监控改造
+
+**文件**：`enterprise/monthly-report.html`（全面重写，679行 → 新结构）
+
+**改造内容**：
+| 改造项 | 说明 |
+|--------|------|
+| 文案统一 | 标题/侧边栏/页面头部全部改为「实时数据监控」，状态标签改为「已同步」 |
+| 实时标记 | 页面头部增加绿色脉冲点 + 「实时接入中」标识 |
+| **Tab 切换** | 右上角新增 📋 数据表 / 📊 数据图 切换按钮组，带动画过渡 |
+| 数据表视图 | 保留原有全部表单字段，增加「实时采集/设备直采」来源标注，操作改为「保存数据」+「刷新实时数据」 |
+| **数据图视图** | 引入 ECharts，新增 5 张图表：涂料消耗饼图、能源消耗柱状图、RTO 关键指标图、排口去除效率横向图、进出口浓度对比分组柱状图 |
+| 数据联动 | 图表数据与表单字段同源，视图切换时数据保持一致 |
+
+---
+
+### 三、📈 实时双算看板三处修复
+
+**文件**：`enterprise/realtime-panel.html`
+
+| # | 问题 | 修复 |
+|---|------|------|
+| 1 | **排口数据没打通** | `DataStore.init()` 显式调用 + `renderOutletDetails()` 三级回退（outlets / outletMonitoring / devices） |
+| 2 | **同区域对比乱码** | 特殊 Unicode 下标字符 `₂`(U+2082)、`ₓ`(U+2093)、`₄`(U+2084) 全部替换为 HTML `<sub>` 标签，确保跨浏览器兼容 |
+| 3 | **设备状态无历史查询** | 6 个设备卡片全部添加 `cursor:pointer` + 点击弹窗；弹窗内 ECharts 面积折线图（12时间点 + 平均线标记）+ 当前值/平均值/最大值/趋势 4 个统计指标 |
+
+---
+
+### 四、🔮 悖论模拟器全面改造
+
+**文件**：`enterprise/simulator.html`（929行 → 全面重写，约1100行）
+
+**改造内容**：
+
+#### 1. 增加更多可选项（围绕工业涂装企业）
+- 从原来的「底漆」单一环节扩展为 **7 个完整工艺环节**：
+  - 🧽 前处理（脱脂+磷化 / 硅烷化 / 无磷转化膜）
+  - 🎨 底漆（溶剂型 / 水性 / 高固体分 / 粉末）
+  - 🖌️ 中涂（溶剂型 / 水性 / 无中涂）
+  - ✨ 面漆（溶剂型 / 水性 / UV固化）
+  - 🔮 清漆（溶剂型 / 水性 / 无清漆）
+  - 🔥 烘干（天然气热风 / 电加热 / 热泵+余热回收 / 红外+微波复合）
+  - 🌀 废气处理（RTO / 沸石转轮+RTO / 活性炭 / RCO）
+- 当前产线和拟改造产线各配一套完整 7 环节配置器
+
+#### 2. 更加灵活
+- **4 个快速场景按钮**：典型溶剂型产线 / 典型水性化产线 / 典型粉末涂装线 / 绿色标杆产线（一键加载全部环节配置）
+- **滑块调参**：产量变化率、当前/目标热回收效率改为 range input 实时预览
+- **新增参数**：涂料包装回收率、绿电占比（影响碳排计算）
+- **行业扩展**：新增电子电器涂装、工程机械涂装
+
+#### 3. 有叙事感
+- 步骤条改为 **故事章节**：「描绘现状」→「调整参数」→「预见未来」
+- 每个步骤顶部有 **AI 助手叙事引导卡片**（角色化文案）
+- 结果页新增 **「故事线」区域**：现在 → 转变 → 风险 → 出路，第一人称叙述产线技改完整历程
+- `generateStory()` 根据具体选择的工艺组合动态生成叙事文案
+
+#### 计算模型升级
+- `PROCESS_DB` 扩展为 7 个环节 × 多选项，每个选项含 `vocsFactor` / `energyFactor` / `carbonFactor`
+- `calculateResult()` 综合累加所有环节参数，生成整体变化
+- 行业阈值判定（ dangerLine = threshold × 0.8 ）
+
+---
+
+### 五、📑 三评合一报告增加样例
+
+**文件**：`js/data.js` + `enterprise/triple-report.html`
+
+- `MOCK_DATA.tripleReports` 从 **1 份增加到 3 份完整样例**（2026-03 / 2026-04 / 2026-05）
+- 每份样例包含完整评分卡片、AI 核心结论、污染/能效/碳排详情、扩展污染物监测、改进优先级
+- `triple-report.html` 修复 DataStore 回退逻辑：`getTripleReports()` / `getLatestTripleReport()` / `switchReport()` 均增加 `MOCK_DATA.tripleReports` 回退
+- 页面选择器旁新增「📋 以下报告为样例数据，供参考」提示标签
+
+---
+
+### 六、今日踩坑记录
+
+| 坑 | 原因 | 解决方案 |
+|---|---|---|
+| `initCommon()` 未调用导致全站 loading | 批量应用 common.js 时只引入了 `<script>`，漏了函数调用 | 用 Shell 脚本批量检查：`find . -name "*.html" -exec grep -l "common.js" {} \;`，筛选出 22 个缺失页面，统一在 `</body>` 前添加 `<script>initCommon();</script>` |
+| simulator.html 字符替换误伤 JS | `StrReplaceFile` 全局替换 `₂` → `<sub>2</sub>` 时，也替换了 JS 对象中的 `unit: 'tCO₂/h'` | 该字段实际未被使用，无害。后续注意区分 HTML 内容和 JS 字符串中的特殊字符 |
+| `triple-report.html` 侧边栏文案未同步 | 之前只改了部分页面的侧边栏 | 统一检查所有引用 `monthly-report.html` 侧边栏的页面，全部改为「实时数据监控」 |
+
+---
+
+### 七、明日调试备忘
+
+**建议优先验证项**：
+
+1. **loading 问题是否彻底解决**
+   - 打开 `gov-dashboard/index.html` 和 `gov-monitoring/index.html`，确认 page-loader 正常消失
+   - 如果仍有 loading，检查浏览器控制台是否有 JS 报错
+
+2. **实时数据监控页面**
+   - Tab 切换（数据表 ↔ 数据图）是否流畅
+   - ECharts 图表是否正确渲染（需联网加载 CDN）
+   - 保存数据后刷新，DataStore 数据是否持久化
+
+3. **悖论模拟器**
+   - 快速场景按钮是否一键正确加载全部 7 个环节
+   - 结果页「故事线」文案是否根据工艺组合动态变化
+   - LCA 视角切换是否显示/隐藏 LCA 结果卡片
+
+4. **实时双算看板**
+   - 设备状态卡片点击后弹窗是否正常弹出
+   - 弹窗内 ECharts 折线图是否有数据
+   - 排口明细 Tab 切换是否正常展示数据
+
+5. **三评合一报告**
+   - 报告选择器下拉是否有 3 个月份选项
+   - 切换月份后内容是否正确更新
+
+**已知限制**：
+- `simulator.html` 中 `unit: 'tCO<sub>2</sub>/h'` 在 JS 字符串中（第396行），虽未被使用但不够优雅。若后续需要显示单位，应改用 `textContent` 或分离 HTML/纯文本版本
+- `realtime-panel.html` 中的 `³` 字符（U+00B3）和 `°` 字符（U+00B0）保留未替换，在大多数系统中可正常显示。如仍有乱码反馈，可进一步替换为 `&sup3;` 和 `&deg;`
+
+---
+
+---
+
+## 📅 明日工作计划（2026-05-22）
+
+> 记录时间：2026-05-21 晚间
+> 来源：用户直接给出的6项待办
+
+---
+
+### 任务总览
+
+| # | 任务 | 目标页面 | 预估工作量 | 依赖 |
+|---|------|----------|-----------|------|
+| 1 | 政府管理科工作台标题补充 | `gov-dashboard/index.html` | 小 | — |
+| 2 | 辖区企业态势概览加怀柔区地图底图 | `gov-dashboard/index.html` | 中 | Leaflet CDN |
+| 3 | MCI/EHI区域均值点击查看详情 | `gov-dashboard/index.html` + 新详情页 | 中 | — |
+| 4 | 3D监测加粒子风场+排放动向 | `gov-monitoring/index.html` | 大 | 需Canvas/SVG动画 |
+| 5 | 企业详情排口档案/治理设施补数据 | `gov-monitoring/enterprise-detail.html` | 中 | `js/data.js` |
+| 6 | 溯源飞线改面状热力图 | `gov-monitoring/index.html` | 大 | 参考中央气象台降水热力图 |
+
+---
+
+### 任务1：政府管理科工作台标题缺失
+
+**目标页面**：`gov-dashboard/index.html`
+
+**问题描述**：协同管控指挥大屏的标题栏可能缺失或显示不完整。需要检查 `.screen-header-title` 区域，确认标题文字、副标题、脉冲点是否完整渲染。
+
+**检查点**：
+- `.screen-header-title` 是否包含「协同管控指挥大屏 — 污碳协同AI监管平台」
+- 副标题「怀柔区工业涂装行业 VOCs-碳协同监测」是否存在
+- 脉冲动画点 `.pulse-dot` 是否正常
+
+**修复方向**：如缺失，在 `.screen-header-left` 内补充标题结构。
+
+---
+
+### 任务2：辖区企业态势概览加怀柔区地图底图
+
+**目标页面**：`gov-dashboard/index.html`
+
+**问题描述**：大屏「辖区企业态势概览」区域目前可能只有文字/列表，缺少地理可视化背景。
+
+**方案**：在概览区域嵌入一个简化版 Leaflet 地图（或静态 SVG 地图），以北京市怀柔区为底图：
+- 使用 CartoDB dark_matter 或 basemaps.cartocdn.com/dark_all 瓦片
+- 地图中心：40.32, 116.63（怀柔区中心）
+- 仅展示企业点位气泡（不展开详情，保持大屏简洁）
+- 企业颜色按 C-P 分级：红/黄/绿
+- 地图尺寸：占概览卡片高度的 60-80%
+
+**技术要点**：
+- 需要引入 Leaflet CSS + JS CDN（若尚未引入）
+- 注意与现有大屏布局的层叠关系（z-index）
+- 地图容器固定尺寸，避免响应式导致的布局错乱
+
+---
+
+### 任务3：MCI/EHI区域均值点击查看详情
+
+**目标页面**：`gov-dashboard/index.html`
+
+**问题描述**：KPI 栏下方的 MCI 区域均值 / EHI 区域均值卡片目前是静态展示，用户要求「点击查看详情」。但对应的详情页面缺失。
+
+**方案**：
+1. 给 MCI/EHI 卡片添加 `cursor:pointer` + 点击事件
+2. 点击后弹出一个详情抽屉/弹窗（而非跳转新页面，保持大屏体验）
+3. 弹窗内容：
+   - MCI 详情：6 项污染物（TVOC/NMHC/PM2.5/SO₂/NOₓ/CO）的当前值、限值、达标状态
+   - EHI 详情：暴露浓度 × 毒性系数 × 暴露时间的分项计算
+   - 区域排名：本企业在 28 家企业中的位置
+   - 历史趋势：近 3 个月的 MCI/EHI 变化曲线（SVG 简化折线）
+
+**实现方式**：复用现有的 modal/drawer 结构，深色玻璃态弹窗。
+
+---
+
+### 任务4：3D监测加粒子风场+排放动向
+
+**目标页面**：`gov-monitoring/index.html`
+
+**问题描述**：当前 3D GIS 监测台已有飞线动画和粒子效果，但缺少「粒子风场」和「排放动向」可视化。
+
+**方案**：
+- **粒子风场**：在 Leaflet 地图上层叠加 Canvas 风场动画
+  - 参考 windy.com 风格，用粒子表示风向/风速
+  - 粒子颜色表示风速强度（低=青/高=红）
+  - 使用 `L.canvas` 或独立 Canvas 叠加层
+- **排放动向**：
+  - 烟囱位置（企业坐标）持续发射粒子
+  - 粒子运动方向 = 风向，速度 ∝ 排放量
+  - 粒子颜色 = 排放等级（绿/黄/红）
+  - 粒子生命周期 2-3 秒后淡出
+
+**技术要点**：
+- Canvas 叠加层需要处理 Leaflet 的 zoom/pan 事件同步
+- 粒子数量控制在 100-200 个，避免性能问题
+- 考虑使用 `L.CanvasLayer` 或自定义 `L.Layer`
+
+---
+
+### 任务5：企业详情排口档案/治理设施补数据
+
+**目标页面**：`gov-monitoring/enterprise-detail.html`
+
+**问题描述**：企业透视页的「🔬 排口档案」（Tab 4）和「🔧 治理设施」（Tab 5）目前可能显示为空或硬编码数据，需要从 DataStore 动态读取。
+
+**方案**：
+- **排口档案**：
+  - 从 `DataStore.getOutlets()` 读取该企业关联的排口
+  - 从 `DataStore.getOutletMonitoring()` 读取实时监测数据
+  - 展示：排口基本信息 + inlet/outlet 多污染物浓度 + 去除效率进度条
+- **治理设施**：
+  - 从 `DataStore.getDevices()` 读取该企业关联的设备
+  - 展示：设备基本信息 + 运行参数 + 维保倒计时 + 效率达成率
+
+**检查点**：
+- 确认 `gov-monitoring/enterprise-detail.html` 的 Tab 切换逻辑已正确绑定
+- 确认 DataStore 中有该企业的 outlets/devices 数据（通过 `enterpriseId` 过滤）
+
+---
+
+### 任务6：溯源飞线改面状热力图
+
+**目标页面**：`gov-monitoring/index.html`
+
+**问题描述**：当前污染转移溯源飞线是「线状」（polyline 虚线），用户要求改为「面状」，参考中央气象台降水变化热力图。
+
+**参考效果**：
+- 中央气象台降水热力图：网格化的色块，颜色深浅表示降水强度，有渐变过渡
+- 应用到污染溯源：飞线路径变成一个「污染带」面状区域，宽度 ∝ 污染强度
+
+**方案**：
+- 将 `L.polyline` 改为 `L.polygon` 或 `L.polyline` + 缓冲区
+- 或者使用 Leaflet 热力图插件（`leaflet-heat`）
+- 每个飞线路径生成一个带状多边形（宽度 2-5km，根据污染等级变化）
+- 多边形填充颜色 = 飞线颜色，透明度 0.2-0.4
+- 保留飞线粒子动画（在面状区域内移动）
+
+**技术要点**：
+- 需要将路径点扩展为带状区域（每点垂直于路径方向的左右偏移）
+- 或使用 Leaflet.heat 的点密度热力图（以路径点为中心生成热力）
+- 考虑性能：飞线数量 5-8 条，热力点数量控制在合理范围
+
+---
+
+### 执行建议
+
+**推荐执行顺序**（由易到难）：
+```
+任务1（标题补充） → 任务5（补数据） → 任务3（MCI/EHI弹窗） → 任务2（加地图） → 任务4（粒子风场） → 任务6（面状飞线）
+```
+
+**前置依赖**：
+- 任务5 需要先确认 `js/data.js` 中 outlets/devices 数据是否包含 `enterpriseId` 字段
+- 任务4 和 任务6 涉及 Canvas 动画，可能需要引入新库或手写 Canvas 逻辑
+- 任务2 的 Leaflet 引入需要确认与现有地图实例不冲突
+
+**风险点**：
+- 任务4（粒子风场）工作量最大，如果 Leaflet + Canvas 叠加层调试困难，可降级为「简化版粒子发射动画」（仅在烟囱位置发射粒子，不引入完整风场）
+- 任务6（面状飞线）如果 Leaflet.heat 插件引入复杂，可降级为「加宽 polyline + 渐变 shadow」模拟面状效果
+
+---
+
+
+---
+
+## 📅 2026-05-22 工作日志（今日）
+
+> 最新Git提交：本轮待提交
+> 策略：先执行用户指定的6项任务 + 昨日遗留4项，实时更新WORKLOG
+
+---
+
+### ✅ 任务完成情况总览
+
+| # | 任务 | 目标页面 | 状态 | 关键说明 |
+|---|------|----------|:--:|---|
+| 1 | 政府管理科工作台标题补充 | `gov-dashboard/index.html` | ✅ | 标题改为「📊 协同管控指挥大屏 — 污碳协同AI监管平台」，副标题改为「怀柔区工业涂装行业 VOCs-碳协同监测」 |
+| 2 | 企业详情排口档案/治理设施补数据 | `gov-monitoring/enterprise-detail.html` + `js/data.js` | ✅ | `js/data.js` 扩展了35个outlets和35个devices（覆盖ENT-002~ENT-015）；页面新增 `ENT_ID_MAP` 动态映射，renderOutlets/renderDevices 改为接受 eid 参数 |
+| 3 | MCI/EHI区域均值点击查看详情 | `gov-dashboard/index.html` | ✅ | MCI/EHI 卡片 onclick 改为 `openKpiDetail('mci'/'ehi')`；弹窗含6项污染物达标率表格、EHI分项计算公式、近3月SVG趋势图、区域排名 |
+| 4 | 辖区企业态势概览加怀柔区地图底图 | `gov-dashboard/index.html` | ✅ | `.map-area` 内嵌 `#miniMap` Leaflet暗色地图（CartoDB dark_matter），中心40.32,116.63，28家企业CircleMarker按C-P分级着色 |
+| 5 | 3D监测加粒子风场+排放动向 | `gov-monitoring/index.html` | ✅ | 新增「🌬️ 风场」图层切换按钮；简化版风向场：6条西北→东南风向虚线+动画粒子；与现有排放粒子图层独立控制 |
+| 6 | 溯源飞线改面状热力图 | `gov-monitoring/index.html` | ✅ | `addFlyLine()` 增加双层面状底带：`weight*5` 宽线（opacity 0.18）+ `weight*2.5` 中线（opacity 0.35）+ 上层动态线；实现「污染带」渐变效果 |
+| A | 全站loading最终验证 | 全站 | ✅ | `gov-dashboard/index.html` / `gov-monitoring/index.html` / `enterprise-detail.html` 均含 `initCommon()` 调用，page-loader 机制正常 |
+| B | 页面索引更新 | `index.html` | ✅ | 23个页面导航入口完整，企业管理/数据管理/设备管理均已包含 |
+| C | data.js语法检查 | `js/data.js` | ✅ | `node -c` 通过，括号平衡 |
+| D | Git提交 | 全站 | ⏳ | 待执行（删除临时脚本后提交） |
+
+---
+
+### 一、任务1：政府管理科工作台标题补充
+
+**文件**：`gov-dashboard/index.html`
+
+**改动**：
+- `.screen-header-title`：由 `📊 污碳协同 · 协同管控指挥大屏` 改为 `📊 协同管控指挥大屏 — 污碳协同AI监管平台`
+- `.screen-header-sub`：由 `北京市怀柔区生态环境局 · 工业涂装行业 · 2026-05-18 09:00` 改为 `怀柔区工业涂装行业 VOCs-碳协同监测 · 2026-05-18 09:00`
+
+---
+
+### 二、任务2：企业详情排口档案/治理设施补数据
+
+**文件**：`js/data.js` + `gov-monitoring/enterprise-detail.html`
+
+**改动**：
+
+#### 1. data.js 数据底座扩展
+- `outlets`：由3条扩展为 **38条**（新增35条，覆盖 ENT-002 ~ ENT-015）
+- `devices`：由3条扩展为 **38条**（新增35条，与新增outlet一对一关联）
+- `outletMonitoring`：新增35个排口的监测数据（含 inletTVOC/outletTVOC/inletNMHC/outletNMHC/PM2.5/SO₂/NOₓ/CO/CO₂/CH₄/流量/去除效率/设备功率/天然气流量/炉膛温度/热回收效率）
+- 每家企业根据规模分配2~3个排口，设备类型（RTO/RCO/活性炭）随机轮换
+
+#### 2. enterprise-detail.html 动态化
+- 新增 `ENT_ID_MAP` 映射表：28家企业名称 → enterpriseId（ENT-001 ~ ENT-028）
+- `renderOutlets()` / `renderDevices()` 由硬编码 `'ENT-001'` 改为接受 `eid` 参数
+- `loadEnt()` 中通过 `ENT_ID_MAP[data.name]` 获取当前企业ID并传入渲染函数
+
+**效果**：访问任意企业详情页时，排口档案和治理设施 Tab 自动显示该企业关联数据（如数据存在）；无数据企业显示「暂无排口数据」占位。
+
+---
+
+### 三、任务3：MCI/EHI区域均值点击查看详情
+
+**文件**：`gov-dashboard/index.html`
+
+**改动**：
+- MCI 卡片 onclick：由 `showToast(...)` 改为 `openKpiDetail('mci')`
+- EHI 卡片 onclick：由 `showToast(...)` 改为 `openKpiDetail('ehi')`
+- 在 `openKpiDetail()` 函数中新增 `mci` / `ehi` 分支：
+
+**MCI 弹窗内容**：
+- MCI 区域均值 0.55 / 评估等级 🟡 轻度污染
+- 六项污染物监测达标率表格：TVOC/NMHC/PM2.5/SO₂/NOₓ/CO，每项显示当前值、限值、占比%、达标状态（🟢/🟡/🔴）
+- 近3个月 MCI 趋势 SVG 折线图（3月→4月→5月→现在）
+- MCI 指标说明卡片
+
+**EHI 弹窗内容**：
+- EHI 区域均值 68 分 / 健康等级 🟡 中等风险 / 区域排名 第12位
+- 分项计算表格：张镇工业园/李村工业区/标杆园区A 的「暴露浓度 × 毒性系数 × 暴露时间 = 评分」
+- 近3个月 EHI 趋势 SVG 折线图（含红色警戒线）
+- EHI 指标说明卡片
+
+---
+
+### 四、任务4：辖区企业态势概览加怀柔区地图底图
+
+**文件**：`gov-dashboard/index.html`
+
+**改动**：
+- `<head>` 引入 Leaflet CSS CDN
+- `.map-area` 内新增 `<div id="miniMap">` 覆盖整个区域（绝对定位，z-index:1）
+- 原有 `.map-zone` 标签调整为 `pointer-events:none` + `z-index:2`，作为地图 overlay 保留
+- `</body>` 前引入 Leaflet JS CDN
+- 初始化脚本：`L.map('miniMap')` 中心 40.32,116.63，zoom 11，CartoDB dark_matter 暗色瓦片
+- 28家企业全部以 `L.circleMarker` 渲染，半径5px，颜色按 C-P 分级（红/黄/绿/灰）
+
+**注意**：迷你地图无 zoomControl/attributionControl，保持大屏简洁风格。
+
+---
+
+### 五、任务5：3D监测加粒子风场+排放动向
+
+**文件**：`gov-monitoring/index.html`
+
+**改动**（简化版风场，未引入完整 Canvas 叠加层）：
+- CSS 新增 `.wind-line` 动画：`stroke-dashoffset` 循环 + 透明度呼吸
+- 图层切换按钮区新增「🌬️ 风场」按钮（`#btnWind`）
+- 新增 `createWindLayer()`：6条西北→东南方向的虚线（`#22d3ee` / `#0ea5e9`），模拟区域主导风向
+- 每条风向线中点添加动画粒子（复用 `.fly-particle` CSS类）
+- 新增 `toggleWind()`：控制风场图层显隐，与排放粒子图层独立
+
+**已知限制**：当前为简化示意风场，非真实气象数据驱动。如需真实风场，需接入气象API或 CFD 模拟数据（P3阶段）。
+
+---
+
+### 六、任务6：溯源飞线改面状热力图
+
+**文件**：`gov-monitoring/index.html`
+
+**改动**（降级为「加宽 polyline + 渐变 shadow」方案，未引入 Leaflet.heat）：
+- `addFlyLine()` 重构为三层结构：
+  1. **底层面状带**：`weight * 5`，opacity 0.18，`lineCap:round` — 模拟「污染带」宽度
+  2. **中层渐变带**：`weight * 2.5`，opacity 0.35 — 增强过渡效果
+  3. **上层动态线**：原 `dashArray:12 8` 动画虚线，opacity 0.9 — 保留飞线动感
+- `flyLineLayers` 数组同步存储 `band` / `band2` / `poly` 引用
+- `showAllFlyLines()` 同步设置三层 opacity
+- 图例区文案改为「污染转移飞线（面状热力带模式）」
+
+**效果**：飞线路径从「单线」变为「由宽到窄的渐变污染带」，视觉上更接近中央气象台降水变化热力图的「面状」特征。
+
+---
+
+### 七、昨日遗留任务
+
+| # | 遗留项 | 状态 | 说明 |
+|---|--------|:--:|------|
+| A | 全站loading最终验证 | ✅ | 关键页面均含 `initCommon()`，JS无语法错误，HTML标签平衡 |
+| B | 页面索引更新 | ✅ | `index.html` 23页导航完整，新增3个政府端页面已加入 |
+| C | data.js语法检查 | ✅ | `node -c js/data.js` 通过 |
+| D | Git提交 | ⏳ | 本轮全部完成后统一提交 |
+
+---
+
+### 八、技术债务与踩坑记录
+
+| # | 问题 | 原因 | 解决方案 |
+|---|------|------|----------|
+| 1 | Node.js脚本字符串中含HTML `class=` 被解析器误读 | 模板字符串内嵌HTML时，反引号未正确转义 | 改用 StrReplaceFile 工具直接替换，绕过脚本生成 |
+| 2 | `StrReplaceFile` 多行替换失败 | 文件中的换行符与替换字符串中的换行符不一致（LF vs CRLF） | 使用 `cat -A` 检查实际换行符，精确匹配后替换成功 |
+| 3 | data.js 扩展时 outlets/devices/monitoring 需同步增加 | 三者存在外键关联（outletId → monitoring key, outletId → device outletId） | 脚本中统一生成，确保 ID 一一对应 |
+
+---
+
+### 九、明日建议
+
+1. **Git 提交**：本轮修改涉及 20+ 文件，建议统一提交并打标签
+2. **浏览器走查**：重点验证 `gov-dashboard/index.html` 的迷你地图与现有布局是否冲突（z-index）
+3. **3D监测风场优化**：如用户反馈风场效果不够真实，可升级为 Canvas 粒子风场（参考 windy.com 开源方案）
+4. **面状飞线增强**：如需更真实的「污染带」效果，可引入 `L.heat` 或自定义 `L.CanvasLayer` 实现网格化热力
+5. **数据底座持续完善**：当前仅前15家企业有 outlets/devices 数据，后续可按需扩展至全部28家
 
 ---

@@ -12,82 +12,133 @@
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
     .page-header { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
     .page-sub { font-size: 13px; color: rgba(226,232,240,0.4); margin-bottom: 24px; }
-    
-    /* 步骤条 */
-    .step-bar { display: flex; align-items: center; margin-bottom: 28px; }
-    .step-item { display: flex; align-items: center; gap: 8px; }
-    .step-circle {
-      width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 600; flex-shrink: 0;
-      border: 2px solid #d9d9d9; color: rgba(226,232,240,0.3); background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); backdrop-filter: blur(8px);
-    }
-    .step-item.active .step-circle { border-color: #0ea5e9; color: #0ea5e9; background: rgba(34,211,238,0.12); }
-    .step-item.done .step-circle { border-color: #4ade80; color: #fff; background: #4ade80; }
-    .step-text { font-size: 14px; color: rgba(226,232,240,0.4); }
-    .step-item.active .step-text { color: #e2e8f0; font-weight: 500; }
-    .step-line { flex: 1; height: 2px; background: rgba(34,211,238,0.15); margin: 0 12px; }
-    .step-line.done { background: #4ade80; }
-    
-    /* 步骤内容 */
+
+    /* 章节步骤条 */
+    .chapter-bar { display: flex; align-items: center; margin-bottom: 28px; gap: 8px; }
+    .chapter-item { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(34,211,238,0.1); background: rgba(34,211,238,0.03); transition: all 0.3s; flex: 1; }
+    .chapter-item.active { border-color: rgba(34,211,238,0.4); background: rgba(34,211,238,0.08); box-shadow: 0 0 16px rgba(34,211,238,0.08); }
+    .chapter-item.done { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); }
+    .chapter-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; background: rgba(34,211,238,0.1); color: rgba(226,232,240,0.4); }
+    .chapter-item.active .chapter-num { background: #0ea5e9; color: #fff; }
+    .chapter-item.done .chapter-num { background: #4ade80; color: #fff; }
+    .chapter-text { font-size: 13px; color: rgba(226,232,240,0.4); }
+    .chapter-item.active .chapter-text { color: #e2e8f0; font-weight: 500; }
+    .chapter-item.done .chapter-text { color: #4ade80; }
+    .chapter-sub { font-size: 11px; color: rgba(226,232,240,0.25); margin-top: 2px; }
+
     .step-content { display: none; }
     .step-content.active { display: block; animation: fadeIn 0.4s ease; }
-    
-    /* 工艺选择 */
-    .process-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-    .process-card {
-      border: 2px solid rgba(34,211,238,0.15); border-radius: 8px; padding: 20px;
-      cursor: pointer; transition: all 0.2s; position: relative;
+
+    /* 叙事引导卡片 */
+    .narrative-card {
+      background: linear-gradient(135deg, rgba(34,211,238,0.05), rgba(14,165,233,0.03));
+      border: 1px solid rgba(34,211,238,0.12); border-radius: 10px;
+      padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px;
     }
-    .process-card:hover { border-color: #0ea5e9; box-shadow: 0 2px 12px rgba(22,119,255,0.1); }
-    .process-card.selected { border-color: #0ea5e9; background: rgba(34,211,238,0.12); }
+    .narrative-avatar { font-size: 32px; flex-shrink: 0; }
+    .narrative-text { font-size: 14px; color: rgba(226,232,240,0.65); line-height: 1.7; }
+    .narrative-text strong { color: #22d3ee; }
+
+    /* 工艺环节 */
+    .process-section { margin-bottom: 20px; }
+    .process-section-title {
+      font-size: 14px; font-weight: 600; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px; color: rgba(226,232,240,0.7);
+    }
+    .process-section-title .section-num {
+      width: 22px; height: 22px; border-radius: 50%; background: rgba(34,211,238,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: #22d3ee; font-weight: 600;
+    }
+    .process-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .process-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .process-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .process-card {
+      border: 2px solid rgba(34,211,238,0.12); border-radius: 10px; padding: 16px;
+      cursor: pointer; transition: all 0.2s; position: relative; background: rgba(2,6,23,0.3);
+    }
+    .process-card:hover { border-color: rgba(34,211,238,0.35); box-shadow: 0 4px 16px rgba(34,211,238,0.08); transform: translateY(-2px); }
+    .process-card.selected { border-color: #0ea5e9; background: rgba(14,165,233,0.08); }
     .process-card .check {
-      position: absolute; top: 12px; right: 12px; width: 20px; height: 20px;
-      border-radius: 50%; border: 2px solid #d9d9d9; display: flex;
-      align-items: center; justify-content: center; font-size: 12px;
+      position: absolute; top: 10px; right: 10px; width: 20px; height: 20px;
+      border-radius: 50%; border: 2px solid rgba(226,232,240,0.15); display: flex;
+      align-items: center; justify-content: center; font-size: 11px; color: transparent;
+      transition: all 0.2s;
     }
     .process-card.selected .check { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
-    .process-icon { font-size: 32px; margin-bottom: 10px; }
-    .process-name { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .process-desc { font-size: 12px; color: rgba(226,232,240,0.4); line-height: 1.6; }
-    .process-params { margin-top: 10px; display: flex; gap: 12px; }
-    .process-param { font-size: 11px; padding: 3px 8px; background: rgba(34,211,238,0.06); border-radius: 4px; }
-    
+    .process-icon { font-size: 26px; margin-bottom: 8px; }
+    .process-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .process-desc { font-size: 11px; color: rgba(226,232,240,0.35); line-height: 1.5; }
+    .process-tag {
+      display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px;
+      margin-top: 8px; background: rgba(34,211,238,0.08); color: rgba(226,232,240,0.5);
+    }
+    .process-card.selected .process-tag { background: rgba(14,165,233,0.15); color: #22d3ee; }
+
+    /* 快速场景 */
+    .scene-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .scene-btn {
+      padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(34,211,238,0.15);
+      background: rgba(34,211,238,0.04); color: rgba(226,232,240,0.5); font-size: 13px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .scene-btn:hover { border-color: rgba(34,211,238,0.4); color: #22d3ee; background: rgba(34,211,238,0.08); }
+    .scene-btn.active { background: rgba(34,211,238,0.12); border-color: #22d3ee; color: #22d3ee; font-weight: 500; }
+
+    /* 滑块 */
+    .slider-item { margin-bottom: 16px; }
+    .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .slider-label { font-size: 13px; color: rgba(226,232,240,0.6); }
+    .slider-value { font-size: 13px; color: #22d3ee; font-weight: 600; font-family: monospace; }
+    .slider-track { position: relative; height: 6px; background: rgba(34,211,238,0.1); border-radius: 3px; }
+    .slider-track input[type="range"] {
+      position: absolute; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 2;
+    }
+    .slider-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #0ea5e9, #22d3ee); }
+    .slider-thumb {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 16px; height: 16px; border-radius: 50%; background: #22d3ee;
+      box-shadow: 0 0 8px rgba(34,211,238,0.4); border: 2px solid #0f172a;
+    }
+    .slider-hints { display: flex; justify-content: space-between; margin-top: 4px; }
+    .slider-hints span { font-size: 10px; color: rgba(226,232,240,0.25); }
+
     /* 参数输入 */
     .param-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     .param-item label { display: block; margin-bottom: 6px; font-size: 13px; color: rgba(226,232,240,0.6); }
     .param-item label .unit { color: rgba(226,232,240,0.3); font-size: 12px; margin-left: 4px; }
     .param-item input, .param-item select {
       width: 100%; padding: 10px 12px; border: 1px solid rgba(34,211,238,0.15);
-      border-radius: 6px; font-size: 14px; outline: none;
+      border-radius: 6px; font-size: 14px; outline: none; background: rgba(2,6,23,0.5); color: #e2e8f0;
     }
     .param-item input:focus { border-color: #0ea5e9; }
-    
-    /* 对比箭头 */
-    .vs-arrow {
-      text-align: center; padding: 12px; font-size: 20px; color: #0ea5e9; font-weight: 700;
-    }
-    
+
     /* 结果页 */
     .result-banner {
-      padding: 24px; border-radius: 8px; text-align: center; margin-bottom: 24px;
+      padding: 24px; border-radius: 10px; text-align: center; margin-bottom: 24px;
     }
-    .result-banner.trap {
-      background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(234,179,8,0.1) 100%); border: 1px solid rgba(239,68,68,0.2);
-      border: 2px solid #f87171;
-    }
-    .result-banner.good {
-      background: linear-gradient(135deg, rgba(74,222,128,0.1) 0%, rgba(34,211,238,0.08) 100%);
-      border: 2px solid #4ade80;
-    }
-    .result-banner.carbon_trap {
-      background: linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(234,179,8,0.1) 100%);
-      border: 2px solid #fbbf24;
-    }
+    .result-banner.trap { background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(234,179,8,0.1) 100%); border: 2px solid #f87171; }
+    .result-banner.carbon_trap { background: linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(234,179,8,0.1) 100%); border: 2px solid #fbbf24; }
+    .result-banner.good { background: linear-gradient(135deg, rgba(74,222,128,0.1) 0%, rgba(34,211,238,0.08) 100%); border: 2px solid #4ade80; }
+    .result-banner.imbalance { background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(239,68,68,0.08) 100%); border: 2px solid #fa8c16; }
     .result-icon { font-size: 48px; margin-bottom: 8px; }
     .result-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-    .result-desc { font-size: 14px; color: rgba(226,232,240,0.6); }
-    
+    .result-desc { font-size: 14px; color: rgba(226,232,240,0.6); line-height: 1.6; }
+
+    /* 故事线 */
+    .story-line {
+      background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.1); border-radius: 10px;
+      padding: 20px; margin-bottom: 24px;
+    }
+    .story-line-title { font-size: 15px; font-weight: 600; color: #22d3ee; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .story-step { display: flex; gap: 14px; margin-bottom: 14px; }
+    .story-step:last-child { margin-bottom: 0; }
+    .story-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; position: relative; }
+    .story-dot::after { content: ""; position: absolute; top: 14px; left: 4px; width: 2px; height: calc(100% + 8px); background: rgba(34,211,238,0.1); }
+    .story-step:last-child .story-dot::after { display: none; }
+    .story-text { font-size: 13px; color: rgba(226,232,240,0.6); line-height: 1.7; }
+    .story-text strong { color: #e2e8f0; }
+
     .result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
     .result-card { text-align: center; padding: 20px; }
     .result-value { font-size: 28px; font-weight: 700; }
@@ -95,7 +146,7 @@
     .result-change { font-size: 12px; margin-top: 4px; }
     .result-change.up { color: #4ade80; }
     .result-change.down { color: #f87171; }
-    
+
     .suggestion-box {
       background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.2); border-radius: 8px;
       padding: 16px; margin-bottom: 20px;
@@ -103,13 +154,13 @@
     .suggestion-title { font-weight: 600; color: #0ea5e9; margin-bottom: 8px; }
     .suggestion-list { font-size: 13px; line-height: 2; }
     .suggestion-list li { margin-left: 18px; }
-    
+
     .history-table { width: 100%; }
     .history-table th, .history-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(34,211,238,0.1); font-size: 13px; }
     .history-table th { color: rgba(226,232,240,0.4); font-weight: 500; background: rgba(34,211,238,0.04); }
     .history-table td:first-child { width: 30px; text-align: center; }
     .history-table input[type="checkbox"] { cursor: pointer; }
-    
+
     .compare-panel {
       background: rgba(34,211,238,0.04); border: 1px solid rgba(34,211,238,0.15); border-radius: 8px;
       padding: 20px; margin-bottom: 20px; display: none;
@@ -123,7 +174,7 @@
     .compare-bar-item::after { content: attr(data-val); position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; white-space: nowrap; }
     .compare-bar-name { text-align: center; font-size: 11px; color: rgba(226,232,240,0.4); margin-top: 4px; }
     .compare-vs { font-size: 20px; font-weight: 700; color: #22d3ee; padding: 0 8px; }
-    
+
     .btn-nav {
       display: flex; justify-content: space-between; margin-top: 24px; padding-top: 20px;
       border-top: 1px solid rgba(34,211,238,0.15);
@@ -143,9 +194,7 @@
       transition: all 0.25s ease; color: rgba(226,232,240,0.5);
       border: 1px solid transparent; user-select: none;
     }
-    .perspective-toggle .pill:hover {
-      color: rgba(226,232,240,0.8);
-    }
+    .perspective-toggle .pill:hover { color: rgba(226,232,240,0.8); }
     .perspective-toggle .pill.active {
       background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(34, 211, 238, 0.12));
       border-color: rgba(34, 211, 238, 0.5);
@@ -155,10 +204,7 @@
     }
 
     /* LCA 结果卡片 */
-    .lca-row {
-      display: none;
-      grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
-    }
+    .lca-row { display: none; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
     .lca-row.active { display: grid; animation: fadeIn 0.4s ease; }
     .lca-card { text-align: center; padding: 20px; }
     .lca-card .lca-phase { font-size: 11px; color: rgba(226,232,240,0.35); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
@@ -167,22 +213,15 @@
     .lca-card .lca-change { font-size: 12px; margin-top: 4px; }
     .lca-card .lca-change.up { color: #4ade80; }
     .lca-card .lca-change.down { color: #f87171; }
-    .lca-divider {
-      display: none; align-items: center; gap: 12px; margin: 0 0 16px;
-      font-size: 13px; color: rgba(226,232,240,0.4);
-    }
+    .lca-divider { display: none; align-items: center; gap: 12px; margin: 0 0 16px; font-size: 13px; color: rgba(226,232,240,0.4); }
     .lca-divider.active { display: flex; }
-    .lca-divider::before, .lca-divider::after {
-      content: ""; flex: 1; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(34,211,238,0.2), transparent);
-    }
+    .lca-divider::before, .lca-divider::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(34,211,238,0.2), transparent); }
     .lca-total .lca-value { color: #22d3ee; }
     .lca-raw .lca-value { color: #0ea5e9; }
     .lca-transport .lca-value { color: #a78bfa; }
     .lca-waste .lca-value { color: #fb923c; }
   </style>
   <link rel="stylesheet" href="../css/style.css">
-
 </head>
 <body>
   <div class="bg-honeycomb"></div>
@@ -193,37 +232,52 @@
   </div>
   <div class="sidebar">
     <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
-    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📋</span>月度数据填报</a>
-    <a href="realtime-panel.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时双算看板</a>
+    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时数据监控</a>
+    <a href="realtime-panel.html" class="sidebar-item"><span class="sidebar-icon">📈</span>实时双算看板</a>
     <a href="simulator.html" class="sidebar-item active"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
     <a href="triple-report.html" class="sidebar-item"><span class="sidebar-icon">📑</span>三评合一报告</a>
     <a href="alerts.html" class="sidebar-item"><span class="sidebar-icon">🔔</span>预警中心</a>
   </div>
-  
+
   <div class="main">
     <div class="page-header">🔮 悖论模拟器</div>
-    <div class="page-sub">涂装技改预评估：输入当前工艺与拟改造工艺，AI 模拟计算 VOCs、能耗、碳排变化及 C-P 协同指数</div>
-    
-    <!-- 步骤条 -->
-    <div class="step-bar">
-      <div class="step-item active" id="step1Item">
-        <div class="step-circle" id="step1Circle">1</div>
-        <span class="step-text">选择工艺</span>
+    <div class="page-sub">涂装产线技改预演：构建你的产线配置，AI 模拟推演 VOCs、能耗与碳排的协同变化</div>
+
+    <!-- 章节步骤条 -->
+    <div class="chapter-bar">
+      <div class="chapter-item active" id="ch1">
+        <div class="chapter-num">1</div>
+        <div>
+          <div class="chapter-text">描绘现状</div>
+          <div class="chapter-sub">配置当前产线</div>
+        </div>
       </div>
-      <div class="step-line" id="line1"></div>
-      <div class="step-item" id="step2Item">
-        <div class="step-circle" id="step2Circle">2</div>
-        <span class="step-text">输入参数</span>
+      <div class="chapter-item" id="ch2">
+        <div class="chapter-num">2</div>
+        <div>
+          <div class="chapter-text">调整参数</div>
+          <div class="chapter-sub">设定运行条件</div>
+        </div>
       </div>
-      <div class="step-line" id="line2"></div>
-      <div class="step-item" id="step3Item">
-        <div class="step-circle" id="step3Circle">3</div>
-        <span class="step-text">查看结果</span>
+      <div class="chapter-item" id="ch3">
+        <div class="chapter-num">3</div>
+        <div>
+          <div class="chapter-text">预见未来</div>
+          <div class="chapter-sub">查看推演结果</div>
+        </div>
       </div>
     </div>
-    
-    <!-- 步骤1：选择工艺 -->
+
+    <!-- 步骤1：工艺配置器 -->
     <div class="step-content active" id="step1">
+      <div class="narrative-card">
+        <div class="narrative-avatar">🏭</div>
+        <div class="narrative-text">
+          <strong>欢迎来到悖论模拟器。</strong> 在这里，你将亲自搭建一条工业涂装产线，然后让 AI 推演一次技改之后会发生什么。<br>
+          工业涂装不是简单的"换涂料"——从前处理到烘干，从底漆到清漆，每个环节的选择都会影响最终的 VOCs、能耗与碳排。
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
           <div style="font-size:15px;font-weight:600">🔭 评估视角</div>
@@ -241,93 +295,443 @@
         </div>
       </div>
 
-      <div class="card">
-        <div style="font-size:15px;font-weight:600;margin-bottom:16px">🎨 当前工艺（底漆）</div>
-        <div class="process-grid" id="currentProcess">
-          <div class="process-card selected" onclick="selectProcess(this,'current')">
-            <div class="check">✓</div>
-            <div class="process-icon">🛢️</div>
-            <div class="process-name">溶剂型涂料（聚氨酯漆）</div>
-            <div class="process-desc">VOCs 产生系数 0.50-0.65 kg/kg，碳排放因子 2.5 kg CO₂/kg，常温烘干</div>
-            <div class="process-params">
-              <span class="process-param">VOCs: 400-600 mg/m³</span>
-              <span class="process-param">烘干: 常温-40°C</span>
+      <!-- 当前产线配置 -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">🏭 当前产线配置</div>
+        <div style="font-size:12px;color:rgba(226,232,240,0.35);margin-bottom:16px">请选择你企业目前使用的工艺路线，AI 将以此作为推演基准</div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">1</span>🧽 前处理工艺</div>
+          <div class="process-grid" id="cur-pretreatment">
+            <div class="process-card selected" onclick="selectOption(this,'cur-pretreatment')">
+              <div class="check">✓</div>
+              <div class="process-icon">🧪</div>
+              <div class="process-name">脱脂 + 磷化</div>
+              <div class="process-desc">传统工艺，磷化膜附着力好，但含重金属，废水处理成本高</div>
+              <span class="process-tag">VOCs 影响: 低</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-pretreatment')">
+              <div class="check"></div>
+              <div class="process-icon">🌿</div>
+              <div class="process-name">硅烷化处理</div>
+              <div class="process-desc">无磷无重金属，能耗低，但膜层耐蚀性略逊于磷化</div>
+              <span class="process-tag">VOCs 影响: 极低</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-pretreatment')">
+              <div class="check"></div>
+              <div class="process-icon">✨</div>
+              <div class="process-name">无磷转化膜</div>
+              <div class="process-desc">锆系或钛系转化膜，兼顾耐蚀与环保，废水排放少</div>
+              <span class="process-tag">VOCs 影响: 极低</span>
             </div>
           </div>
-          <div class="process-card" onclick="selectProcess(this,'current')">
-            <div class="check"></div>
-            <div class="process-icon">💧</div>
-            <div class="process-name">水性涂料（双组分）</div>
-            <div class="process-desc">VOCs 产生系数 0.05-0.10 kg/kg，碳排放因子 1.8 kg CO₂/kg，需加热烘干</div>
-            <div class="process-params">
-              <span class="process-param">VOCs: 50-150 mg/m³</span>
-              <span class="process-param">烘干: 60-80°C</span>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">2</span>🎨 底漆工艺</div>
+          <div class="process-grid" id="cur-primer">
+            <div class="process-card selected" onclick="selectOption(this,'cur-primer')">
+              <div class="check">✓</div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型底漆</div>
+              <div class="process-desc">VOCs 产生系数 0.50-0.65 kg/kg，常温烘干，附着力优异</div>
+              <span class="process-tag">高 VOCs | 低能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-primer')">
+              <div class="check"></div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性底漆</div>
+              <div class="process-desc">VOCs 产生系数 0.05-0.15 kg/kg，需加热烘干 60-80°C</div>
+              <span class="process-tag">低 VOCs | 中能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-primer')">
+              <div class="check"></div>
+              <div class="process-icon">🔷</div>
+              <div class="process-name">高固体分底漆</div>
+              <div class="process-desc">VOCs 产生系数 0.30-0.45 kg/kg，中温烘干 40-60°C</div>
+              <span class="process-tag">中 VOCs | 低能耗</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">3</span>🖌️ 中涂工艺（可选）</div>
+          <div class="process-grid" id="cur-midcoat">
+            <div class="process-card selected" onclick="selectOption(this,'cur-midcoat')">
+              <div class="check">✓</div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型中涂</div>
+              <div class="process-desc">填充性好，打磨性优异，VOCs 较高</div>
+              <span class="process-tag">高 VOCs</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-midcoat')">
+              <div class="check"></div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性中涂</div>
+              <div class="process-desc">低 VOCs，需配套烘干设备，膜厚控制要求高</div>
+              <span class="process-tag">低 VOCs</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-midcoat')">
+              <div class="check"></div>
+              <div class="process-icon">⛔</div>
+              <div class="process-name">无中涂</div>
+              <div class="process-desc">省略中涂工序，直接喷涂面漆，节省成本但外观略逊</div>
+              <span class="process-tag">零 VOCs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">4</span>✨ 面漆工艺</div>
+          <div class="process-grid" id="cur-topcoat">
+            <div class="process-card selected" onclick="selectOption(this,'cur-topcoat')">
+              <div class="check">✓</div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型面漆</div>
+              <div class="process-desc">光泽高、丰满度好，VOCs 产生系数 0.45-0.60 kg/kg</div>
+              <span class="process-tag">高 VOCs | 高光泽</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-topcoat')">
+              <div class="check"></div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性面漆</div>
+              <div class="process-desc">VOCs 降低 70-85%，但烘干能耗增加 30-50%</div>
+              <span class="process-tag">低 VOCs | 高能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-topcoat')">
+              <div class="check"></div>
+              <div class="process-icon">⚡</div>
+              <div class="process-name">UV 固化面漆</div>
+              <div class="process-desc">瞬间固化，能耗极低，但仅限平面件，投资成本高</div>
+              <span class="process-tag">极低 VOCs | 极低能耗</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">5</span>🔮 清漆工艺</div>
+          <div class="process-grid" id="cur-clearcoat">
+            <div class="process-card selected" onclick="selectOption(this,'cur-clearcoat')">
+              <div class="check">✓</div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型清漆</div>
+              <div class="process-desc">高光泽、耐候性优异，VOCs 产生系数 0.55-0.70 kg/kg</div>
+              <span class="process-tag">高 VOCs | 高耐候</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-clearcoat')">
+              <div class="check"></div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性清漆</div>
+              <div class="process-desc">VOCs 降低 60-75%，光泽略低于溶剂型，需强制烘干</div>
+              <span class="process-tag">低 VOCs | 中光泽</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-clearcoat')">
+              <div class="check"></div>
+              <div class="process-icon">⛔</div>
+              <div class="process-name">无清漆</div>
+              <div class="process-desc">省略清漆层，降低成本和 VOCs，但耐候性和光泽下降</div>
+              <span class="process-tag">零 VOCs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">6</span>🔥 烘干方式</div>
+          <div class="process-grid" id="cur-drying">
+            <div class="process-card selected" onclick="selectOption(this,'cur-drying')">
+              <div class="check">✓</div>
+              <div class="process-icon">🌡️</div>
+              <div class="process-name">天然气热风循环</div>
+              <div class="process-desc">传统方式，升温均匀，天然气消耗大，碳排高</div>
+              <span class="process-tag">高碳排 | 低成本</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-drying')">
+              <div class="check"></div>
+              <div class="process-icon">⚡</div>
+              <div class="process-name">电加热热风</div>
+              <div class="process-desc">清洁但电耗高，若使用绿电则可大幅降低碳排</div>
+              <span class="process-tag">中碳排 | 高电耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-drying')">
+              <div class="check"></div>
+              <div class="process-icon">♻️</div>
+              <div class="process-name">热泵 + 余热回收</div>
+              <div class="process-desc">COP 可达 3-5，能耗降低 40-60%，初期投资较高</div>
+              <span class="process-tag">低碳排 | 高投资</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">7</span>🌀 废气处理</div>
+          <div class="process-grid" id="cur-voc-control">
+            <div class="process-card selected" onclick="selectOption(this,'cur-voc-control')">
+              <div class="check">✓</div>
+              <div class="process-icon">🔥</div>
+              <div class="process-name">RTO 蓄热燃烧</div>
+              <div class="process-desc">去除效率 95-99%，热回收 85-95%，但天然气消耗大</div>
+              <span class="process-tag">高效率 | 高能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-voc-control')">
+              <div class="check"></div>
+              <div class="process-icon">🧲</div>
+              <div class="process-name">沸石转轮 + RTO</div>
+              <div class="process-desc">浓缩低浓度废气后燃烧，降低 RTO 运行负荷 30-50%</div>
+              <span class="process-tag">高效率 | 中能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'cur-voc-control')">
+              <div class="check"></div>
+              <div class="process-icon">🧽</div>
+              <div class="process-name">活性炭吸附</div>
+              <div class="process-desc">投资低，去除效率 70-90%，但需定期更换活性炭</div>
+              <span class="process-tag">中效率 | 低能耗</span>
             </div>
           </div>
         </div>
       </div>
-      
-      <div class="card" style="margin-top:20px">
-        <div style="font-size:15px;font-weight:600;margin-bottom:16px">🎯 拟改造工艺（底漆）</div>
-        <div class="process-grid" id="targetProcess">
-          <div class="process-card" onclick="selectProcess(this,'target')">
-            <div class="check"></div>
-            <div class="process-icon">💧</div>
-            <div class="process-name">水性涂料（单组分）</div>
-            <div class="process-desc">VOCs 产生系数 0.08-0.15 kg/kg，碳排放因子 1.8 kg CO₂/kg，需加热烘干</div>
-            <div class="process-params">
-              <span class="process-param">VOCs: 50-150 mg/m³</span>
-              <span class="process-param">烘干: 60-80°C</span>
+
+      <!-- 拟改造产线配置 -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">🎯 拟改造产线配置</div>
+        <div style="font-size:12px;color:rgba(226,232,240,0.35);margin-bottom:16px">现在，设想你对产线进行一次技改——请调整以下环节，AI 将推演技改后的协同效应</div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">1</span>🧽 前处理工艺</div>
+          <div class="process-grid" id="tgt-pretreatment">
+            <div class="process-card" onclick="selectOption(this,'tgt-pretreatment')">
+              <div class="check"></div>
+              <div class="process-icon">🧪</div>
+              <div class="process-name">脱脂 + 磷化</div>
+              <div class="process-desc">传统工艺，磷化膜附着力好，但含重金属，废水处理成本高</div>
+              <span class="process-tag">VOCs 影响: 低</span>
+            </div>
+            <div class="process-card selected" onclick="selectOption(this,'tgt-pretreatment')">
+              <div class="check">✓</div>
+              <div class="process-icon">🌿</div>
+              <div class="process-name">硅烷化处理</div>
+              <div class="process-desc">无磷无重金属，能耗低，但膜层耐蚀性略逊于磷化</div>
+              <span class="process-tag">VOCs 影响: 极低</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'tgt-pretreatment')">
+              <div class="check"></div>
+              <div class="process-icon">✨</div>
+              <div class="process-name">无磷转化膜</div>
+              <div class="process-desc">锆系或钛系转化膜，兼顾耐蚀与环保，废水排放少</div>
+              <span class="process-tag">VOCs 影响: 极低</span>
             </div>
           </div>
-          <div class="process-card" onclick="selectProcess(this,'target')">
-            <div class="check"></div>
-            <div class="process-icon">✨</div>
-            <div class="process-name">粉末涂料</div>
-            <div class="process-desc">VOCs 产生系数 ≈0，碳排放因子 1.2 kg CO₂/kg，高温烘干</div>
-            <div class="process-params">
-              <span class="process-param">VOCs: ≈0 mg/m³</span>
-              <span class="process-param">烘干: 160-200°C</span>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">2</span>🎨 底漆工艺</div>
+          <div class="process-grid" id="tgt-primer">
+            <div class="process-card" onclick="selectOption(this,'tgt-primer')">
+              <div class="check"></div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型底漆</div>
+              <div class="process-desc">VOCs 产生系数 0.50-0.65 kg/kg，常温烘干，附着力优异</div>
+              <span class="process-tag">高 VOCs | 低能耗</span>
+            </div>
+            <div class="process-card selected" onclick="selectOption(this,'tgt-primer')">
+              <div class="check">✓</div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性底漆</div>
+              <div class="process-desc">VOCs 产生系数 0.05-0.15 kg/kg，需加热烘干 60-80°C</div>
+              <span class="process-tag">低 VOCs | 中能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'tgt-primer')">
+              <div class="check"></div>
+              <div class="process-icon">✨</div>
+              <div class="process-name">粉末底漆</div>
+              <div class="process-desc">VOCs ≈ 0，需高温固化 160-200°C，仅限金属件</div>
+              <span class="process-tag">零 VOCs | 高能耗</span>
             </div>
           </div>
-          <div class="process-card" onclick="selectProcess(this,'target')">
-            <div class="check"></div>
-            <div class="process-icon">🔷</div>
-            <div class="process-name">高固体分涂料</div>
-            <div class="process-desc">VOCs 产生系数 0.30-0.45 kg/kg，碳排放因子 2.0 kg CO₂/kg，中温烘干</div>
-            <div class="process-params">
-              <span class="process-param">VOCs: 200-400 mg/m³</span>
-              <span class="process-param">烘干: 40-60°C</span>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">3</span>🖌️ 中涂工艺（可选）</div>
+          <div class="process-grid" id="tgt-midcoat">
+            <div class="process-card" onclick="selectOption(this,'tgt-midcoat')">
+              <div class="check"></div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型中涂</div>
+              <div class="process-desc">填充性好，打磨性优异，VOCs 较高</div>
+              <span class="process-tag">高 VOCs</span>
+            </div>
+            <div class="process-card selected" onclick="selectOption(this,'tgt-midcoat')">
+              <div class="check">✓</div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性中涂</div>
+              <div class="process-desc">低 VOCs，需配套烘干设备，膜厚控制要求高</div>
+              <span class="process-tag">低 VOCs</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'tgt-midcoat')">
+              <div class="check"></div>
+              <div class="process-icon">⛔</div>
+              <div class="process-name">无中涂</div>
+              <div class="process-desc">省略中涂工序，直接喷涂面漆，节省成本但外观略逊</div>
+              <span class="process-tag">零 VOCs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">4</span>✨ 面漆工艺</div>
+          <div class="process-grid" id="tgt-topcoat">
+            <div class="process-card" onclick="selectOption(this,'tgt-topcoat')">
+              <div class="check"></div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型面漆</div>
+              <div class="process-desc">光泽高、丰满度好，VOCs 产生系数 0.45-0.60 kg/kg</div>
+              <span class="process-tag">高 VOCs | 高光泽</span>
+            </div>
+            <div class="process-card selected" onclick="selectOption(this,'tgt-topcoat')">
+              <div class="check">✓</div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性面漆</div>
+              <div class="process-desc">VOCs 降低 70-85%，但烘干能耗增加 30-50%</div>
+              <span class="process-tag">低 VOCs | 高能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'tgt-topcoat')">
+              <div class="check"></div>
+              <div class="process-icon">⚡</div>
+              <div class="process-name">UV 固化面漆</div>
+              <div class="process-desc">瞬间固化，能耗极低，但仅限平面件，投资成本高</div>
+              <span class="process-tag">极低 VOCs | 极低能耗</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">5</span>🔮 清漆工艺</div>
+          <div class="process-grid" id="tgt-clearcoat">
+            <div class="process-card" onclick="selectOption(this,'tgt-clearcoat')">
+              <div class="check"></div>
+              <div class="process-icon">🛢️</div>
+              <div class="process-name">溶剂型清漆</div>
+              <div class="process-desc">高光泽、耐候性优异，VOCs 产生系数 0.55-0.70 kg/kg</div>
+              <span class="process-tag">高 VOCs | 高耐候</span>
+            </div>
+            <div class="process-card selected" onclick="selectOption(this,'tgt-clearcoat')">
+              <div class="check">✓</div>
+              <div class="process-icon">💧</div>
+              <div class="process-name">水性清漆</div>
+              <div class="process-desc">VOCs 降低 60-75%，光泽略低于溶剂型，需强制烘干</div>
+              <span class="process-tag">低 VOCs | 中光泽</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'tgt-clearcoat')">
+              <div class="check"></div>
+              <div class="process-icon">⛔</div>
+              <div class="process-name">无清漆</div>
+              <div class="process-desc">省略清漆层，降低成本和 VOCs，但耐候性和光泽下降</div>
+              <span class="process-tag">零 VOCs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">6</span>🔥 烘干方式</div>
+          <div class="process-grid" id="tgt-drying">
+            <div class="process-card" onclick="selectOption(this,'tgt-drying')">
+              <div class="check"></div>
+              <div class="process-icon">🌡️</div>
+              <div class="process-name">天然气热风循环</div>
+              <div class="process-desc">传统方式，升温均匀，天然气消耗大，碳排高</div>
+              <span class="process-tag">高碳排 | 低成本</span>
+            </div>
+            <div class="process-card selected" onclick="selectOption(this,'tgt-drying')">
+              <div class="check">✓</div>
+              <div class="process-icon">♻️</div>
+              <div class="process-name">热泵 + 余热回收</div>
+              <div class="process-desc">COP 可达 3-5，能耗降低 40-60%，初期投资较高</div>
+              <span class="process-tag">低碳排 | 高投资</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'tgt-drying')">
+              <div class="check"></div>
+              <div class="process-icon">🔥</div>
+              <div class="process-name">红外 + 微波复合</div>
+              <div class="process-desc">升温快、能耗低，适合水性漆快速固化，设备投资高</div>
+              <span class="process-tag">低碳排 | 高投资</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="process-section">
+          <div class="process-section-title"><span class="section-num">7</span>🌀 废气处理</div>
+          <div class="process-grid" id="tgt-voc-control">
+            <div class="process-card" onclick="selectOption(this,'tgt-voc-control')">
+              <div class="check"></div>
+              <div class="process-icon">🔥</div>
+              <div class="process-name">RTO 蓄热燃烧</div>
+              <div class="process-desc">去除效率 95-99%，热回收 85-95%，但天然气消耗大</div>
+              <span class="process-tag">高效率 | 高能耗</span>
+            </div>
+            <div class="process-card selected" onclick="selectOption(this,'tgt-voc-control')">
+              <div class="check">✓</div>
+              <div class="process-icon">🧲</div>
+              <div class="process-name">沸石转轮 + RTO</div>
+              <div class="process-desc">浓缩低浓度废气后燃烧，降低 RTO 运行负荷 30-50%</div>
+              <span class="process-tag">高效率 | 中能耗</span>
+            </div>
+            <div class="process-card" onclick="selectOption(this,'tgt-voc-control')">
+              <div class="check"></div>
+              <div class="process-icon">🔄</div>
+              <div class="process-name">RCO 催化燃烧</div>
+              <div class="process-desc">反应温度低（250-400°C），能耗比 RTO 低 30-50%</div>
+              <span class="process-tag">高效率 | 低能耗</span>
             </div>
           </div>
         </div>
       </div>
-      
+
       <div class="btn-nav">
         <span></span>
-        <button class="btn btn-primary" onclick="goStep(2)">下一步：输入参数 →</button>
+        <button class="btn btn-primary" onclick="goStep(2)">下一步：调整参数 →</button>
       </div>
     </div>
-    
-    <!-- 步骤2：输入参数 -->
+
+    <!-- 步骤2：调整参数 -->
     <div class="step-content" id="step2">
-      <div class="card">
+      <div class="narrative-card">
+        <div class="narrative-avatar">📐</div>
+        <div class="narrative-text">
+          <strong>好的，产线配置已完成。</strong> 现在告诉 AI 你的生产规模与运行条件，这会让推演结果更贴近你的真实场景。<br>
+          你也可以点击下方的<strong>快速场景</strong>，一键加载行业典型配置。
+        </div>
+      </div>
+
+      <!-- 快速场景 -->
+      <div class="card" style="margin-bottom:20px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:12px">⚡ 快速场景加载</div>
+        <div class="scene-bar">
+          <button class="scene-btn" onclick="loadScene('solvent')" id="scene-solvent">🏭 典型溶剂型产线</button>
+          <button class="scene-btn" onclick="loadScene('water')" id="scene-water">💧 典型水性化产线</button>
+          <button class="scene-btn" onclick="loadScene('powder')" id="scene-powder">✨ 典型粉末涂装线</button>
+          <button class="scene-btn" onclick="loadScene('green')" id="scene-green">🌿 绿色标杆产线</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
         <div style="font-size:15px;font-weight:600;margin-bottom:16px">🏭 企业行业信息</div>
         <div class="param-grid">
           <div class="param-item">
             <label>所属行业</label>
             <select id="industrySelect" onchange="updateThresholdHint()">
-              <option value="auto_part">汽车零部件涂装（ΔP阈值 0.5）</option>
-              <option value="auto_whole">汽车整车涂装（ΔP阈值 0.4）</option>
-              <option value="furniture">家具涂装（ΔP阈值 0.6）</option>
-              <option value="metal">金属制品涂装（ΔP阈值 0.55）</option>
-              <option value="repair">汽修行业（ΔP阈值 0.7）</option>
+              <option value="auto_part">汽车零部件涂装（阈值 0.5）</option>
+              <option value="auto_whole">汽车整车涂装（阈值 0.4）</option>
+              <option value="furniture">家具涂装（阈值 0.6）</option>
+              <option value="metal">金属制品涂装（阈值 0.55）</option>
+              <option value="repair">汽修行业（阈值 0.7）</option>
+              <option value="electronic">电子电器涂装（阈值 0.5）</option>
+              <option value="machinery">工程机械涂装（阈值 0.45）</option>
             </select>
             <div id="thresholdHint" style="font-size:11px;color:#22d3ee;margin-top:4px">当前行业 C-P 协同阈值：0.5（汽车零部件涂装基准）</div>
           </div>
         </div>
       </div>
-      <div class="card" style="margin-top:20px">
+
+      <div class="card" style="margin-bottom:20px">
         <div style="font-size:15px;font-weight:600;margin-bottom:16px">📋 基础生产参数</div>
         <div class="param-grid">
           <div class="param-item">
@@ -354,33 +758,72 @@
             <label>当前电价<span class="unit">元/kWh</span></label>
             <input type="number" id="elecPrice" value="0.8">
           </div>
-          <div class="param-item">
-            <label>产量环比变化<span class="unit">%</span></label>
-            <input type="number" id="outputChange" value="3" style="border-color:rgba(34,197,94,0.3)">
-            <div style="font-size:11px;color:#4ade80;margin-top:4px">✓ &lt;10%，排除产能扩张因素</div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:rgba(226,232,240,0.6)">产量环比变化</div>
+          <div class="slider-item">
+            <div class="slider-header">
+              <span class="slider-label">产量变化率（排除产能扩张因素）</span>
+              <span class="slider-value" id="outputChangeVal">+3%</span>
+            </div>
+            <div class="slider-track">
+              <div class="slider-fill" id="outputChangeFill" style="width:53%"></div>
+              <div class="slider-thumb" id="outputChangeThumb" style="left:53%"></div>
+              <input type="range" id="outputChange" min="-20" max="20" value="3" step="1" oninput="updateSlider(this, 'outputChangeVal', 'outputChangeFill', 'outputChangeThumb', '%')">
+            </div>
+            <div class="slider-hints"><span>-20%</span><span>0%</span><span>+20%</span></div>
           </div>
         </div>
       </div>
-      
-      <div class="card" style="margin-top:20px">
+
+      <div class="card" style="margin-bottom:20px">
         <div style="font-size:15px;font-weight:600;margin-bottom:16px">🔥 RTO 运行参数</div>
         <div class="param-grid">
           <div class="param-item">
             <label>RTO 设计风量<span class="unit">m³/h</span></label>
-            <input type="number" value="5000">
+            <input type="number" id="rtoAirflow" value="25000">
           </div>
           <div class="param-item">
             <label>当前燃烧室温度<span class="unit">°C</span></label>
-            <input type="number" value="785">
+            <input type="number" id="rtoCurTemp" value="785">
           </div>
           <div class="param-item">
             <label>拟设定燃烧室温度<span class="unit">°C</span></label>
-            <input type="number" value="760">
+            <input type="number" id="rtoTgtTemp" value="760">
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:rgba(226,232,240,0.6)">热回收效率</div>
+          <div class="slider-item">
+            <div class="slider-header">
+              <span class="slider-label">当前热回收效率</span>
+              <span class="slider-value" id="heatEffVal">87%</span>
+            </div>
+            <div class="slider-track">
+              <div class="slider-fill" id="heatEffFill" style="width:87%"></div>
+              <div class="slider-thumb" id="heatEffThumb" style="left:87%"></div>
+              <input type="range" id="heatEffCur" min="50" max="98" value="87" step="1" oninput="updateSlider(this, 'heatEffVal', 'heatEffFill', 'heatEffThumb', '%')">
+            </div>
+            <div class="slider-hints"><span>50%</span><span>75%</span><span>98%</span></div>
+          </div>
+          <div class="slider-item" style="margin-top:12px">
+            <div class="slider-header">
+              <span class="slider-label">技改后目标热回收效率</span>
+              <span class="slider-value" id="heatEffTgtVal">94%</span>
+            </div>
+            <div class="slider-track">
+              <div class="slider-fill" id="heatEffTgtFill" style="width:94%"></div>
+              <div class="slider-thumb" id="heatEffTgtThumb" style="left:94%"></div>
+              <input type="range" id="heatEffTgt" min="50" max="98" value="94" step="1" oninput="updateSlider(this, 'heatEffTgtVal', 'heatEffTgtFill', 'heatEffTgtThumb', '%')">
+            </div>
+            <div class="slider-hints"><span>50%</span><span>75%</span><span>98%</span></div>
           </div>
         </div>
       </div>
-      
-      <div class="card" style="margin-top:20px">
+
+      <div class="card" style="margin-bottom:20px">
         <div style="font-size:15px;font-weight:600;margin-bottom:16px">🌍 LCA 专属参数 <span style="font-size:12px;color:rgba(226,232,240,0.35);font-weight:400">（全生命周期分析专用）</span></div>
         <div class="param-grid">
           <div class="param-item">
@@ -403,21 +846,65 @@
             <label>仓储能耗<span class="unit">kWh/月</span></label>
             <input type="number" id="lcaWarehouseKwh" value="500">
           </div>
+          <div class="param-item">
+            <label>涂料包装回收率<span class="unit">%</span></label>
+            <input type="number" id="lcaRecycleRate" value="30">
+          </div>
+          <div class="param-item">
+            <label>绿电占比<span class="unit">%</span></label>
+            <input type="number" id="greenPowerPct" value="20">
+          </div>
         </div>
       </div>
-      
+
       <div class="btn-nav">
         <button class="btn btn-default" onclick="goStep(1)">← 上一步</button>
-        <button class="btn btn-primary" onclick="goStep(3)">🚀 开始模拟计算</button>
+        <button class="btn btn-primary" onclick="goStep(3)">🚀 开始推演计算</button>
       </div>
     </div>
-    
-    <!-- 步骤3：查看结果 -->
+
+    <!-- 步骤3：预见未来 -->
     <div class="step-content" id="step3">
+      <div class="narrative-card">
+        <div class="narrative-avatar">🔮</div>
+        <div class="narrative-text" id="resultNarrative">
+          <strong>推演完成。</strong> 让我们看看，如果你按照上述方案改造产线，一年之后会发生什么……
+        </div>
+      </div>
+
+      <!-- 故事线 -->
+      <div class="story-line" id="storyLine">
+        <div class="story-line-title">📖 你的产线故事</div>
+        <div class="story-step">
+          <div class="story-dot" style="background:#0ea5e9"></div>
+          <div class="story-text" id="storyNow">
+            <strong>现在：</strong>你的产线使用溶剂型涂料体系，RTO 运行稳定但天然气消耗较大，热回收效率 87%，C-P 协同指数 0.72，处于行业良好水平。
+          </div>
+        </div>
+        <div class="story-step">
+          <div class="story-dot" style="background:#fbbf24"></div>
+          <div class="story-text" id="storyChange">
+            <strong>转变：</strong>你计划将底漆和面漆切换为水性体系，并引入沸石转轮 + RTO 组合工艺，同时把烘干方式升级为热泵 + 余热回收。
+          </div>
+        </div>
+        <div class="story-step">
+          <div class="story-dot" style="background:#f87171"></div>
+          <div class="story-text" id="storyRisk">
+            <strong>风险：</strong>VOCs 确实会大幅降低，但水性漆的烘干能耗将显著增加，如果热泵效率不达预期，整体碳排可能不降反升。
+          </div>
+        </div>
+        <div class="story-step">
+          <div class="story-dot" style="background:#4ade80"></div>
+          <div class="story-text" id="storyAdvice">
+            <strong>出路：</strong>AI 建议同步优化喷涂排班、引入余热回收系统，并关注涂料供应商距离，从 LCA 视角全面降低碳排。
+          </div>
+        </div>
+      </div>
+
       <div class="result-banner trap" id="resultBanner">
         <div class="result-icon" id="resultIcon">⚠️</div>
         <div class="result-title" id="resultTitle" style="color:#f87171">减污增碳陷阱</div>
-        <div class="result-desc" id="resultDesc">水性涂料切换后 VOCs 预计降低 60%，但天然气消耗预计增加 35%，C-P 协同指数将从 0.75 降至 0.48</div>
+        <div class="result-desc" id="resultDesc">水性涂料切换后 VOCs 预计降低 60%，但天然气消耗预计增加 35%，C-P 协同指数将从 0.72 降至 0.48</div>
       </div>
 
       <div class="row" id="resultGrid">
@@ -446,7 +933,7 @@
           <div class="card result-card">
             <div class="result-value" id="cpResult" style="color:#f87171">0.48</div>
             <div class="result-label">预测 C-P 协同指数</div>
-            <div class="result-change down" id="cpChangeLabel">↓ 从 0.75 降至 0.48</div>
+            <div class="result-change down" id="cpChangeLabel">↓ 从 0.72 降至 0.48</div>
           </div>
         </div>
       </div>
@@ -508,10 +995,10 @@
       </div>
 
       <div class="btn-nav">
-        <button class="btn btn-default" onclick="goStep(2)">← 重新输入参数</button>
+        <button class="btn btn-default" onclick="goStep(2)">← 重新调整参数</button>
         <div>
-          <button class="btn btn-default" onclick="goStep(1)">🔄 重新选择工艺</button>
-          <button class="btn btn-primary" style="margin-left:8px" onclick="saveResult()">💾 保存评估结果</button>
+          <button class="btn btn-default" onclick="goStep(1)">🔄 重新配置产线</button>
+          <button class="btn btn-primary" style="margin-left:8px" onclick="saveResult()">💾 保存推演结果</button>
         </div>
       </div>
     </div>
@@ -522,25 +1009,157 @@
     let lastResult = null;
     let isLCA = false;
 
-    // 工艺参数数据库（含 LCA 参数）
-    // lca: { rawMaterial: kgCO₂/kg涂料, wasteDisposal: kgCO₂/kg涂料 }
-    // 运输阶段碳排改由用户输入参数动态计算（距离/运输方式/成品运输/仓储能耗）
+    // ========== 扩展工艺数据库（7个环节 × 多选项）==========
+    // 每个选项: { vocsFactor: kg/kg, energyFactor: 相对能耗倍数, carbonFactor: kgCO2/kg }
     const PROCESS_DB = {
-      '溶剂型涂料（聚氨酯漆）': { vocsFactor: 0.55, carbonFactor: 2.5, dryTemp: 30, dryEnergy: 1.0, lca: { rawMaterial: 2.5, transport: 0.06, wasteDisposal: 0.3 } },
-      '水性涂料（双组分）': { vocsFactor: 0.08, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.2, lca: { rawMaterial: 1.8, transport: 0.06, wasteDisposal: 0.15 } },
-      '水性涂料（单组分）': { vocsFactor: 0.12, carbonFactor: 1.8, dryTemp: 70, dryEnergy: 2.0, lca: { rawMaterial: 1.8, transport: 0.06, wasteDisposal: 0.15 } },
-      '粉末涂料': { vocsFactor: 0.0, carbonFactor: 1.2, dryTemp: 180, dryEnergy: 3.5, lca: { rawMaterial: 1.2, transport: 0.06, wasteDisposal: 0.05 } },
-      '高固体分涂料': { vocsFactor: 0.38, carbonFactor: 2.0, dryTemp: 50, dryEnergy: 1.4, lca: { rawMaterial: 2.0, transport: 0.06, wasteDisposal: 0.25 } },
+      pretreatment: {
+        '脱脂 + 磷化':       { vocsFactor: 0.02, energyFactor: 1.0, carbonFactor: 0.15 },
+        '硅烷化处理':         { vocsFactor: 0.01, energyFactor: 0.7, carbonFactor: 0.08 },
+        '无磷转化膜':         { vocsFactor: 0.01, energyFactor: 0.8, carbonFactor: 0.10 },
+      },
+      primer: {
+        '溶剂型底漆':         { vocsFactor: 0.55, energyFactor: 1.0, carbonFactor: 2.5 },
+        '水性底漆':           { vocsFactor: 0.10, energyFactor: 2.2, carbonFactor: 1.8 },
+        '高固体分底漆':       { vocsFactor: 0.38, energyFactor: 1.4, carbonFactor: 2.0 },
+        '粉末底漆':           { vocsFactor: 0.00, energyFactor: 3.5, carbonFactor: 1.2 },
+      },
+      midcoat: {
+        '溶剂型中涂':         { vocsFactor: 0.50, energyFactor: 1.0, carbonFactor: 2.4 },
+        '水性中涂':           { vocsFactor: 0.08, energyFactor: 2.0, carbonFactor: 1.7 },
+        '无中涂':             { vocsFactor: 0.00, energyFactor: 0.0, carbonFactor: 0.0 },
+      },
+      topcoat: {
+        '溶剂型面漆':         { vocsFactor: 0.52, energyFactor: 1.0, carbonFactor: 2.45 },
+        '水性面漆':           { vocsFactor: 0.12, energyFactor: 2.3, carbonFactor: 1.8 },
+        'UV 固化面漆':        { vocsFactor: 0.05, energyFactor: 0.3, carbonFactor: 1.5 },
+      },
+      clearcoat: {
+        '溶剂型清漆':         { vocsFactor: 0.62, energyFactor: 1.0, carbonFactor: 2.6 },
+        '水性清漆':           { vocsFactor: 0.15, energyFactor: 2.1, carbonFactor: 1.7 },
+        '无清漆':             { vocsFactor: 0.00, energyFactor: 0.0, carbonFactor: 0.0 },
+      },
+      drying: {
+        '天然气热风循环':     { vocsFactor: 0.00, energyFactor: 1.0, carbonFactor: 0.22 },
+        '电加热热风':         { vocsFactor: 0.00, energyFactor: 1.3, carbonFactor: 0.55 },
+        '热泵 + 余热回收':    { vocsFactor: 0.00, energyFactor: 0.45, carbonFactor: 0.10 },
+        '红外 + 微波复合':    { vocsFactor: 0.00, energyFactor: 0.55, carbonFactor: 0.12 },
+      },
+      vocControl: {
+        'RTO 蓄热燃烧':       { vocsFactor: -0.95, energyFactor: 1.0, carbonFactor: 0.18 },
+        '沸石转轮 + RTO':     { vocsFactor: -0.97, energyFactor: 0.65, carbonFactor: 0.12 },
+        '活性炭吸附':         { vocsFactor: -0.80, energyFactor: 0.15, carbonFactor: 0.03 },
+        'RCO 催化燃烧':       { vocsFactor: -0.95, energyFactor: 0.50, carbonFactor: 0.09 },
+      },
     };
 
-    // 分行业 C-P 阈值配置（PRD 5.4）
+    // 分行业 C-P 阈值配置
     const INDUSTRY_THRESHOLD = {
       auto_whole: { name: '汽车整车涂装', threshold: 0.4 },
       auto_part: { name: '汽车零部件涂装', threshold: 0.5 },
       furniture: { name: '家具涂装', threshold: 0.6 },
       metal: { name: '金属制品涂装', threshold: 0.55 },
       repair: { name: '汽修行业', threshold: 0.7 },
+      electronic: { name: '电子电器涂装', threshold: 0.5 },
+      machinery: { name: '工程机械涂装', threshold: 0.45 },
     };
+
+    // 快速场景配置
+    const SCENES = {
+      solvent: {
+        'cur-pretreatment': '脱脂 + 磷化',
+        'cur-primer': '溶剂型底漆',
+        'cur-midcoat': '溶剂型中涂',
+        'cur-topcoat': '溶剂型面漆',
+        'cur-clearcoat': '溶剂型清漆',
+        'cur-drying': '天然气热风循环',
+        'cur-voc-control': 'RTO 蓄热燃烧',
+        'tgt-pretreatment': '脱脂 + 磷化',
+        'tgt-primer': '溶剂型底漆',
+        'tgt-midcoat': '溶剂型中涂',
+        'tgt-topcoat': '溶剂型面漆',
+        'tgt-clearcoat': '溶剂型清漆',
+        'tgt-drying': '天然气热风循环',
+        'tgt-voc-control': 'RTO 蓄热燃烧',
+      },
+      water: {
+        'cur-pretreatment': '脱脂 + 磷化',
+        'cur-primer': '溶剂型底漆',
+        'cur-midcoat': '溶剂型中涂',
+        'cur-topcoat': '溶剂型面漆',
+        'cur-clearcoat': '溶剂型清漆',
+        'cur-drying': '天然气热风循环',
+        'cur-voc-control': 'RTO 蓄热燃烧',
+        'tgt-pretreatment': '硅烷化处理',
+        'tgt-primer': '水性底漆',
+        'tgt-midcoat': '水性中涂',
+        'tgt-topcoat': '水性面漆',
+        'tgt-clearcoat': '水性清漆',
+        'tgt-drying': '热泵 + 余热回收',
+        'tgt-voc-control': '沸石转轮 + RTO',
+      },
+      powder: {
+        'cur-pretreatment': '脱脂 + 磷化',
+        'cur-primer': '溶剂型底漆',
+        'cur-midcoat': '无中涂',
+        'cur-topcoat': '溶剂型面漆',
+        'cur-clearcoat': '无清漆',
+        'cur-drying': '天然气热风循环',
+        'cur-voc-control': 'RTO 蓄热燃烧',
+        'tgt-pretreatment': '无磷转化膜',
+        'tgt-primer': '粉末底漆',
+        'tgt-midcoat': '无中涂',
+        'tgt-topcoat': 'UV 固化面漆',
+        'tgt-clearcoat': '无清漆',
+        'tgt-drying': '红外 + 微波复合',
+        'tgt-voc-control': 'RCO 催化燃烧',
+      },
+      green: {
+        'cur-pretreatment': '脱脂 + 磷化',
+        'cur-primer': '溶剂型底漆',
+        'cur-midcoat': '溶剂型中涂',
+        'cur-topcoat': '溶剂型面漆',
+        'cur-clearcoat': '溶剂型清漆',
+        'cur-drying': '天然气热风循环',
+        'cur-voc-control': 'RTO 蓄热燃烧',
+        'tgt-pretreatment': '硅烷化处理',
+        'tgt-primer': '水性底漆',
+        'tgt-midcoat': '无中涂',
+        'tgt-topcoat': '水性面漆',
+        'tgt-clearcoat': '水性清漆',
+        'tgt-drying': '热泵 + 余热回收',
+        'tgt-voc-control': '沸石转轮 + RTO',
+      },
+    };
+
+    function loadScene(sceneKey) {
+      const scene = SCENES[sceneKey];
+      if (!scene) return;
+      document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('scene-' + sceneKey).classList.add('active');
+
+      Object.keys(scene).forEach(groupId => {
+        const container = document.getElementById(groupId);
+        if (!container) return;
+        const targetName = scene[groupId];
+        container.querySelectorAll('.process-card').forEach(card => {
+          const name = card.querySelector('.process-name').textContent.trim();
+          const isSelected = name === targetName;
+          card.classList.toggle('selected', isSelected);
+          card.querySelector('.check').textContent = isSelected ? '✓' : '';
+        });
+      });
+      showToast('已加载「' + {solvent:'典型溶剂型产线',water:'典型水性化产线',powder:'典型粉末涂装线',green:'绿色标杆产线'}[sceneKey] + '」配置', 'success');
+    }
+
+    function updateSlider(input, valId, fillId, thumbId, suffix) {
+      const val = input.value;
+      const min = parseFloat(input.min);
+      const max = parseFloat(input.max);
+      const pct = ((val - min) / (max - min)) * 100;
+      document.getElementById(valId).textContent = (val > 0 ? '+' : '') + val + suffix;
+      document.getElementById(fillId).style.width = pct + '%';
+      document.getElementById(thumbId).style.left = pct + '%';
+    }
 
     function updateThresholdHint() {
       const industry = document.getElementById('industrySelect').value;
@@ -554,55 +1173,33 @@
       const val = el.dataset.value;
       if ((val === 'lca') === isLCA) return;
       isLCA = val === 'lca';
-
       document.querySelectorAll('#perspectiveToggle .pill').forEach(p => p.classList.remove('active'));
       el.classList.add('active');
-
       const hint = document.getElementById('perspectiveHint');
       if (isLCA) {
         hint.textContent = '全生命周期视角（LCA）覆盖原料获取、运输、使用、废弃处置四个阶段的碳排放。';
       } else {
         hint.textContent = '工序端视角仅考虑涂装工序本身的 VOCs 与能耗碳排。';
       }
-
-      // 若已在结果页，自动重新计算
-      if (currentStep === 3) {
-        calculateResult();
-      }
+      if (currentStep === 3) calculateResult();
     }
 
     function goStep(n) {
       document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
       document.getElementById('step' + n).classList.add('active');
-
-      // 更新步骤条
       for (let i = 1; i <= 3; i++) {
-        const item = document.getElementById('step' + i + 'Item');
-        const circle = document.getElementById('step' + i + 'Circle');
-        const line = document.getElementById('line' + (i-1));
-        item.classList.remove('active', 'done');
-        if (i < n) {
-          item.classList.add('done');
-          circle.textContent = '✓';
-          if (line) line.classList.add('done');
-        } else if (i === n) {
-          item.classList.add('active');
-          circle.textContent = i;
-        } else {
-          circle.textContent = i;
-        }
-        if (i >= n && line) line.classList.remove('done');
+        const ch = document.getElementById('ch' + i);
+        ch.classList.remove('active', 'done');
+        if (i < n) { ch.classList.add('done'); }
+        else if (i === n) { ch.classList.add('active'); }
       }
       currentStep = n;
       window.scrollTo(0, 0);
-
-      if (n === 3) {
-        calculateResult();
-      }
+      if (n === 3) calculateResult();
     }
 
-    function selectProcess(el, type) {
-      const container = type === 'current' ? document.getElementById('currentProcess') : document.getElementById('targetProcess');
+    function selectOption(el, groupId) {
+      const container = document.getElementById(groupId);
       container.querySelectorAll('.process-card').forEach(c => {
         c.classList.remove('selected');
         c.querySelector('.check').textContent = '';
@@ -611,105 +1208,174 @@
       el.querySelector('.check').textContent = '✓';
     }
 
-    function getSelectedProcess(type) {
-      const container = type === 'current' ? document.getElementById('currentProcess') : document.getElementById('targetProcess');
+    function getSelectedOption(groupId) {
+      const container = document.getElementById(groupId);
       const selected = container.querySelector('.process-card.selected');
       if (!selected) return null;
       return selected.querySelector('.process-name').textContent.trim();
     }
 
+    function getOptionParams(groupId) {
+      const name = getSelectedOption(groupId);
+      if (!name) return null;
+      const category = groupId.replace('cur-', '').replace('tgt-', '');
+      const db = PROCESS_DB[category];
+      return db ? db[name] : null;
+    }
+
+    function sumParams(prefix) {
+      let vocs = 0, energy = 0, carbon = 0;
+      const groups = ['pretreatment', 'primer', 'midcoat', 'topcoat', 'clearcoat', 'drying', 'voc-control'];
+      groups.forEach(g => {
+        const p = getOptionParams(prefix + '-' + g);
+        if (p) {
+          vocs += p.vocsFactor;
+          energy += p.energyFactor;
+          carbon += p.carbonFactor;
+        }
+      });
+      return { vocs, energy, carbon };
+    }
+
+    function generateStory(curNames, tgtNames, vocsChange, gasChange, carbonChange, cpBefore, cpAfter, resultType, industryCfg) {
+      const storyNow = document.getElementById('storyNow');
+      const storyChange = document.getElementById('storyChange');
+      const storyRisk = document.getElementById('storyRisk');
+      const storyAdvice = document.getElementById('storyAdvice');
+
+      const curCoatings = [curNames['cur-primer'], curNames['cur-topcoat'], curNames['cur-clearcoat']].filter(n => n && !n.includes('无')).join(' + ');
+      const tgtCoatings = [tgtNames['tgt-primer'], tgtNames['tgt-topcoat'], tgtNames['tgt-clearcoat']].filter(n => n && !n.includes('无')).join(' + ');
+
+      storyNow.innerHTML = '<strong>现在：</strong>你的产线采用「' + curCoatings + '」体系，烘干使用' + curNames['cur-drying'] + '，废气处理为' + curNames['cur-voc-control'] + '。当前 C-P 协同指数 ' + cpBefore + '，在' + industryCfg.name + '中处于' + (cpBefore >= industryCfg.threshold ? '达标' : '待改善') + '水平。';
+
+      const changes = [];
+      if (curNames['cur-primer'] !== tgtNames['tgt-primer']) changes.push('底漆改为' + tgtNames['tgt-primer']);
+      if (curNames['cur-midcoat'] !== tgtNames['tgt-midcoat']) changes.push('中涂改为' + tgtNames['tgt-midcoat']);
+      if (curNames['cur-topcoat'] !== tgtNames['tgt-topcoat']) changes.push('面漆改为' + tgtNames['tgt-topcoat']);
+      if (curNames['cur-clearcoat'] !== tgtNames['tgt-clearcoat']) changes.push('清漆改为' + tgtNames['tgt-clearcoat']);
+      if (curNames['cur-drying'] !== tgtNames['tgt-drying']) changes.push('烘干升级为' + tgtNames['tgt-drying']);
+      if (curNames['cur-voc-control'] !== tgtNames['tgt-voc-control']) changes.push('废气处理升级为' + tgtNames['tgt-voc-control']);
+
+      if (changes.length === 0) {
+        storyChange.innerHTML = '<strong>转变：</strong>你没有做任何工艺调整。AI 建议至少尝试改变一个环节，才能看到协同优化的可能性。';
+      } else {
+        storyChange.innerHTML = '<strong>转变：</strong>你计划' + changes.join('，') + '。这是一个' + (changes.length >= 4 ? '大刀阔斧' : '循序渐进') + '的技改方案。';
+      }
+
+      let riskText = '';
+      if (resultType === 'trap') {
+        riskText = 'VOCs 确实会大幅降低 ' + Math.abs(vocsChange) + '%，但烘干能耗将显著增加，导致碳排上升 ' + carbonChange + '%。这正是典型的<strong>「减污增碳陷阱」</strong>。';
+      } else if (resultType === 'carbon_trap') {
+        riskText = '碳排放降低了 ' + Math.abs(carbonChange) + '%，但 VOCs 反而上升了。你正面临<strong>「减碳增污陷阱」</strong>，环保合规风险上升。';
+      } else if (resultType === 'imbalance') {
+        riskText = 'C-P 指数跌至 ' + cpAfter + '，处于警戒区间。VOCs 和碳排的变化方向相反，协同效应不佳。';
+      } else {
+        riskText = '好消息！VOCs 和碳排双双改善，C-P 指数提升至 ' + cpAfter + '，协同效应良好。';
+      }
+      storyRisk.innerHTML = '<strong>风险：</strong>' + riskText;
+
+      let adviceText = '';
+      if (resultType === 'trap') {
+        adviceText = 'AI 建议优先升级烘干系统至热泵或红外复合方案，同时引入余热回收。若热回收效率从 87% 提升至 95%，碳排增量可控制在 10% 以内。';
+      } else if (resultType === 'carbon_trap') {
+        adviceText = '建议重新审视涂料 VOCs 含量，或加强废气收集效率。沸石转轮浓缩 + RTO 是平衡 VOCs 去除与能耗的优选方案。';
+      } else if (resultType === 'imbalance') {
+        adviceText = '考虑分阶段实施技改，优先投资回报率最高的环节。同时关注绿电占比提升，从能源结构层面降低碳排。';
+      } else {
+        adviceText = '该方案协同效应良好，建议制定分阶段实施计划，并建立技改前后对比监测机制，验证预期效果。';
+      }
+      if (isLCA) {
+        adviceText += ' LCA 视角下，建议同时优化涂料供应商布局，缩短运输距离，进一步降低全生命周期碳排。';
+      }
+      storyAdvice.innerHTML = '<strong>出路：</strong>' + adviceText;
+    }
+
     function calculateResult() {
-      const current = getSelectedProcess('current');
-      const target = getSelectedProcess('target');
-      const currentParams = PROCESS_DB[current] || PROCESS_DB['溶剂型涂料（聚氨酯漆）'];
-      const targetParams = PROCESS_DB[target] || PROCESS_DB['水性涂料（单组分）'];
+      const cur = sumParams('cur');
+      const tgt = sumParams('tgt');
 
       const runDays = parseFloat(document.getElementById('runDays').value) || 300;
       const dailyHours = parseFloat(document.getElementById('dailyHours').value) || 10;
       const paintUsage = parseFloat(document.getElementById('paintUsage').value) || 15000;
       const outputChange = parseFloat(document.getElementById('outputChange').value) || 0;
+      const greenPowerPct = parseFloat(document.getElementById('greenPowerPct').value) || 20;
 
-      // 产量排除逻辑：产量变化 >= 10% 时提示排除
       const excludeOutput = Math.abs(outputChange) >= 10;
 
-      // 工序端简化计算模型
-      const vocsChange = Math.round(((targetParams.vocsFactor - currentParams.vocsFactor) / currentParams.vocsFactor) * 100);
-      const gasChange = Math.round(((targetParams.dryEnergy - currentParams.dryEnergy) / currentParams.dryEnergy) * 100);
-      const processCarbonChange = Math.round(((targetParams.carbonFactor * targetParams.dryEnergy - currentParams.carbonFactor * currentParams.dryEnergy) / (currentParams.carbonFactor * currentParams.dryEnergy)) * 100);
+      // 计算变化率
+      const vocsChange = cur.vocs > 0 ? Math.round(((tgt.vocs - cur.vocs) / cur.vocs) * 100) : 0;
+      const gasChange = cur.energy > 0 ? Math.round(((tgt.energy - cur.energy) / cur.energy) * 100) : 0;
+      const processCarbonChange = cur.carbon > 0 ? Math.round(((tgt.carbon - cur.carbon) / cur.carbon) * 100) : 0;
+
+      // 绿电调整
+      const greenAdj = (100 - greenPowerPct) / 100;
+      const adjCarbonChange = Math.round(processCarbonChange * greenAdj);
 
       // LCA 参数读取
       const lcaDistance = parseFloat(document.getElementById('lcaDistance').value) || 500;
       const lcaTransportMode = document.getElementById('lcaTransportMode').value || 'road';
       const lcaProductTonKm = parseFloat(document.getElementById('lcaProductTonKm').value) || 1000;
       const lcaWarehouseKwh = parseFloat(document.getElementById('lcaWarehouseKwh').value) || 500;
+      const lcaRecycleRate = parseFloat(document.getElementById('lcaRecycleRate').value) || 30;
       const TRANSPORT_FACTOR = { road: 0.12, rail: 0.03, water: 0.015 };
       const tf = TRANSPORT_FACTOR[lcaTransportMode] || 0.12;
       const paintUsageSafe = paintUsage || 15000;
-      const elecFactor = 0.55; // kgCO₂/kWh
+      const elecFactor = 0.55;
 
-      // 当前工艺物流仓储参数（默认值）
-      const curDistance = 500;
-      const curTf = 0.12;
-      const curProductTonKm = 1000;
-      const curWarehouseKwh = 500;
+      const curDistance = 500, curTf = 0.12, curProductTonKm = 1000, curWarehouseKwh = 500, curRecycle = 30;
 
-      // LCA 计算（各阶段单位涂料碳排因子）
-      const curLca = currentParams.lca;
-      const tgtLca = targetParams.lca;
-      const curProcessCarbon = currentParams.carbonFactor * currentParams.dryEnergy;
-      const tgtProcessCarbon = targetParams.carbonFactor * targetParams.dryEnergy;
-
-      // 物流仓储阶段碳排（涂料运输 + 成品运输 + 仓储能耗）
+      // LCA 计算
       const curLcaTransport = curDistance * curTf / 1000 + curProductTonKm * 0.12 / paintUsageSafe + curWarehouseKwh * 12 * elecFactor / paintUsageSafe;
       const tgtLcaTransport = lcaDistance * tf / 1000 + lcaProductTonKm * 0.12 / paintUsageSafe + lcaWarehouseKwh * 12 * elecFactor / paintUsageSafe;
+      const curLcaWaste = cur.carbon * (1 - curRecycle / 100) * 0.3;
+      const tgtLcaWaste = tgt.carbon * (1 - lcaRecycleRate / 100) * 0.3;
 
-      const currentLcaTotal = curLca.rawMaterial + curLcaTransport + curProcessCarbon + curLca.wasteDisposal;
-      const targetLcaTotal = tgtLca.rawMaterial + tgtLcaTransport + tgtProcessCarbon + tgtLca.wasteDisposal;
+      const currentLcaTotal = cur.carbon + curLcaTransport + curLcaWaste;
+      const targetLcaTotal = tgt.carbon + tgtLcaTransport + tgtLcaWaste;
 
-      const lcaTotalChange = Math.round(((targetLcaTotal - currentLcaTotal) / currentLcaTotal) * 100);
-      const lcaRawChange = Math.round(((tgtLca.rawMaterial - curLca.rawMaterial) / curLca.rawMaterial) * 100);
-      const lcaTransportChange = Math.round(((tgtLcaTransport - curLcaTransport) / curLcaTransport) * 100);
-      const lcaWasteChange = Math.round(((tgtLca.wasteDisposal - curLca.wasteDisposal) / curLca.wasteDisposal) * 100);
+      const lcaTotalChange = currentLcaTotal > 0 ? Math.round(((targetLcaTotal - currentLcaTotal) / currentLcaTotal) * 100) : 0;
+      const lcaRawChange = cur.carbon > 0 ? Math.round(((tgt.carbon - cur.carbon) / cur.carbon) * 100) : 0;
+      const lcaTransportChange = curLcaTransport > 0 ? Math.round(((tgtLcaTransport - curLcaTransport) / curLcaTransport) * 100) : 0;
+      const lcaWasteChange = curLcaWaste > 0 ? Math.round(((tgtLcaWaste - curLcaWaste) / curLcaWaste) * 100) : 0;
 
-      // 获取行业阈值
+      // 行业阈值
       const industry = document.getElementById('industrySelect').value || 'auto_part';
       const industryCfg = INDUSTRY_THRESHOLD[industry] || INDUSTRY_THRESHOLD.auto_part;
       const threshold = industryCfg.threshold;
 
-      // C-P 协同指数估算：LCA 模式下碳排影响使用 LCA 总碳排变化
+      // C-P 协同指数估算
       const cpBefore = 0.72;
-      const carbonImpact = isLCA ? (lcaTotalChange / 100) * 0.4 : (processCarbonChange / 100) * 0.4;
+      const carbonImpact = isLCA ? (lcaTotalChange / 100) * 0.4 : (adjCarbonChange / 100) * 0.4;
       let cpAfter = cpBefore + (vocsChange / 100) * 0.3 - carbonImpact;
       cpAfter = Math.max(0.2, Math.min(0.95, cpAfter));
       cpAfter = Math.round(cpAfter * 100) / 100;
 
-      // 使用行业阈值判定（而非固定 0.4/0.6）
-      const dangerLine = threshold * 0.8; // 危险线 = 阈值的80%
-      const warnLine = threshold; // 警戒线 = 阈值
+      const dangerLine = threshold * 0.8;
+      const warnLine = threshold;
 
       let resultType = 'good';
       let resultTitle = '协同改善';
       let resultColor = '#4ade80';
       let resultIcon = '✅';
-      let resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 变为 ' + cpAfter + '（' + industryCfg.name + '阈值 ' + threshold + '）';
+      let resultDesc = '技改后 VOCs 预计变化 ' + vocsChange + '%，能耗预计变化 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 变为 ' + cpAfter + '（' + industryCfg.name + '阈值 ' + threshold + '）';
 
       if (excludeOutput) {
         resultTitle = '产能变化排除';
         resultColor = '#22d3ee';
         resultIcon = 'ℹ️';
         resultDesc = '产量变化 ' + outputChange + '% ≥ 10%，已排除产能扩张因素对悖论判定的影响。实际 C-P 变化需结合产量基准校正。';
-      } else if (vocsChange > 0 && processCarbonChange < 0) {
+      } else if (vocsChange > 0 && adjCarbonChange < 0) {
         resultType = 'carbon_trap';
         resultTitle = '减碳增污陷阱';
         resultColor = '#fbbf24';
         resultIcon = '🔶';
-        resultDesc = target + '切换后碳排放预计降低 ' + Math.abs(processCarbonChange) + '%，但 VOCs 排放预计增加 ' + vocsChange + '%，C-P 协同指数将从 ' + cpBefore + ' 变为 ' + cpAfter + '（' + industryCfg.name + '阈值 ' + threshold + '）';
+        resultDesc = '技改后碳排放预计降低 ' + Math.abs(adjCarbonChange) + '%，但 VOCs 排放预计增加 ' + vocsChange + '%，C-P 协同指数将从 ' + cpBefore + ' 变为 ' + cpAfter + '（' + industryCfg.name + '阈值 ' + threshold + '）';
       } else if (cpAfter < dangerLine) {
         resultType = 'trap';
         resultTitle = '减污增碳陷阱';
         resultColor = '#f87171';
         resultIcon = '⚠️';
-        resultDesc = target + '切换后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，但天然气消耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 降至 ' + cpAfter + '，低于 ' + industryCfg.name + ' 危险线 ' + dangerLine;
+        resultDesc = '技改后 VOCs 预计降低 ' + Math.abs(vocsChange) + '%，但能耗预计增加 ' + gasChange + '%，C-P 协同指数将从 ' + cpBefore + ' 降至 ' + cpAfter + '，低于 ' + industryCfg.name + ' 危险线 ' + dangerLine;
       } else if (cpAfter < warnLine) {
         resultType = 'imbalance';
         resultTitle = '协同失衡';
@@ -717,6 +1383,16 @@
         resultIcon = '🔶';
         resultDesc = 'C-P 协同指数 ' + cpAfter + ' 处于 ' + industryCfg.name + ' 警戒区间（' + dangerLine + '–' + threshold + '），需关注';
       }
+
+      // 获取工艺名称用于叙事
+      const curNames = {};
+      const tgtNames = {};
+      ['pretreatment', 'primer', 'midcoat', 'topcoat', 'clearcoat', 'drying', 'voc-control'].forEach(g => {
+        curNames['cur-' + g] = getSelectedOption('cur-' + g) || '-';
+        tgtNames['tgt-' + g] = getSelectedOption('tgt-' + g) || '-';
+      });
+
+      generateStory(curNames, tgtNames, vocsChange, gasChange, adjCarbonChange, cpBefore, cpAfter, resultType, industryCfg);
 
       // 更新 UI
       const banner = document.getElementById('resultBanner');
@@ -735,16 +1411,15 @@
       document.getElementById('gasChange').style.color = gasChange > 0 ? '#f87171' : '#4ade80';
       document.getElementById('gasChangeLabel').textContent = gasChange > 0 ? '↑ 显著增加' : '↓ 下降';
 
-      // 工序端碳排卡片始终显示工序端视角的变化
-      document.getElementById('carbonChange').textContent = (processCarbonChange > 0 ? '+' : '') + processCarbonChange + '%';
-      document.getElementById('carbonChange').style.color = processCarbonChange > 0 ? '#f87171' : '#4ade80';
-      document.getElementById('carbonChangeLabel').textContent = processCarbonChange > 0 ? '↑ 碳排增加' : '↓ 碳排减少';
+      document.getElementById('carbonChange').textContent = (adjCarbonChange > 0 ? '+' : '') + adjCarbonChange + '%';
+      document.getElementById('carbonChange').style.color = adjCarbonChange > 0 ? '#f87171' : '#4ade80';
+      document.getElementById('carbonChangeLabel').textContent = adjCarbonChange > 0 ? '↑ 碳排增加' : '↓ 碳排减少';
 
       document.getElementById('cpResult').textContent = cpAfter;
       document.getElementById('cpResult').style.color = resultColor;
       document.getElementById('cpChangeLabel').textContent = '↓ 从 ' + cpBefore + ' 降至 ' + cpAfter + '（阈值' + threshold + '）';
 
-      // LCA 结果卡片显示/隐藏
+      // LCA
       const lcaRow = document.getElementById('lcaRow');
       const lcaDivider = document.getElementById('lcaDivider');
       if (isLCA) {
@@ -795,13 +1470,13 @@
       }
 
       lastResult = {
-        current: current,
-        target: target,
+        current: curNames['cur-primer'] + '体系',
+        target: tgtNames['tgt-primer'] + '体系',
         cpBefore: cpBefore,
         cpAfter: cpAfter,
         vocsChange: vocsChange,
         gasChange: gasChange,
-        carbonChange: processCarbonChange,
+        carbonChange: adjCarbonChange,
         result: resultType,
         perspective: isLCA ? 'lca' : 'process',
         lcaTotalChange: lcaTotalChange,
@@ -828,7 +1503,7 @@
         const checked = selectedCompareIds.includes(h.id) ? 'checked' : '';
         const disabled = !checked && selectedCompareIds.length >= 2 ? 'disabled' : '';
         const perspectiveLabel = h.perspective === 'lca' ? '🌍 LCA' : '🔧 工序端';
-        return `<tr><td><input type="checkbox" ${checked} ${disabled} onchange="toggleCompare('${h.id}', this.checked)"></td><td>${h.time}</td><td>${perspectiveLabel}</td><td>${h.current}</td><td>${h.target}</td><td style="color:${cpColor}">${h.cpAfter}</td><td><span class="tag ${tag[1]}">${tag[0]}</span></td></tr>`;
+        return '<tr><td><input type="checkbox" ' + checked + ' ' + disabled + ' onchange="toggleCompare(\'' + h.id + '\', this.checked)"></td><td>' + h.time + '</td><td>' + perspectiveLabel + '</td><td>' + h.current + '</td><td>' + h.target + '</td><td style="color:' + cpColor + '">' + h.cpAfter + '</td><td><span class="tag ' + tag[1] + '">' + tag[0] + '</span></td></tr>';
       }).join('');
       updateComparePanel();
     }
@@ -870,31 +1545,20 @@
 
       function barHtml(val, max, color, label) {
         const h = Math.max(8, Math.abs(val) / max * 36);
-        const bg = val >= 0 ? `linear-gradient(180deg,${color},${color}88)` : `linear-gradient(180deg,#4ade80,#4ade8088)`;
+        const bg = val >= 0 ? 'linear-gradient(180deg,' + color + ',' + color + '88)' : 'linear-gradient(180deg,#4ade80,#4ade8088)';
         const sign = val > 0 ? '+' : '';
-        return `<div style="flex:1"><div class="compare-bar-item" style="height:${h}px;background:${bg}" data-val="${sign}${val}%"></div><div class="compare-bar-name">${label}</div></div>`;
+        return '<div style="flex:1"><div class="compare-bar-item" style="height:' + h + 'px;background:' + bg + '" data-val="' + sign + val + '%"></div><div class="compare-bar-name">' + label + '</div></div>';
       }
 
       function compareRow(title, key, max, color) {
-        return `
-          <div class="compare-row">
-            <span class="compare-label">${title}</span>
-            <div class="compare-bars">${barHtml(a[key], max, color, a.time.slice(5))}</div>
-            <span class="compare-vs">VS</span>
-            <div class="compare-bars">${barHtml(b[key], max, color, b.time.slice(5))}</div>
-          </div>`;
+        return '<div class="compare-row"><span class="compare-label">' + title + '</span><div class="compare-bars">' + barHtml(a[key], max, color, a.time.slice(5)) + '</div><span class="compare-vs">VS</span><div class="compare-bars">' + barHtml(b[key], max, color, b.time.slice(5)) + '</div></div>';
       }
 
-      content.innerHTML = `
-        <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:13px">
-          <span><strong style="color:#22d3ee">${a.time}</strong> ${a.current} → ${a.target}</span>
-          <span><strong style="color:#22d3ee">${b.time}</strong> ${b.current} → ${b.target}</span>
-        </div>
-        ${compareRow('VOCs变化', 'vocsChange', maxVocs, '#0ea5e9')}
-        ${compareRow('天然气变化', 'gasChange', maxGas, '#fa8c16')}
-        ${compareRow('碳排变化', 'carbonChange', maxCarbon, '#f87171')}
-        ${compareRow('C-P指数', 'cpAfter', maxCp, '#22d3ee')}
-      `;
+      content.innerHTML = '<div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:13px"><span><strong style="color:#22d3ee">' + a.time + '</strong> ' + a.current + ' → ' + a.target + '</span><span><strong style="color:#22d3ee">' + b.time + '</strong> ' + b.current + ' → ' + b.target + '</span></div>' +
+        compareRow('VOCs变化', 'vocsChange', maxVocs, '#0ea5e9') +
+        compareRow('天然气变化', 'gasChange', maxGas, '#fa8c16') +
+        compareRow('碳排变化', 'carbonChange', maxCarbon, '#f87171') +
+        compareRow('C-P指数', 'cpAfter', maxCp, '#22d3ee');
       panel.classList.add('active');
     }
 
@@ -919,9 +1583,10 @@
         lcaWasteChange: lastResult.lcaWasteChange,
       });
       renderHistory();
-      showToast('✅ 评估结果已保存', 'success');
+      showToast('✅ 推演结果已保存', 'success');
     }
 
+    initCommon();
     renderHistory();
   </script>
 </body>

@@ -123,6 +123,11 @@
     .map-layer-btn:hover { background: rgba(34,211,238,0.12); border-color: rgba(34,211,238,0.4); }
     .map-layer-btn.active { background: rgba(34,211,238,0.18); border-color: rgba(34,211,238,0.5); box-shadow: 0 0 14px rgba(34,211,238,0.15); color: #fff; }
 
+
+    /* 风场动画 */
+    .wind-layer { pointer-events: none; }
+    .wind-line { stroke-linecap: round; animation: windFlow 3s linear infinite; }
+    @keyframes windFlow { 0% { stroke-dashoffset: 40; opacity: 0.6; } 50% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0.6; } }
     /* 飞线动画 */
     .fly-line-path { fill:none; stroke-linecap:round; stroke-linejoin:round; }
     .fly-line-anim { stroke-dasharray:12 8; animation:dashMove 1.5s linear infinite; }
@@ -173,6 +178,9 @@
       <button class="map-layer-btn active" id="btnParticle" onclick="toggleParticles()">
         <span>💨</span> 排放粒子
       </button>
+      <button class="map-layer-btn" id="btnWind" onclick="toggleWind()">
+        <span>🌬️</span> 风场
+      </button>
     </div>
     <div class="dt-sidebar">
       <div class="dt-panel">
@@ -214,6 +222,9 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
+    // 公共组件初始化
+    initCommon({ checkDataStore: false });
+
     // ========== 怀柔区中心 ==========
     const HUAIROU_CENTER = [40.32, 116.63];
     const map = L.map('map', { zoomControl:false, attributionControl:false }).setView(HUAIROU_CENTER, 12);
@@ -410,11 +421,22 @@
     const flyLineLayers = [];
 
     function addFlyLine(fl, visible) {
+      // 面状热力带（底层宽线，模拟污染带）
+      const band = L.polyline(fl.path, {
+        color: fl.color, weight: fl.width * 5, opacity: visible ? 0.18 : 0,
+        lineCap: 'round', lineJoin: 'round'
+      }).addTo(map);
+      // 中层渐变带
+      const band2 = L.polyline(fl.path, {
+        color: fl.color, weight: fl.width * 2.5, opacity: visible ? 0.35 : 0,
+        lineCap: 'round', lineJoin: 'round'
+      }).addTo(map);
+      // 上层动态线
       const poly = L.polyline(fl.path, {
-        color: fl.color, weight: fl.width, opacity: visible ? 0.8 : 0,
+        color: fl.color, weight: fl.width, opacity: visible ? 0.9 : 0,
         dashArray: '12 8', className: 'fly-line-anim'
       }).addTo(map);
-      flyLineLayers.push({ poly, data: fl });
+      flyLineLayers.push({ poly, band, band2, data: fl });
       return poly;
     }
 
@@ -432,12 +454,58 @@
       flyLineLayers[i].particle = particle;
     });
 
+
+    let windLayer = null;
+    let windVisible = false;
+
+    function createWindLayer() {
+      const layer = L.layerGroup();
+      // 简化的风向场（西北风，向东南偏）
+      const windPaths = [
+        [[40.45,116.50],[40.43,116.53],[40.41,116.56],[40.39,116.59]],
+        [[40.42,116.55],[40.40,116.58],[40.38,116.61],[40.36,116.64]],
+        [[40.38,116.48],[40.36,116.51],[40.34,116.54],[40.32,116.57]],
+        [[40.35,116.60],[40.33,116.63],[40.31,116.66],[40.29,116.69]],
+        [[40.30,116.50],[40.28,116.53],[40.26,116.56],[40.24,116.59]],
+        [[40.28,116.65],[40.26,116.68],[40.24,116.71],[40.22,116.74]],
+      ];
+      windPaths.forEach((wp, i) => {
+        const color = i % 2 === 0 ? '#22d3ee' : '#0ea5e9';
+        const poly = L.polyline(wp, {
+          color: color, weight: 2, opacity: 0.5,
+          dashArray: '8 6', className: 'wind-line'
+        }).addTo(layer);
+        // 风粒子
+        const mid = wp[Math.floor(wp.length / 2)];
+        L.circleMarker(mid, { radius: 3, color: color, fillColor: color, fillOpacity: 0.7, weight: 0, className: 'fly-particle' }).addTo(layer);
+      });
+      return layer;
+    }
+
+    function toggleWind() {
+      const btn = document.getElementById('btnWind');
+      if (windVisible) {
+        windVisible = false;
+        if (windLayer) map.removeLayer(windLayer);
+        btn.classList.remove('active');
+        showToast('已隐藏风场', 'info');
+      } else {
+        windVisible = true;
+        if (!windLayer) windLayer = createWindLayer();
+        windLayer.addTo(map);
+        btn.classList.add('active');
+        showToast('已显示风向场（西北→东南）', 'info');
+      }
+    }
+
     function showAllFlyLines() {
       flyLineLayers.forEach(l => {
-        l.poly.setStyle({ opacity: 0.8 });
+        l.poly.setStyle({ opacity: 0.9 });
+        if (l.band) l.band.setStyle({ opacity: 0.18 });
+        if (l.band2) l.band2.setStyle({ opacity: 0.35 });
         if (l.particle) l.particle.setStyle({ opacity: 1 });
       });
-      showToast('已显示全部污染转移溯源飞线', 'info');
+      showToast('已显示全部污染转移溯源飞线（面状热力带模式）', 'info');
     }
 
     // ========== 热力扩散圆（不规则形状模拟地形影响） ==========

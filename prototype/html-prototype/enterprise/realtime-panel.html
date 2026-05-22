@@ -7,6 +7,7 @@
 
   <script src="../js/data.js"></script>
   <script src="../js/common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   <style>
     .topbar { background: linear-gradient(90deg, rgba(12,74,110,0.9), rgba(3,105,161,0.9)); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34,211,238,0.15); }
     .main { margin-left: 200px; margin-top: 64px; padding: 24px; }
@@ -112,6 +113,39 @@
     .outlet-eff-good { background: rgba(74,222,128,0.12); color: #4ade80; }
     .outlet-eff-warn { background: rgba(251,191,36,0.12); color: #fbbf24; }
     .outlet-eff-bad { background: rgba(239,68,68,0.12); color: #f87171; }
+
+    /* 设备历史弹窗 */
+    .device-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000;
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .device-modal-overlay.show { display: flex; animation: fadeIn 0.25s ease; }
+    .device-modal {
+      background: #0f172a; border: 1px solid rgba(34,211,238,0.2); border-radius: 12px;
+      width: 720px; max-width: 90vw; max-height: 85vh; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(34,211,238,0.1);
+    }
+    .device-modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; border-bottom: 1px solid rgba(34,211,238,0.1);
+    }
+    .device-modal-title { font-size: 16px; font-weight: 600; color: #e2e8f0; }
+    .device-modal-close { font-size: 20px; color: rgba(226,232,240,0.4); cursor: pointer; background: none; border: none; }
+    .device-modal-close:hover { color: #f87171; }
+    .device-modal-body { padding: 20px; }
+    .device-modal-chart { width: 100%; height: 300px; }
+    .device-modal-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px;
+    }
+    .device-modal-stat {
+      text-align: center; padding: 12px; background: rgba(34,211,238,0.04);
+      border: 1px solid rgba(34,211,238,0.08); border-radius: 8px;
+    }
+    .device-modal-stat-value { font-size: 18px; font-weight: 700; color: #22d3ee; }
+    .device-modal-stat-label { font-size: 11px; color: rgba(226,232,240,0.4); margin-top: 4px; }
+    .status-item { cursor: pointer; transition: all 0.2s; }
+    .status-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34,211,238,0.08); }
   </style>
   <link rel="stylesheet" href="../css/style.css">
 
@@ -125,7 +159,7 @@
   </div>
   <div class="sidebar">
     <a href="dashboard.html" class="sidebar-item"><span class="sidebar-icon">🏠</span>工作台</a>
-    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📋</span>月度数据填报</a>
+    <a href="monthly-report.html" class="sidebar-item"><span class="sidebar-icon">📊</span>实时数据监控</a>
     <a href="realtime-panel.html" class="sidebar-item active"><span class="sidebar-icon">📊</span>实时双算看板</a>
     <a href="simulator.html" class="sidebar-item"><span class="sidebar-icon">🔮</span>悖论模拟器</a>
     <a href="triple-report.html" class="sidebar-item"><span class="sidebar-icon">📑</span>三评合一报告</a>
@@ -153,7 +187,7 @@
       </div>
       <div class="card rt-big-card">
         <div class="rt-big-value" style="color:#fbbf24">0.42</div>
-        <div class="rt-big-unit">tCO₂/h</div>
+        <div class="rt-big-unit">tCO<sub>2</sub>/h</div>
         <div class="rt-big-label">总碳排放</div>
         <div class="rt-big-trend up">环比 +18.6%</div>
       </div>
@@ -263,32 +297,32 @@
         <div class="card">
           <div class="card-title">🔧 关键设备实时状态</div>
           <div class="status-grid">
-            <div class="status-item normal">
+            <div class="status-item normal" onclick="openDeviceModal('燃烧室温度', 'temp')">
               <div class="status-icon">🌡️</div>
               <div class="status-name">燃烧室温度</div>
               <div class="status-value" style="color:#4ade80">785°C</div>
             </div>
-            <div class="status-item normal">
+            <div class="status-item normal" onclick="openDeviceModal('废气风量', 'flow')">
               <div class="status-icon">💨</div>
               <div class="status-name">废气风量</div>
               <div class="status-value" style="color:#4ade80">4200 m³/h</div>
             </div>
-            <div class="status-item warn">
+            <div class="status-item warn" onclick="openDeviceModal('天然气流量', 'gas')">
               <div class="status-icon">⛽</div>
               <div class="status-name">天然气流量</div>
               <div class="status-value" style="color:#fbbf24">1200 Nm³/h</div>
             </div>
-            <div class="status-item danger">
+            <div class="status-item danger" onclick="openDeviceModal('热回收效率', 'eff')">
               <div class="status-icon">🔥</div>
               <div class="status-name">热回收效率</div>
               <div class="status-value" style="color:#f87171">87%</div>
             </div>
-            <div class="status-item normal">
+            <div class="status-item normal" onclick="openDeviceModal('电表功率', 'power')">
               <div class="status-icon">⚡</div>
               <div class="status-name">电表功率</div>
               <div class="status-value" style="color:#4ade80">45 kW</div>
             </div>
-            <div class="status-item danger">
+            <div class="status-item danger" onclick="openDeviceModal('空烧判定', 'burn')">
               <div class="status-icon">⚠️</div>
               <div class="status-name">空烧判定</div>
               <div class="status-value" style="color:#f87171">是</div>
@@ -317,9 +351,25 @@
 
     <div style="height:40px"></div>
   </div>
+
+  <!-- 设备历史数据弹窗 -->
+  <div class="device-modal-overlay" id="deviceModalOverlay" onclick="if(event.target===this)closeDeviceModal()">
+    <div class="device-modal">
+      <div class="device-modal-header">
+        <span class="device-modal-title" id="deviceModalTitle">🔧 设备历史数据</span>
+        <button class="device-modal-close" onclick="closeDeviceModal()">&times;</button>
+      </div>
+      <div class="device-modal-body">
+        <div class="device-modal-chart" id="deviceModalChart"></div>
+        <div class="device-modal-stats" id="deviceModalStats"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
 window.addEventListener("load",function(){
   setTimeout(function(){var el=document.getElementById("pageLoader");if(el)el.classList.add("done");},500);
+  DataStore.init();
 
   // ========== DataStore 动态数据接入 ==========
   function initRealtimeData() {
@@ -343,7 +393,7 @@ window.addEventListener("load",function(){
     const metrics = [
       { selector: '.rt-big-grid .rt-big-card:nth-child(1) .rt-big-value', value: rt.vocsRate, suffix: '', color: '#0ea5e9', unit: 'kg/h', trend: '环比 -8.2%', trendCls: 'down' },
       { selector: '.rt-big-grid .rt-big-card:nth-child(2) .rt-big-value', value: rt.vocsEfficiency, suffix: '%', color: '#4ade80', unit: '', trend: '环比 +1.5%', trendCls: 'up' },
-      { selector: '.rt-big-grid .rt-big-card:nth-child(3) .rt-big-value', value: rt.carbonTotal, suffix: '', color: '#fbbf24', unit: 'tCO₂/h', trend: '环比 +18.6%', trendCls: 'up' },
+      { selector: '.rt-big-grid .rt-big-card:nth-child(3) .rt-big-value', value: rt.carbonTotal, suffix: '', color: '#fbbf24', unit: 'tCO<sub>2</sub>/h', trend: '环比 +18.6%', trendCls: 'up' },
       { selector: '.rt-big-grid .rt-big-card:nth-child(4) .rt-big-value', value: rt.cpIndex, suffix: '', color: '#f87171', unit: '', trend: '环比 -15.6%', trendCls: 'up' },
       { selector: '.rt-big-grid .rt-big-card:nth-child(5) .rt-big-value', value: layered.mciIndex, suffix: '', color: '#a78bfa', unit: '', trend: '环比 -3.5%', trendCls: 'down' },
       { selector: '.rt-big-grid .rt-big-card:nth-child(6) .rt-big-value', value: layered.ehiScore, suffix: '', color: '#22d3ee', unit: '', trend: '环比 +2.1%', trendCls: 'up' },
@@ -432,7 +482,8 @@ window.addEventListener("load",function(){
 
   // ========== 排口明细渲染 ==========
   function renderOutletDetails() {
-    const outlets = DataStore.getOutlets();
+    let outlets = DataStore.getOutlets();
+    if (!outlets || outlets.length === 0) outlets = MOCK_DATA.outlets || [];
     const tabsEl = document.getElementById('outletTabs');
     const panelsEl = document.getElementById('outletPanels');
     if (!tabsEl || !panelsEl) return;
@@ -456,8 +507,12 @@ window.addEventListener("load",function(){
     }
 
     outlets.forEach((outlet, idx) => {
-      const data = DataStore.getOutletData(outlet.id);
-      const devices = DataStore.getDevicesByOutlet(outlet.id);
+      let data = DataStore.getOutletData(outlet.id);
+      if (!data && MOCK_DATA.outletMonitoring) data = MOCK_DATA.outletMonitoring[outlet.id];
+      let devices = DataStore.getDevicesByOutlet(outlet.id);
+      if ((!devices || devices.length === 0) && MOCK_DATA.devices) {
+        devices = MOCK_DATA.devices.filter(d => d.outletId === outlet.id);
+      }
       const deviceName = devices.map(d => d.deviceCode).join(', ') || '无';
 
       // Tab
@@ -515,12 +570,12 @@ window.addEventListener("load",function(){
             '<div style="font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:10px;">扩展污染物</div>' +
             '<table class="outlet-table">' +
               '<tr><th>指标</th><th>浓度</th><th>指标</th><th>浓度</th></tr>' +
-              '<tr><td>SO₂</td><td class="outlet-status-' + so2Status + '">' + fmt(data.outletSO2, 1) + '<span class="outlet-unit">mg/m³</span></td>' +
-                  '<td>NOₓ</td><td class="outlet-status-' + noxStatus + '">' + fmt(data.outletNOx, 0) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
+              '<tr><td>SO<sub>2</sub></td><td class="outlet-status-' + so2Status + '">' + fmt(data.outletSO2, 1) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td>NO<sub>x</sub></td><td class="outlet-status-' + noxStatus + '">' + fmt(data.outletNOx, 0) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
               '<tr><td>PM2.5</td><td class="outlet-status-' + pm25Status + '">' + fmt(data.outletPM25, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
                   '<td>CO</td><td>' + fmt(data.outletCO, 0) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
-              '<tr><td>CO₂</td><td>' + fmt(data.outletCO2, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
-                  '<td>CH₄</td><td>' + fmt(data.outletCH4, 1) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
+              '<tr><td>CO<sub>2</sub></td><td>' + fmt(data.outletCO2, 0) + '<span class="outlet-unit">mg/m³</span></td>' +
+                  '<td>CH<sub>4</sub></td><td>' + fmt(data.outletCH4, 1) + '<span class="outlet-unit">mg/m³</span></td></tr>' +
             '</table>' +
           '</div>' +
           '<div class="outlet-mini-card">' +
@@ -611,6 +666,92 @@ window.addEventListener("load",function(){
   renderOutletDetails();
   setTimeout(animateNumbers, 300);
 });
+
+  // ========== 设备历史数据弹窗 ==========
+  const DEVICE_HISTORY = {
+    temp:  { label: '燃烧室温度', unit: '°C', color: '#f87171', data: [760, 765, 770, 775, 780, 782, 785, 788, 785, 783, 780, 778] },
+    flow:  { label: '废气风量', unit: 'm³/h', color: '#0ea5e9', data: [3800, 3900, 4000, 4100, 4150, 4180, 4200, 4250, 4200, 4100, 4050, 4000] },
+    gas:   { label: '天然气流量', unit: 'Nm³/h', color: '#fbbf24', data: [800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1280, 1300] },
+    eff:   { label: '热回收效率', unit: '%', color: '#a78bfa', data: [95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84] },
+    power: { label: '电表功率', unit: 'kW', color: '#4ade80', data: [38, 39, 40, 41, 42, 43, 44, 45, 46, 45, 44, 43] },
+    burn:  { label: '空烧占比', unit: '%', color: '#f87171', data: [0, 0, 2, 5, 8, 12, 15, 18, 20, 22, 23, 24] },
+  };
+  const HOURS = ['00:00','02:00','04:00','06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'];
+
+  function openDeviceModal(title, key) {
+    const cfg = DEVICE_HISTORY[key];
+    if (!cfg) return;
+    document.getElementById('deviceModalTitle').textContent = '🔧 ' + title + ' — 近24小时趋势';
+    document.getElementById('deviceModalOverlay').classList.add('show');
+    setTimeout(() => renderDeviceChart(cfg), 50);
+  }
+
+  function closeDeviceModal() {
+    document.getElementById('deviceModalOverlay').classList.remove('show');
+  }
+
+  function renderDeviceChart(cfg) {
+    const el = document.getElementById('deviceModalChart');
+    if (!el) return;
+    const chart = echarts.init(el);
+    const vals = cfg.data;
+    const avg = (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1);
+    const max = Math.max(...vals);
+    const min = Math.min(...vals);
+    const latest = vals[vals.length - 1];
+    const trend = vals[vals.length - 1] > vals[0] ? '↗️ 上升' : '↘️ 下降';
+
+    document.getElementById('deviceModalStats').innerHTML =
+      '<div class="device-modal-stat"><div class="device-modal-stat-value" style="color:' + cfg.color + '">' + latest + '</div><div class="device-modal-stat-label">当前值 (' + cfg.unit + ')</div></div>' +
+      '<div class="device-modal-stat"><div class="device-modal-stat-value">' + avg + '</div><div class="device-modal-stat-label">平均值</div></div>' +
+      '<div class="device-modal-stat"><div class="device-modal-stat-value">' + max + '</div><div class="device-modal-stat-label">最大值</div></div>' +
+      '<div class="device-modal-stat"><div class="device-modal-stat-value">' + trend + '</div><div class="device-modal-stat-label">趋势</div></div>';
+
+    chart.setOption({
+      backgroundColor: 'transparent',
+      textStyle: { color: 'rgba(226,232,240,0.7)' },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(2,6,23,0.95)', borderColor: 'rgba(34,211,238,0.2)',
+        textStyle: { color: '#e2e8f0' },
+        formatter: function(p) { return p[0].name + '<br/>' + cfg.label + ': <b>' + p[0].value + ' ' + cfg.unit + '</b>'; }
+      },
+      grid: { left: '10%', right: '6%', top: '12%', bottom: '15%' },
+      xAxis: {
+        type: 'category', data: HOURS,
+        axisLine: { lineStyle: { color: 'rgba(34,211,238,0.15)' } },
+        axisLabel: { color: 'rgba(226,232,240,0.4)', fontSize: 11 }
+      },
+      yAxis: {
+        type: 'value', name: cfg.unit,
+        nameTextStyle: { color: 'rgba(226,232,240,0.4)' },
+        axisLine: { lineStyle: { color: 'rgba(34,211,238,0.15)' } },
+        splitLine: { lineStyle: { color: 'rgba(34,211,238,0.06)' } },
+        axisLabel: { color: 'rgba(226,232,240,0.4)' }
+      },
+      series: [{
+        type: 'line', data: vals, smooth: true,
+        lineStyle: { color: cfg.color, width: 2.5 },
+        itemStyle: { color: cfg.color },
+        areaStyle: {
+          color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [{ offset: 0, color: cfg.color + '33' }, { offset: 1, color: cfg.color + '05' }]
+          }
+        },
+        symbol: 'circle', symbolSize: 6,
+        markLine: {
+          silent: true, lineStyle: { color: 'rgba(226,232,240,0.2)', type: 'dashed' },
+          data: [{ type: 'average', name: '平均', label: { formatter: '平均 {c}', color: 'rgba(226,232,240,0.5)', fontSize: 10 } }]
+        }
+      }]
+    });
+  }
+
+  window.addEventListener('resize', function() {
+    const chartEl = document.getElementById('deviceModalChart');
+    if (chartEl) { const c = echarts.getInstanceByDom(chartEl); if (c) c.resize(); }
+  });
 </script>
+  <script>initCommon();</script>
 </body>
 </html>
